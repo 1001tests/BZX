@@ -67,9 +67,10 @@ before_script:
 before_deploy:
   - sudo chown -R travis:travis /*
   - sudo chown -R travis:travis *  
-  - "cd ./ci/"
-  - "chmod +x deploy.sh"
-  - "./deploy.sh"
+  - sudo chown -R travis:travis /home/travis/
+  - "cd $TRAVIS_BUILD_DIR"
+  - "chmod +x .ci/deploy.sh"
+  - "./.ci/deploy.sh"
 deploy:
   provider: releases
   api_key:
