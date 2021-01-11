@@ -915,3 +915,6 @@ if ENABLE_QT
 include Makefile.qt.include
 endif
 
+if ENABLE_ELYSIUM
+include Makefile.elysium.include
+endif
