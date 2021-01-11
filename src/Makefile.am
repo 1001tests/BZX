@@ -185,6 +185,7 @@ BITCOIN_CORE_H = \
   evo/providertx.h \
   evo/simplifiedmns.h \
   evo/specialtx.h \
+  evo/spork.h \
   dsnotificationinterface.h \
   coins.h \
   compat.h \
@@ -387,6 +388,7 @@ libbitcoin_server_a_SOURCES = \
   evo/providertx.cpp \
   evo/simplifiedmns.cpp \
   evo/specialtx.cpp \
+  evo/spork.cpp \
   llmq/quorums.cpp \
   llmq/quorums_blockprocessor.cpp \
   llmq/quorums_commitment.cpp \
