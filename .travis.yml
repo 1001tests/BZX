@@ -76,7 +76,7 @@ deploy:
   file_glob: true
   file:
     - out/**/zip/*
-    - out/zip/*
+    - build-ci/firo-$BUILD_TARGET/src/bin/zip/*
   skip_cleanup: true
   on:
     tags: true
