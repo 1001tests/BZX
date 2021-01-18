@@ -32,8 +32,8 @@ cp firo-cli bin/ || cp firo-cli.exe bin/ || echo "no cli"
 cp firo-tx bin/ || cp firo-tx.exe bin/ || echo "no tx"
 echo "before bin"
 
-cd build-ci/firo-$BUILD_TARGET/src/bin || echo "bin failed"
-echo "listing src/bim"
+cd bin || echo "bin failed"
+echo "listing src/bin"
 ls -lah
 echo "strip files"
 strip /* || echo "nothing to strip"
