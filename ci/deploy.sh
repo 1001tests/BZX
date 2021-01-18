@@ -32,8 +32,10 @@ cp firo-cli bin/ || cp firo-cli.exe bin/ || echo "no cli"
 cp firo-tx bin/ || cp firo-tx.exe bin/ || echo "no tx"
 echo "before bin"
 
-cd bin || echo "bin failed"
+cd build-ci/firo-$BUILD_TARGET/src/bin || echo "bin failed"
+echo "listing src/bim"
 ls -lah
+echo "strip files"
 strip /* || echo "nothing to strip"
 
 ARCHIVE_CMD="$ARCHIVE_CMD $ARCHIVE_NAME *"
