@@ -76,6 +76,7 @@ deploy:
   file_glob: true
   file:
     - out/**/zip/*
+    - out/zip/*
   skip_cleanup: true
   on:
     tags: true
