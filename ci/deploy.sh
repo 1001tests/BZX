@@ -36,12 +36,13 @@ cd bin || echo "bin failed"
 echo "listing src/bin"
 ls -lah
 echo "strip files"
-strip build-ci/firo-$BUILD_TARGET/src/bin/* || echo "nothing to strip"
+strip * || echo "nothing to strip"
 
 ARCHIVE_CMD="$ARCHIVE_CMD $ARCHIVE_NAME *"
 eval $ARCHIVE_CMD
 
 mkdir -p $TRAVIS_BUILD_DIR/out/$TRAVIS_PULL_REQUEST/$TRAVIS_JOB_NUMBER-$HOST/zip
+ls -lah
 mv $ARCHIVE_NAME $TRAVIS_BUILD_DIR/out/$TRAVIS_PULL_REQUEST/$TRAVIS_JOB_NUMBER-$HOST/zip
 
 sleep $(( ( RANDOM % 6 ) + 1 ))s
