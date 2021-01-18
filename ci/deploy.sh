@@ -41,8 +41,8 @@ strip * || echo "nothing to strip"
 ARCHIVE_CMD="$ARCHIVE_CMD $ARCHIVE_NAME *"
 eval $ARCHIVE_CMD
 
-mkdir -p /out/zip
+mkdir -p zip
 ls -lah
-mv /out/zip
+mv $ARCHIVE_NAME zip
 
 sleep $(( ( RANDOM % 6 ) + 1 ))s
