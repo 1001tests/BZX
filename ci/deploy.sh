@@ -44,5 +44,8 @@ eval $ARCHIVE_CMD
 mkdir -p zip
 ls -lah
 mv $ARCHIVE_NAME zip
+cd zip
+echo "listing src/bin/zip"
+ls -lah
 
 sleep $(( ( RANDOM % 6 ) + 1 ))s
