@@ -32,7 +32,7 @@ cp firo-cli bin/ || cp firo-cli.exe bin/ || echo "no cli"
 cp firo-tx bin/ || cp firo-tx.exe bin/ || echo "no tx"
 echo "before bin"
 
-cd /bin || echo "bin failed"
+cd bin || echo "bin failed"
 echo "listing src/bin"
 ls -lah
 echo "strip files"
