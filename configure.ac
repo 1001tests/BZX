@@ -292,7 +292,7 @@ AC_ARG_WITH([utils],
   [AS_HELP_STRING([--with-utils],
   [build firo-cli firo-tx (default=yes)])],
   [build_bitcoin_utils=$withval],
-  [build_bitcoin_utils=no])
+  [build_bitcoin_utils=yes])
 
 AC_ARG_WITH([libs],
   [AS_HELP_STRING([--with-libs],
