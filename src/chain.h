@@ -476,7 +476,7 @@ public:
 
         const auto &params = Params().GetConsensus();
 
-        // Zcoin - MTP
+        // MTP
         if (nTime > ZC_GENESIS_BLOCK_TIME && nTime >= params.nMTPSwitchTime) {
             READWRITE(nVersionMTP);
             READWRITE(mtpHashValue);

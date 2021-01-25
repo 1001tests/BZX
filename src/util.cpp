@@ -496,7 +496,7 @@ void PrintExceptionContinue(const std::exception_ptr pex, const char* pszThread)
 #endif
 }
 
-boost::filesystem::path GetDefaultDataDirForCoinName(const std::string &coinName)
+boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
     // Windows < Vista: C:\Documents and Settings\Username\Application Data\firo
@@ -505,7 +505,7 @@ boost::filesystem::path GetDefaultDataDirForCoinName(const std::string &coinName
     // Unix: ~/.firo
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / coinName;
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "firo";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -515,27 +515,12 @@ boost::filesystem::path GetDefaultDataDirForCoinName(const std::string &coinName
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support" / coinName;
+    return pathRet / "Library/Application Support/firo;
 #else
     // Unix
-    return pathRet / ("." + coinName);
+    return pathRet / ".firo";;
 #endif
 #endif
-}
-
-boost::filesystem::path GetDefaultDataDir()
-{
-    namespace fs = boost::filesystem;
-
-    fs::path firoDefaultDir = GetDefaultDataDirForCoinName("firo");
-    if (!fs::is_directory(firoDefaultDir)) {
-        // try "zcoin" in case we're upgrading from pre-firo version
-        fs::path zcoinDefaultDir = GetDefaultDataDirForCoinName("zcoin");
-        if (fs::is_directory(zcoinDefaultDir))
-            return zcoinDefaultDir;
-    }
-
-    return firoDefaultDir;
 }
 
 static boost::filesystem::path pathCached;
@@ -614,13 +599,7 @@ boost::filesystem::path GetConfigFile(const std::string& confPath)
     if (!pathConfigFile.is_complete()) {
         boost::filesystem::path dataDir = GetDataDir(false);
 
-        // upgrade heuristics: if dataDir ends with either "zcoin" or ".zcoin" and confPath is set
-        // to default value we use "zcoin.conf" as config file name
-
-        if (confPath == BITCOIN_CONF_FILENAME && (dataDir.filename() == "zcoin" || dataDir.filename() == ".zcoin"))
-            pathConfigFile = dataDir / "zcoin.conf";
-        else
-            pathConfigFile = dataDir / pathConfigFile;
+        pathConfigFile = dataDir / pathConfigFile;
     }
 
     return pathConfigFile;
@@ -652,42 +631,6 @@ void ReadConfigFile(const std::string& confPath)
     ClearDatadirCache();
 }
 
-bool RenameDirectoriesFromZcoinToFiro()
-{
-    namespace fs = boost::filesystem;
-
-    fs::path zcoinPath = GetDefaultDataDirForCoinName("zcoin");
-    fs::path firoPath = GetDefaultDataDirForCoinName("firo");
-
-    // rename is possible only if zcoin directory exists and firo doesn't
-    if (fs::exists(firoPath) || !fs::is_directory(zcoinPath))
-        return false;
-
-    fs::path zcoinConfFileName = zcoinPath / "zcoin.conf";
-    fs::path firoConfFileName = zcoinPath / "firo.conf";
-    if (fs::exists(firoConfFileName))
-        return false;
-
-    try {
-        if (fs::is_regular_file(zcoinConfFileName))
-            fs::rename(zcoinConfFileName, firoConfFileName);
-
-        try {
-            fs::rename(zcoinPath, firoPath);
-        }
-        catch (const fs::filesystem_error &) {
-            // rename config file back
-            fs::rename(firoConfFileName, zcoinConfFileName);
-            throw;
-        }
-    }
-    catch (const fs::filesystem_error &) {
-        return false;
-    }
-
-    ClearDatadirCache();
-    return true;
-}
 
 #ifndef WIN32
 boost::filesystem::path GetPidFile()
