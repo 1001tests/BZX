@@ -616,7 +616,6 @@ int main(int argc, char *argv[])
     if (!Intro::pickDataDirectory())
         return EXIT_SUCCESS;
 
-    app.migrateToFiro();
 
     /// 6. Determine availability of data directory and parse firo.conf
     /// - Do not call GetDataDir(true) before this step finishes
