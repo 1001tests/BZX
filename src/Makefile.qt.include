@@ -311,9 +311,6 @@ RES_ICONS = \
   qt/res/icons/about.png \
   qt/res/icons/about_qt.png \
   qt/res/icons/balances.png \
-  qt/res/icons/bitcoin.ico \
-  qt/res/icons/bitcoin_testnet.ico \
-  qt/res/icons/bitcoin.png \
   qt/res/icons/firo.png \
   qt/res/icons/zerocoin.png \
   qt/res/icons/sigma.png \
