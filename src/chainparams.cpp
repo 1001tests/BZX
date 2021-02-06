@@ -255,7 +255,8 @@ public:
         // evo znodes
         consensus.DIP0003Height = 278300; // Approximately June 22 2020, 12:00 UTC
         consensus.DIP0003EnforcementHeight = 284400; // Approximately July 13 2020, 12:00 UTC
-        consensus.DIP0008Height = INT_MAX;
+        consensus.DIP0003EnforcementHash = uint256S("0x8b8d7c05bb2d75f8c5e076cb6c10ef464e94ddcda2744740db03aeda2d6cc006");
+        consensus.DIP0008Height = 341100; // Approximately Jan 28 2021, 11:00 UTC
         consensus.nEvoZnodeMinimumConfirmations = 15;
 
         // long living quorum params
@@ -263,6 +264,8 @@ public:
         consensus.llmqs[Consensus::LLMQ_400_60] = llmq400_60;
         consensus.llmqs[Consensus::LLMQ_400_85] = llmq400_85;
         consensus.nLLMQPowTargetSpacing = 5*60;
+        consensus.llmqChainLocks = Consensus::LLMQ_400_60;
+        consensus.llmqForInstantSend = Consensus::LLMQ_50_60;
 
         consensus.nMTPSwitchTime = SWITCH_TO_MTP_BLOCK_HEADER;
         consensus.nMTPStartBlock = 117564;
@@ -340,12 +343,10 @@ public:
                 boost::assign::map_list_of
                 (0, uint256S("0xf11046292ff76af48b66de6f1a210c09825d2ab4f56975ec507766ebf9c9f443"))
                 (14000, uint256S("0xeab9b7e451284cb75ada7609e0220bee2b4f289fed9d9cf2a9e3aa548b2d38eb"))
-                (14001, uint256S("0x98641539b9b8ff4e6a8053ec904a14a99f95cf7655c71625104419b22016c9a0"))
-                (14002, uint256S("0x8c8c67106b0b612b08edd13e846c97c24ad0b59066efdb3ad6666e20f90d4bfa"))
-                (14003, uint256S("0xaccfa7c7bb153135def08bb54dadb1835744d9521afb36661a91aa2f70df9abd"))
                 (14271, uint256S("0xf15088099a30f98e85a09789880f74cadca42f725c0cc1666484865539d2f335"))
                 (20580, uint256S("0x591b00ac1ba7d30b9f440efc467072400805a900e92f04f272e6f70cb55ab026"))
                 (121378, uint256S("0xa7d9a56dd2986442b5c10ad036eb4e6555eaa8d9f6645c7b9620597792a153ac"))
+                (341100, uint256S("0x1ca6cbd9f6e13db8e0e1db0b77f8b1a037b01c69558214bc1ae2ce1f81da4890"))
         };
 
         chainTxData = ChainTxData{
@@ -390,6 +391,13 @@ public:
         consensus.evoSporkKeyID = "a78fERshquPsTv2TuKMSsxTeKom56uBwLP";
         consensus.nEvoSporkStartBlock = ZC_LELANTUS_STARTING_BLOCK;
         consensus.nEvoSporkStopBlock = ZC_LELANTUS_STARTING_BLOCK + 24*12*365;  // one year after lelantus
+
+        // reorg
+        consensus.nMaxReorgDepth = 5;
+        consensus.nMaxReorgDepthEnforcementBlock = 338000;
+
+        // whitelist
+        consensus.txidWhitelist.insert(uint256S("3ecea345c7b174271bbdcde8cad6097d9a3dc420259743d52cc9cf1945aaba03"));
 
         // Dandelion related values.
         consensus.nDandelionEmbargoMinimum = DANDELION_EMBARGO_MINIMUM;
@@ -513,7 +521,9 @@ public:
         // evo znodes
         consensus.DIP0003Height = 3340;
         consensus.DIP0003EnforcementHeight = 3800;
-        consensus.DIP0008Height = INT_MAX;
+        consensus.DIP0003EnforcementHash.SetNull();
+
+        consensus.DIP0008Height = 25000;
         consensus.nEvoZnodeMinimumConfirmations = 0;
 
         // long living quorum params
@@ -522,6 +532,8 @@ public:
         consensus.llmqs[Consensus::LLMQ_400_60] = llmq400_60;
         consensus.llmqs[Consensus::LLMQ_400_85] = llmq400_85;
         consensus.nLLMQPowTargetSpacing = 20;
+        consensus.llmqChainLocks = Consensus::LLMQ_10_70;
+        consensus.llmqForInstantSend = Consensus::LLMQ_10_70;
 
         consensus.nMTPSwitchTime = 1539172800;
         consensus.nMTPStartBlock = 1;
@@ -631,6 +643,13 @@ public:
         consensus.nEvoSporkStartBlock = 22000;
         consensus.nEvoSporkStopBlock = 40000;
 
+        // reorg
+        consensus.nMaxReorgDepth = 4;
+        consensus.nMaxReorgDepthEnforcementBlock = 25150;
+
+        // whitelist
+        consensus.txidWhitelist.insert(uint256S("44b3829117bd248544c71b430d585cb88b4ce156a7d4fdb9ef3ae96efa8f09d3"));
+
         // Dandelion related values.
         consensus.nDandelionEmbargoMinimum = DANDELION_TESTNET_EMBARGO_MINIMUM;
         consensus.nDandelionEmbargoAvgAdd = DANDELION_TESTNET_EMBARGO_AVG_ADD;
@@ -716,7 +735,9 @@ public:
         // evo znodes
         consensus.DIP0003Height = 500;
         consensus.DIP0003EnforcementHeight = 550;
-        consensus.DIP0008Height = INT_MAX;
+        consensus.DIP0003EnforcementHash.SetNull();
+
+        consensus.DIP0008Height = 550;
         consensus.nEvoZnodeMinimumConfirmations = 1;
 
         // long living quorum params
@@ -725,6 +746,8 @@ public:
         consensus.llmqs[Consensus::LLMQ_400_60] = llmq400_60;
         consensus.llmqs[Consensus::LLMQ_400_85] = llmq400_85;
         consensus.nLLMQPowTargetSpacing = 1;
+        consensus.llmqChainLocks = Consensus::LLMQ_5_60;
+        consensus.llmqForInstantSend = Consensus::LLMQ_5_60;
 
         consensus.nMTPSwitchTime = INT_MAX;
         consensus.nMTPStartBlock = 0;
@@ -825,6 +848,10 @@ public:
         consensus.evoSporkKeyID = "TSpmHGzQT4KJrubWa4N2CRmpA7wKMMWDg4";  // private key is cW2YM2xaeCaebfpKguBahUAgEzLXgSserWRuD29kSyKHq1TTgwRQ
         consensus.nEvoSporkStartBlock = 1000;
         consensus.nEvoSporkStopBlock = 1500;
+
+        // reorg
+        consensus.nMaxReorgDepth = 4;
+        consensus.nMaxReorgDepthEnforcementBlock = 300;
 
         // Dandelion related values.
         consensus.nDandelionEmbargoMinimum = 0;
