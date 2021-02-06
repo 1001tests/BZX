@@ -18,8 +18,8 @@
 #include <boost/filesystem/operations.hpp>
 #include <stdio.h>
 
-#include <include/event2/buffer.h>
-#include <include/event2/keyvalq_struct.h>
+#include <event2/buffer.h>
+#include <event2/keyvalq_struct.h>
 #include "support/events.h"
 
 #include <univalue.h>
