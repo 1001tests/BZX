@@ -32,7 +32,7 @@ jobs:
     # build depends
     - <<: *builddepends
       env: BUILD_TARGET=win64
-    - <<: *builddepends
+    #- <<: *builddepends
       #env: BUILD_TARGET=linux64
     # build source
     - <<: *buildsrc
