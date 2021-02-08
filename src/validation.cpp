@@ -4253,11 +4253,13 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 
     if (masternodeSync.IsSynced())
     {
-        if (chainActive.Height() > 52033) {
+        if (chainActive.Height() > 52033)
+        {
             if (block.nBits != NexxtD(pindexPrev, &block))
-                return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work"); }
+                return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
+        }
     }
-    else (block.nBits != GetNextWorkRequired(pindexPrev, &block)
+    else (block.nBits != GetNextWorkRequired(pindexPrev, &block))
         return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
 
     // Check timestamp against prev
