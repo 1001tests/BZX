@@ -116,11 +116,11 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
-    if (pindexLast->nHeight > HF_FORK_DGW)
+    if (pindexLast->nHeight > 5)
     {
         return DarkGravityWave3(pindexLast, pblock);
     }
-    else if (pindexLast->nHeight > HF_FORK_END)
+    else if (pindexLast->nHeight > 3)
     {
         return GetNextWorkRequiredBTC(pindexLast, pblock);
     }

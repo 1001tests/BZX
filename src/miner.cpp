@@ -90,10 +90,16 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
 
     // Updating time can change work required on testnet:
     if (consensusParams.fPowAllowMinDifficultyBlocks)
-        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock, consensusParams);
+        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
 
     return nNewTime - nOldTime;
 }
+
+void UpdateDiff(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
+{
+    pblock->nBits = NexxtD(pindexPrev, pblock);
+}
+
 
 BlockAssembler::BlockAssembler(const CChainParams& _chainparams)
     : chainparams(_chainparams)
@@ -288,8 +294,9 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
 
     // Fill in header
     pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
+    UpdateDiff(pblock, pindexPrev);
     UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
-    pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus());
+    pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock);
     pblock->nNonce         = 0;
     pblocktemplate->vTxSigOpsCost[0] = GetLegacySigOpCount(*pblock->vtx[0]);
 
@@ -406,6 +413,7 @@ bool BlockAssembler::TestForBlock(CTxMemPool::txiter iter)
     }
 
     // Must check that lock times are still valid
+
     // as long as reorgs keep the mempool consistent.
     if (!IsFinalTx(iter->GetTx(), nHeight, nLockTimeCutoff))
         return false;
@@ -1072,6 +1080,7 @@ void static BZXMiner(const CChainParams &chainparams) {
                 if (UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev) < 0)
                     break; // Recreate the block if the clock has run backwards,
                 // so that we can use the correct time.
+                UpdateDiff(pblock, pindexPrev);
                 if (chainparams.GetConsensus().fPowAllowMinDifficultyBlocks) {
                     // Changing pblock->nTime can change work required on testnet:
                     hashTarget.SetCompact(pblock->nBits);

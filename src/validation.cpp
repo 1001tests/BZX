@@ -50,7 +50,7 @@
 #include "versionbits.h"
 #include "definition.h"
 #include "utiltime.h"
-
+#include "masternode-sync.h"
 #include "coins.h"
 
 #include "blacklists.h"
@@ -3044,6 +3044,7 @@ void static UpdateTip(CBlockIndex *pindexNew, const CChainParams &chainParams) {
         int nUpgraded = 0;
         const CBlockIndex* pindex = chainActive.Tip();
         for (int bit = 0; bit < VERSIONBITS_NUM_BITS; bit++) {
+
             WarningBitsConditionChecker checker(bit);
             ThresholdState state = checker.GetStateFor(pindex, chainParams.GetConsensus(), warningcache[bit]);
             if (state == THRESHOLD_ACTIVE || state == THRESHOLD_LOCKED_IN) {
@@ -4249,7 +4250,14 @@ std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBloc
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, CBlockIndex * const pindexPrev, int64_t nAdjustedTime)
 {
 	// Check proof of work
-    if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
+
+    if (masternodeSync.IsSynced())
+    {
+        if (chainActive.Height() > 52033) {
+            if (block.nBits != NexxtD(pindexPrev, &block))
+                return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work"); }
+    }
+    else (block.nBits != GetNextWorkRequired(pindexPrev, &block)
         return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
 
     // Check timestamp against prev
