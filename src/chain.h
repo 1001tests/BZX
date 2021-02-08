@@ -212,9 +212,6 @@ public:
     unsigned int nBits;
     unsigned int nNonce;
 
-    // BZX - MTP
-    int32_t nVersionMTP = 0x1000;
-    uint256 mtpHashValue;
     // Reserved fields
     uint256 reserved[2];
 
@@ -276,8 +273,6 @@ public:
         nBits          = 0;
         nNonce         = 0;
 
-        nVersionMTP = 0;
-        mtpHashValue = reserved[0] = reserved[1] = uint256();
 
         mintedPubCoins.clear();
         sigmaMintedPubCoins.clear();
@@ -304,12 +299,6 @@ public:
         nBits          = block.nBits;
         nNonce         = block.nNonce;
 
-        if (block.IsMTP()) {
-            nVersionMTP = block.nVersionMTP;
-            mtpHashValue = block.mtpHashValue;
-            reserved[0] = block.reserved[0];
-            reserved[1] = block.reserved[1];
-        }
     }
 
     CDiskBlockPos GetBlockPos() const {
@@ -341,13 +330,6 @@ public:
         block.nBits          = nBits;
         block.nNonce         = nNonce;
 
-        // BZX - MTP
-        if(block.IsMTP()){
-			block.nVersionMTP = nVersionMTP;
-            block.mtpHashValue = mtpHashValue;
-            block.reserved[0] = reserved[0];
-            block.reserved[1] = reserved[1];
-		}
         return block;
     }
 
@@ -476,14 +458,6 @@ public:
 
         const auto &params = Params().GetConsensus();
 
-        // MTP
-        if (nTime > ZC_GENESIS_BLOCK_TIME && nTime >= params.nMTPSwitchTime) {
-            READWRITE(nVersionMTP);
-            READWRITE(mtpHashValue);
-            READWRITE(reserved[0]);
-            READWRITE(reserved[1]);
-        }
-
         if (!(s.GetType() & SER_GETHASH) && nVersion >= ZC_ADVANCED_INDEX_VERSION) {
             READWRITE(mintedPubCoins);
 		    READWRITE(accumulatorChanges);
@@ -527,13 +501,6 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
-
-        if (block.IsMTP()) {
-            block.nVersionMTP = nVersionMTP;
-            block.mtpHashValue = mtpHashValue;
-            block.reserved[0] = reserved[0];
-            block.reserved[1] = reserved[1];
-        }
 
         return block.GetHash();
     }

@@ -244,7 +244,6 @@ template<typename Stream> inline void Unserialize(Stream& s, bool& a) { char f=s
 
 /**
  * Please note that BZX drops support for big-endian architectures and thus these functions are simple read/writes
- * It significantly improves MTP structures serialization performance
  */
 
 template <typename ItemType>

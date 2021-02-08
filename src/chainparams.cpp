@@ -214,11 +214,6 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1479168000; // November 15th, 2016.
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1510704000; // November 15th, 2017.
 
-        // Deployment of MTP
-        consensus.vDeployments[Consensus::DEPLOYMENT_MTP].bit = 12;
-        consensus.vDeployments[Consensus::DEPLOYMENT_MTP].nStartTime = SWITCH_TO_MTP_BLOCK_HEADER - 2*60; // 2 hours leeway
-        consensus.vDeployments[Consensus::DEPLOYMENT_MTP].nTimeout = SWITCH_TO_MTP_BLOCK_HEADER + consensus.nMinerConfirmationWindow*2 * 5*60;
-
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000708f98bf623f02e");
 
@@ -257,14 +252,8 @@ public:
         consensus.llmqChainLocks = Consensus::LLMQ_400_60;
         consensus.llmqForInstantSend = Consensus::LLMQ_50_60;
 
-        consensus.nMTPSwitchTime = SWITCH_TO_MTP_BLOCK_HEADER;
-        consensus.nMTPStartBlock = 117564;
-        consensus.nMTPFiveMinutesStartBlock = SWITCH_TO_MTP_5MIN_BLOCK;
-        consensus.nDifficultyAdjustStartBlock = 0;
+        consensus.nDifficultyAdjustStartBlock = 0;//XXXX
         consensus.nFixedDifficulty = 0x2000ffff;
-        consensus.nPowTargetSpacingMTP = 5*60;
-        consensus.nInitialMTPDifficulty = 0x1c021e57;
-        consensus.nMTPRewardReduction = 2;
 
         consensus.nDisableZerocoinStartBlock = 157000;
 
@@ -305,14 +294,7 @@ public:
         assert(consensus.hashGenesisBlock == uint256S("0x4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"));
         assert(genesis.hashMerkleRoot == uint256S("0x365d2aa75d061370c9aefdabac3985716b1e3b4bb7c4af4ed54f25e5aaa42783"));
         vSeeds.push_back(CDNSSeedData("amsterdam.BZX.org", "amsterdam.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("australia.BZX.org", "australia.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("chicago.BZX.org", "chicago.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("london.BZX.org", "london.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("frankfurt.BZX.org", "frankfurt.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("newjersey.BZX.org", "newjersey.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("sanfrancisco.BZX.org", "sanfrancisco.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("tokyo.BZX.org", "tokyo.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("singapore.BZX.org", "singapore.BZX.org", false));
+
         // Note that of those with the service bits flag, most only support a subset of possible options
         base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 82);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 7);
@@ -330,12 +312,7 @@ public:
 
         checkpointData = (CCheckpointData) {
                 boost::assign::map_list_of
-                (0, uint256S("0xf11046292ff76af48b66de6f1a210c09825d2ab4f56975ec507766ebf9c9f443"))
-                (14000, uint256S("0xeab9b7e451284cb75ada7609e0220bee2b4f289fed9d9cf2a9e3aa548b2d38eb"))
-                (14271, uint256S("0xf15088099a30f98e85a09789880f74cadca42f725c0cc1666484865539d2f335"))
-                (20580, uint256S("0x591b00ac1ba7d30b9f440efc467072400805a900e92f04f272e6f70cb55ab026"))
-                (121378, uint256S("0xa7d9a56dd2986442b5c10ad036eb4e6555eaa8d9f6645c7b9620597792a153ac"))
-                (341100, uint256S("0x1ca6cbd9f6e13db8e0e1db0b77f8b1a037b01c69558214bc1ae2ce1f81da4890"))
+                (0, uint256S("0x0"))
         };
 
         chainTxData = ChainTxData{
