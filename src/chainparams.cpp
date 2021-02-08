@@ -176,10 +176,6 @@ public:
 
         consensus.chainType = Consensus::chainMain;
 
-        consensus.nSubsidyHalvingFirst = 302438;
-        consensus.nSubsidyHalvingInterval = 420000;
-        consensus.nSubsidyHalvingStopBlock = 3646849;
-
         consensus.stage2DevelopmentFundShare = 15;
         consensus.stage2ZnodeShare = 35;
         consensus.stage2DevelopmentFundAddress = "aFrAVZFr8pva5mG8XKaUH8EXcFVVNxLiuB";
@@ -276,7 +272,6 @@ public:
 
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
-        strZnodePaymentsPubKey = "04549ac134f694c0243f503e8c8a9a986f5de6610049c40b07816809b0d1d06a21b07be27b9bb555931773f62ba6cf35a25fd52f694d4e1106ccd237a7bb899fdd";
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
