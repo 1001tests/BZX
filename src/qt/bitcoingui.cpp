@@ -1483,43 +1483,19 @@ void BitcoinGUI::checkZc2SigmaVisibility(int numBlocks) {
     }
 }
 
-void BitcoinGUI::checkZnodeVisibility(int numBlocks) {
-
-    const Consensus::Params& params = ::Params().GetConsensus();
-    // Before legacy window
-    if(numBlocks < params.DIP0003Height){
-        masternodeAction->setVisible(false);
-    } else {
-        masternodeAction->setVisible(true);
-    }
+void BitcoinGUI::checkZnodeVisibility(int numBlocks)
+{
+    masternodeAction->setVisible(true);
 }
 
 void BitcoinGUI::checkSigmaVisibility(int numBlocks)
 {
-    auto allowSigmaPage = sigma::IsSigmaAllowed(numBlocks) && !lelantus::IsLelantusAllowed(numBlocks);
-    if (allowSigmaPage != sigmaAction->isVisible()) {
-        if (!allowSigmaPage && sigmaAction->isChecked()) {
-            gotoOverviewPage();
-        }
-        sigmaAction->setVisible(allowSigmaPage);
-    }
+        sigmaAction->setVisible(false);
 }
 
 void BitcoinGUI::checkLelantusVisibility(int numBlocks)
 {
-    auto allowLelantusPage = false;
-    if (clientModel && clientModel->getOptionsModel()) {
-        allowLelantusPage = clientModel->getOptionsModel()->getLelantusPage();
-    }
-
-    allowLelantusPage &= lelantus::IsLelantusAllowed(numBlocks);
-
-    if (allowLelantusPage != lelantusAction->isVisible()) {
-        if (!allowLelantusPage && lelantusAction->isChecked()) {
-            gotoOverviewPage();
-        }
-        lelantusAction->setVisible(allowLelantusPage);
-    }
+        lelantusAction->setVisible(true);
 }
 
 void BitcoinGUI::toggleNetworkActive()
