@@ -110,7 +110,7 @@ LIBBITCOIN_CLI=libbitcoin_cli.a
 LIBBITCOIN_UTIL=libbitcoin_util.a
 LIBLELANTUS=liblelantus.a
 LIBBITCOIN_CRYPTO=crypto/libbitcoin_crypto.a
-LIBBITCOINQT=qt/libfiroqt.a
+LIBBITCOINQT=qt/libBZXqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
 
 LIBBZX_SIGMA=libsigma.a
@@ -150,11 +150,11 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += firod
+  bin_PROGRAMS += BZXd
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += firo-cli firo-tx
+  bin_PROGRAMS += BZX-cli BZX-tx
 endif
 
 .PHONY: FORCE check-symbols check-security
@@ -369,7 +369,7 @@ BITCOIN_CORE_H = \
   immer/array_transient.hpp \
   immer/map.hpp
 
-# server: shared between firod and firo-qt
+# server: shared between BZXd and BZX-qt
 libbitcoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libbitcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_server_a_SOURCES = \
@@ -459,7 +459,7 @@ libbitcoin_zmq_a_SOURCES = \
 endif
 
 
-# wallet: shared between firod and firo-qt, but only linked
+# wallet: shared between BZXd and BZX-qt, but only linked
 # when wallet enabled
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -573,7 +573,7 @@ libbitcoin_consensus_a_SOURCES = \
   crypto/MerkleTreeProof/ref.c \
   crypto/MerkleTreeProof/blake2/blake2b.c
 
-# common: shared between firod, and firo-qt and non-server tools
+# common: shared between BZXd, and BZX-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_common_a_SOURCES = \
@@ -736,7 +736,7 @@ libbitcoin_util_a_SOURCES += stacktraces.cpp
 libbitcoin_consensus_a_SOURCES += stacktraces.h
 endif
 
-# cli: shared between firo-cli and firo-qt
+# cli: shared between BZX-cli and BZX-qt
 libbitcoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_cli_a_SOURCES = \
@@ -747,17 +747,17 @@ nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
 # bitcoind binary #
-firod_SOURCES = bitcoind.cpp
-firod_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-firod_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-firod_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
-EXTRA_firod_DEPENDENCIES = $(LIBBLSSIG_LIBS)
+BZXd_SOURCES = bitcoind.cpp
+BZXd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+BZXd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+BZXd_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+EXTRA_BZXd_DEPENDENCIES = $(LIBBLSSIG_LIBS)
 
 if TARGET_WINDOWS
-firod_SOURCES += bitcoind-res.rc
+BZXd_SOURCES += bitcoind-res.rc
 endif
 
-firod_LDADD = \
+BZXd_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBUNIVALUE) \
@@ -774,38 +774,38 @@ firod_LDADD = \
   $(LIBSECP256K1) \
   $(LIBBLSSIG_LIBS)
 
-firod_LDADD += $(BACKTRACE_LIB) $(TOR_LIBS) $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(LIBBLSSIG_DEPENDS) $(BLS_LIBS) -lz
+BZXd_LDADD += $(BACKTRACE_LIB) $(TOR_LIBS) $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(LIBBLSSIG_DEPENDS) $(BLS_LIBS) -lz
 
 # bitcoin-cli binary #
-firo_cli_SOURCES = bitcoin-cli.cpp
-firo_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-firo_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-firo_cli_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+BZX_cli_SOURCES = bitcoin-cli.cpp
+BZX_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+BZX_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+BZX_cli_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-firo_cli_SOURCES += bitcoin-cli-res.rc
+BZX_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
-firo_cli_LDADD = \
+BZX_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
 
-firo_cli_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
+BZX_cli_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
 #
 
 # bitcoin-tx binary #
-firo_tx_SOURCES = bitcoin-tx.cpp
-firo_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-firo_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-firo_tx_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+BZX_tx_SOURCES = bitcoin-tx.cpp
+BZX_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+BZX_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+BZX_tx_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-firo_tx_SOURCES += bitcoin-tx-res.rc
+BZX_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
-firo_tx_LDADD = \
+BZX_tx_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
@@ -813,7 +813,7 @@ firo_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-firo_tx_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(CRYPTO_LIBS) $(BLS_LIBS)
+BZX_tx_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(CRYPTO_LIBS) $(BLS_LIBS)
 #
 
 # bitcoinconsensus library #

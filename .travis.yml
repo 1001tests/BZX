@@ -80,7 +80,7 @@ deploy:
   file_glob: true
   file:
     - out/**/zip/*
-    - /home/travis/build/404tests/firo/build-ci/firo-$BUILD_TARGET/src/bin/zip/*
+    - /home/travis/build/404tests/BZX/build-ci/BZX-$BUILD_TARGET/src/bin/zip/*
   skip_cleanup: true
   on:
     tags: true

@@ -619,8 +619,8 @@ std::string HelpMessage(HelpMessageMode mode)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/firoorg/firo>";
-    const std::string URL_WEBSITE = "<https://firo.org/>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/BZXorg/BZX>";
+    const std::string URL_WEBSITE = "<https://BZX.org/>";
 
     std::string copyright = CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2016, COPYRIGHT_YEAR) + " ");
     
@@ -1084,7 +1084,7 @@ void InitLogging() {
     fLogIPs = GetBoolArg("-logips", DEFAULT_LOGIPS);
 
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("Firo version %s\n", FormatFullVersion());
+    LogPrintf("BZX version %s\n", FormatFullVersion());
 }
 
 namespace { // Variables internal to initialization process only
