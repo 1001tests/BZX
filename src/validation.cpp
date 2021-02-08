@@ -87,7 +87,7 @@
 #include <boost/thread.hpp>
 
 #if defined(NDEBUG)
-# error "Firo cannot be compiled without assertions."
+# error "BZX cannot be compiled without assertions."
 #endif
 
 bool AbortNode(const std::string& strMessage, const std::string& userMessage="");
@@ -132,7 +132,7 @@ CTxMemPool mempool(::minRelayTxFee);
 FeeFilterRounder filterRounder(::minRelayTxFee);
 CTxPoolAggregate txpools(::minRelayTxFee);
 
-// Firo znode
+// BZX znode
 map <uint256, int64_t> mapRejectedBlocks GUARDED_BY(cs_main);
 
 
@@ -740,7 +740,7 @@ static bool IsCurrentForFeeEstimation()
 bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const CTransactionRef& ptx, bool fLimitFree,
                               bool* pfMissingInputs, int64_t nAcceptTime, std::list<CTransactionRef>* plTxnReplaced,
                               bool fOverrideMempoolLimit, const CAmount& nAbsurdFee, std::vector<COutPoint>& coins_to_uncache,
-                              bool isCheckWalletTransaction, bool markFiroSpendTransactionSerial)
+                              bool isCheckWalletTransaction, bool markBZXSpendTransactionSerial)
 {
     bool fTestNet = Params().GetConsensus().IsTestnet();
     LogPrintf("AcceptToMemoryPoolWorker(), tx.IsZerocoinSpend()=%s, fTestNet=%s\n", ptx->IsZerocoinSpend() || ptx->IsSigmaSpend() || ptx->IsLelantusJoinSplit(), fTestNet);
@@ -1423,10 +1423,10 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         }
     }
 
-    if ((tx.IsZerocoinSpend() || tx.IsZerocoinRemint()) && markFiroSpendTransactionSerial)
+    if ((tx.IsZerocoinSpend() || tx.IsZerocoinRemint()) && markBZXSpendTransactionSerial)
         zcState->AddSpendToMempool(zcSpendSerials, hash);
     if (tx.IsSigmaSpend()) {
-        if(markFiroSpendTransactionSerial)
+        if(markBZXSpendTransactionSerial)
             sigmaState->AddSpendToMempool(zcSpendSerialsV3, hash);
         LogPrintf("Updating mint tracker state from Mempool..");
 #ifdef ENABLE_WALLET
@@ -1438,7 +1438,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
     }
 
     if (tx.IsLelantusJoinSplit()) {
-        if(markFiroSpendTransactionSerial) {
+        if(markBZXSpendTransactionSerial) {
             for (const auto &spendSerial: lelantusSpendSerials)
                 pool.lelantusState.AddSpendToMempool(spendSerial, hash);
         }
@@ -1452,7 +1452,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
 #endif
     }
 
-    if(markFiroSpendTransactionSerial) {
+    if(markBZXSpendTransactionSerial) {
         sigmaState->AddMintsToMempool(zcMintPubcoinsV3);
         for (const auto &pubCoin: lelantusMintPubcoins)
             pool.lelantusState.AddMintToMempool(pubCoin);
@@ -1501,11 +1501,11 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
 bool AcceptToMemoryPoolWithTime(CTxMemPool& pool, CValidationState &state, const CTransactionRef &tx, bool fLimitFree,
                         bool* pfMissingInputs, int64_t nAcceptTime, std::list<CTransactionRef>* plTxnReplaced,
                         bool fOverrideMempoolLimit, const CAmount nAbsurdFee,
-                        bool isCheckWalletTransaction, bool markFiroSpendTransactionSerial)
+                        bool isCheckWalletTransaction, bool markBZXSpendTransactionSerial)
 {
     LogPrintf("AcceptToMemoryPool(), transaction: %s\n", tx->GetHash().ToString());
     std::vector<COutPoint> coins_to_uncache;
-    bool res = AcceptToMemoryPoolWorker(pool, state, tx, fLimitFree, pfMissingInputs, nAcceptTime, plTxnReplaced, fOverrideMempoolLimit, nAbsurdFee, coins_to_uncache, isCheckWalletTransaction, markFiroSpendTransactionSerial);
+    bool res = AcceptToMemoryPoolWorker(pool, state, tx, fLimitFree, pfMissingInputs, nAcceptTime, plTxnReplaced, fOverrideMempoolLimit, nAbsurdFee, coins_to_uncache, isCheckWalletTransaction, markBZXSpendTransactionSerial);
     if (!res) {
         BOOST_FOREACH(const COutPoint& hashTx, coins_to_uncache)
             pcoinsTip->Uncache(hashTx);
@@ -1519,16 +1519,16 @@ bool AcceptToMemoryPoolWithTime(CTxMemPool& pool, CValidationState &state, const
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransactionRef &tx, bool fLimitFree,
                         bool* pfMissingInputs, std::list<CTransactionRef>* plTxnReplaced,
                         bool fOverrideMempoolLimit, const CAmount nAbsurdFee,
-                        bool isCheckWalletTransaction, bool markFiroSpendTransactionSerial)
+                        bool isCheckWalletTransaction, bool markBZXSpendTransactionSerial)
 {
-    return AcceptToMemoryPoolWithTime(pool, state, tx, fLimitFree, pfMissingInputs, GetTime(), plTxnReplaced, fOverrideMempoolLimit, nAbsurdFee, isCheckWalletTransaction, markFiroSpendTransactionSerial);
+    return AcceptToMemoryPoolWithTime(pool, state, tx, fLimitFree, pfMissingInputs, GetTime(), plTxnReplaced, fOverrideMempoolLimit, nAbsurdFee, isCheckWalletTransaction, markBZXSpendTransactionSerial);
 }
 
 
 bool AcceptToMemoryPool(CTxPoolAggregate& poolAggregate, CValidationState &state, const CTransactionRef &tx, bool fLimitFree,
                         bool* pfMissingInputs, std::list<CTransactionRef>* plTxnReplaced,
-                        bool fOverrideMempoolLimit, const CAmount nAbsurdFee, bool isCheckWalletTransaction, bool markFiroSpendTransactionSerial) {
-    bool res = AcceptToMemoryPool(mempool, state, tx, fLimitFree, pfMissingInputs, plTxnReplaced, fOverrideMempoolLimit, nAbsurdFee, isCheckWalletTransaction, markFiroSpendTransactionSerial);
+                        bool fOverrideMempoolLimit, const CAmount nAbsurdFee, bool isCheckWalletTransaction, bool markBZXSpendTransactionSerial) {
+    bool res = AcceptToMemoryPool(mempool, state, tx, fLimitFree, pfMissingInputs, plTxnReplaced, fOverrideMempoolLimit, nAbsurdFee, isCheckWalletTransaction, markBZXSpendTransactionSerial);
     AcceptToMemoryPool(txpools.getStemTxPool(), state, tx, fLimitFree, pfMissingInputs, plTxnReplaced, fOverrideMempoolLimit, nAbsurdFee, isCheckWalletTransaction, false);
     return res;
 }
@@ -1685,7 +1685,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, int nHeight, con
         return error("%s: Deserialize or I/O error - %s at %s", __func__, e.what(), pos.ToString());
     }
 
-    // Firo - MTP
+    // BZX - MTP
     if (!CheckMerkleTreeProof(block, consensusParams)){
     	return error("ReadBlockFromDisk: CheckMerkleTreeProof: Errors in block header at %s", pos.ToString());
     }
@@ -2063,7 +2063,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsVi
                 return state.DoS(
                     100, false,
                     REJECT_MALFORMED,
-                    "CheckSpendFiroTransaction: can't mix zerocoin spend input with regular ones");
+                    "CheckSpendBZXTransaction: can't mix zerocoin spend input with regular ones");
             }
             CDataStream serializedCoinSpend((const char *)&*(txin.scriptSig.begin() + 1),
                                             (const char *)&*txin.scriptSig.end(),
@@ -3252,7 +3252,7 @@ bool static DisconnectTip(CValidationState& state, const CChainParams& chainpara
                     false, /* fOverrideMempoolLimit */
                     0, /* nAbsurdFee */
                     false, /* isCheckWalletTransaction */
-                    false /* markFiroSpendTransactionSerial */
+                    false /* markBZXSpendTransactionSerial */
                 );
             }
             if (tx.IsCoinBase() || !AcceptToMemoryPool(mempool, stateDummy, MakeTransactionRef(tx), false, NULL)) {
@@ -4169,7 +4169,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         if (mutated)
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-duplicate", true, "duplicate transaction");
 
-        // Firo - MTP
+        // BZX - MTP
         if (block.IsMTP() && !CheckMerkleTreeProof(block, consensusParams))
             return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
     }
@@ -4307,7 +4307,7 @@ std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBloc
 
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, CBlockIndex * const pindexPrev, int64_t nAdjustedTime)
 {
-	// Firo - MTP
+	// BZX - MTP
     bool fBlockHasMTP = (block.nVersion & 4096) != 0 || (pindexPrev && consensusParams.nMTPSwitchTime == 0);
 
     if (block.IsMTP() != fBlockHasMTP)

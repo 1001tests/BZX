@@ -126,7 +126,7 @@
         <translation>Оношилгоо ба засварын консолыг онгойлго</translation>
     </message>
     <message>
-        <source>Firo</source>
+        <source>BZX</source>
         <translation>Биткойн</translation>
     </message>
     <message>
@@ -546,7 +546,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
         <source>Options:</source>
         <translation>Сонголтууд:</translation>

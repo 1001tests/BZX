@@ -90,8 +90,8 @@
         <translation>&amp;செய்தியை சரிசெய்...</translation>
     </message>
     <message>
-        <source>Firo</source>
-        <translation>Firo</translation>
+        <source>BZX</source>
+        <translation>BZX</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -706,10 +706,10 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
-        <source>Firo Core</source>
-        <translation>Firo மையம்</translation>
+        <source>BZX Core</source>
+        <translation>BZX மையம்</translation>
     </message>
     <message>
         <source>(default: %u)</source>

@@ -38,8 +38,8 @@
         <translation>Билдирүүнү &amp;текшерүү...</translation>
     </message>
     <message>
-        <source>Firo</source>
-        <translation>Firo</translation>
+        <source>BZX</source>
+        <translation>BZX</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -334,7 +334,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
         <source>Information</source>
         <translation>Маалымат</translation>

@@ -91,7 +91,7 @@ std::pair<std::unique_ptr<libzerocoin::CoinSpend>, uint32_t> ParseZerocoinSpend(
     return std::make_pair(std::move(spend), groupId);
 }
 
-bool CheckRemintFiroTransaction(const CTransaction &tx,
+bool CheckRemintBZXTransaction(const CTransaction &tx,
                                 const Consensus::Params &params,
                                 CValidationState &state,
                                 uint256 hashTx,
@@ -121,11 +121,11 @@ bool CheckRemintFiroTransaction(const CTransaction &tx,
     CDataStream inStream1(remintSerData, SER_NETWORK, PROTOCOL_VERSION);
     sigma::CoinRemintToV3 remint(inStream1);
 
-    LogPrintf("CheckRemintFiroTransaction: nHeight=%d, denomination=%d, serial=%s\n", 
+    LogPrintf("CheckRemintBZXTransaction: nHeight=%d, denomination=%d, serial=%s\n", 
             nHeight, remint.getDenomination(), remint.getSerialNumber().GetHex().c_str());
 
     if (remint.getMintVersion() != ZEROCOIN_TX_VERSION_2) {
-        LogPrintf("CheckRemintFiroTransaction: only mint of version 2 is currently supported\n");
+        LogPrintf("CheckRemintBZXTransaction: only mint of version 2 is currently supported\n");
         return false;
     }
 
@@ -133,7 +133,7 @@ bool CheckRemintFiroTransaction(const CTransaction &tx,
     int64_t totalAmountInSigmaMints = 0;
 
     if (CZerocoinState::IsPublicCoinValueBlacklisted(remint.getPublicCoinValue())) {
-        LogPrintf("CheckRemintFiroTransaction: coin is blacklisted\n");
+        LogPrintf("CheckRemintBZXTransaction: coin is blacklisted\n");
         return false;
     }
 
@@ -149,7 +149,7 @@ bool CheckRemintFiroTransaction(const CTransaction &tx,
         secp_primitives::GroupElement mintPublicValue = sigma::ParseSigmaMintScript(out.scriptPubKey);
         sigma::PublicCoin *mint = new sigma::PublicCoin(mintPublicValue, d);
         if (!mint->validate()) {
-            LogPrintf("CheckRemintFiroTransaction: sigma mint validation failure\n");
+            LogPrintf("CheckRemintBZXTransaction: sigma mint validation failure\n");
             return false;
         }
 
@@ -158,7 +158,7 @@ bool CheckRemintFiroTransaction(const CTransaction &tx,
     }
 
     if (remint.getDenomination()*COIN != totalAmountInSigmaMints) {
-        LogPrintf("CheckRemintFiroTransaction: incorrect amount\n");
+        LogPrintf("CheckRemintBZXTransaction: incorrect amount\n");
         return false;
     }
 
@@ -180,7 +180,7 @@ bool CheckRemintFiroTransaction(const CTransaction &tx,
     libzerocoin::SpendMetaData metadata(remint.getCoinGroupId(), tempTx.GetHash());
 
     if (!remint.Verify(metadata)) {
-        LogPrintf("CheckRemintFiroTransaction: remint input verification failure\n");
+        LogPrintf("CheckRemintBZXTransaction: remint input verification failure\n");
         return false;
     }
 
@@ -195,7 +195,7 @@ bool CheckRemintFiroTransaction(const CTransaction &tx,
     if ((mintHeight = zerocoinState->GetMintedCoinHeightAndId(remint.getPublicCoinValue(), (int)remint.getDenomination(), mintId) <= 0) 
                 || mintId != remint.getCoinGroupId()     /* inconsistent group id in remint data */
                 || mintHeight >= params.nSigmaStartBlock /* additional failsafe to ensure mint height is valid */) {
-        LogPrintf("CheckRemintFiroTransaction: no such mint\n");
+        LogPrintf("CheckRemintBZXTransaction: no such mint\n");
         return false;
     }
 
@@ -214,7 +214,7 @@ bool CheckRemintFiroTransaction(const CTransaction &tx,
     return true;
 }
 
-bool CheckSpendFiroTransaction(const CTransaction &tx,
+bool CheckSpendBZXTransaction(const CTransaction &tx,
                                 const Consensus::Params &params,
                                 const vector<libzerocoin::CoinDenomination>& targetDenominations,
                                 CValidationState &state,
@@ -254,7 +254,7 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
             return state.DoS(100,
                 false,
                 REJECT_MALFORMED,
-                "CheckSpendFiroTransaction: invalid spend transaction");
+                "CheckSpendBZXTransaction: invalid spend transaction");
         }
 
         bool fModulusV2 = pubcoinId >= ZC_MODULUS_V2_BASE_ID, fModulusV2InIndex = false;
@@ -306,14 +306,14 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
             txHashForMetadata = txTemp.GetHash();
         }
 
-        LogPrintf("CheckSpendFiroTransaction: tx version=%d, tx metadata hash=%s, serial=%s\n", spend->getVersion(), txHashForMetadata.ToString(), spend->getCoinSerialNumber().ToString());
+        LogPrintf("CheckSpendBZXTransaction: tx version=%d, tx metadata hash=%s, serial=%s\n", spend->getVersion(), txHashForMetadata.ToString(), spend->getCoinSerialNumber().ToString());
 
         int txHeight = chainActive.Height();
 
         if (spendVersion == ZEROCOIN_TX_VERSION_1 && nHeight == INT_MAX) {
             int allowedV1Height = params.nSpendV15StartBlock;
             if (txHeight >= allowedV1Height + ZC_V1_5_GRACEFUL_MEMPOOL_PERIOD) {
-                LogPrintf("CheckSpendFiroTransaction: cannot allow spend v1 into mempool after block %d\n",
+                LogPrintf("CheckSpendBZXTransaction: cannot allow spend v1 into mempool after block %d\n",
                           allowedV1Height + ZC_V1_5_GRACEFUL_MEMPOOL_PERIOD);
                 return false;
             }
@@ -324,14 +324,14 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
             if ((nHeight == INT_MAX && txHeight < params.nModulusV2StartBlock) || nHeight < params.nModulusV2StartBlock)
                 return state.DoS(100, false,
                                  NSEQUENCE_INCORRECT,
-                                 "CheckSpendFiroTransaction: cannon use modulus v2 at this point");
+                                 "CheckSpendBZXTransaction: cannon use modulus v2 at this point");
         }
         else {
             if ((nHeight == INT_MAX && txHeight >= params.nModulusV1MempoolStopBlock) ||
                     (nHeight != INT_MAX && nHeight >= params.nModulusV1StopBlock))
                 return state.DoS(100, false,
                                  NSEQUENCE_INCORRECT,
-                                 "CheckSpendFiroTransaction: cannon use modulus v1 at this point");
+                                 "CheckSpendBZXTransaction: cannon use modulus v1 at this point");
         }
 
         if (!fStatefulZerocoinCheck)
@@ -364,7 +364,7 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
 
         CZerocoinState::CoinGroupInfo coinGroup;
         if (!zerocoinState.GetCoinGroupInfo(targetDenominations[vinIndex], pubcoinId, coinGroup))
-            return state.DoS(100, false, NO_MINT_ZEROCOIN, "CheckSpendFiroTransaction: Error: no coins were minted with such parameters");
+            return state.DoS(100, false, NO_MINT_ZEROCOIN, "CheckSpendBZXTransaction: Error: no coins were minted with such parameters");
 
         bool passVerify = false;
         CBlockIndex *index = coinGroup.lastBlock;
@@ -394,7 +394,7 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
                 libzerocoin::Accumulator accumulator(zcParams,
                                                      (index->*accChanges)[denominationAndId].first,
                                                      targetDenominations[vinIndex]);
-                LogPrintf("CheckSpendFiroTransaction: accumulator=%s\n", accumulator.getValue().ToString().substr(0,15));
+                LogPrintf("CheckSpendBZXTransaction: accumulator=%s\n", accumulator.getValue().ToString().substr(0,15));
                 passVerify = spend->Verify(accumulator, newMetadata);
             }
 
@@ -425,7 +425,7 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
             libzerocoin::Accumulator accumulator(zcParams, targetDenominations[vinIndex]);
             BOOST_FOREACH(const CBigNum &pubCoin, pubCoins) {
                 accumulator += libzerocoin::PublicCoin(zcParams, pubCoin, (libzerocoin::CoinDenomination)targetDenominations[vinIndex]);
-                LogPrintf("CheckSpendFiroTransaction: accumulator=%s\n", accumulator.getValue().ToString().substr(0,15));
+                LogPrintf("CheckSpendBZXTransaction: accumulator=%s\n", accumulator.getValue().ToString().substr(0,15));
                 if ((passVerify = spend->Verify(accumulator, newMetadata)) == true)
                     break;
             }
@@ -436,7 +436,7 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
                 libzerocoin::Accumulator accumulator(zcParams, targetDenominations[vinIndex]);
                 BOOST_REVERSE_FOREACH(const CBigNum &pubCoin, pubCoins) {
                     accumulator += libzerocoin::PublicCoin(zcParams, pubCoin, (libzerocoin::CoinDenomination)targetDenominations[vinIndex]);
-                    LogPrintf("CheckSpendFiroTransaction: accumulatorRev=%s\n", accumulator.getValue().ToString().substr(0,15));
+                    LogPrintf("CheckSpendBZXTransaction: accumulatorRev=%s\n", accumulator.getValue().ToString().substr(0,15));
                     if ((passVerify = spend->Verify(accumulator, newMetadata)) == true)
                         break;
                 }
@@ -444,7 +444,7 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
         }
 
         if (!passVerify) {
-            LogPrintf("CheckSpendFiroTransaction: verification failed at block %d\n", nHeight);
+            LogPrintf("CheckSpendBZXTransaction: verification failed at block %d\n", nHeight);
             return false;
         }
     }
@@ -454,7 +454,7 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
             // mixing zerocoin spend input with non-zerocoin inputs is prohibited
             return state.DoS(100, false,
                             REJECT_MALFORMED,
-                            "CheckSpendFiroTransaction: can't mix zerocoin spend input with regular ones");
+                            "CheckSpendBZXTransaction: can't mix zerocoin spend input with regular ones");
         }
         else if (tx.vin.size() > 1) {
             // having tx with several zerocoin spend inputs is possible since nMultipleSpendInputsInOneTxStartBlock
@@ -462,7 +462,7 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
                     (nHeight < params.nMultipleSpendInputsInOneTxStartBlock)) {
                 return state.DoS(100, false,
                              REJECT_MALFORMED,
-                             "CheckSpendFiroTransaction: can't have more than one input");
+                             "CheckSpendBZXTransaction: can't have more than one input");
             }
         }
     }
@@ -470,13 +470,13 @@ bool CheckSpendFiroTransaction(const CTransaction &tx,
     return true;
 }
 
-bool CheckMintFiroTransaction(const CTxOut &txout,
+bool CheckMintBZXTransaction(const CTxOut &txout,
                                CValidationState &state,
                                uint256 hashTx,
                                CZerocoinTxInfo *zerocoinTxInfo) {
     CBigNum pubCoin;
 
-    LogPrintf("CheckMintFiroTransaction txHash = %s\n", txout.GetHash().ToString());
+    LogPrintf("CheckMintBZXTransaction txHash = %s\n", txout.GetHash().ToString());
     LogPrintf("nValue = %d\n", txout.nValue);
 
     try {
@@ -691,7 +691,7 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
             if (!isWalletCheck && realHeight > params.nSigmaStartBlock + params.nZerocoinV2MintGracefulPeriod)
                 return state.DoS(100, false, REJECT_OBSOLETE, "bad-txns-mint-obsolete");
 
-            if (!CheckMintFiroTransaction(txout, state, hashTx, zerocoinTxInfo))
+            if (!CheckMintBZXTransaction(txout, state, hashTx, zerocoinTxInfo))
                 return false;
         }
     }
@@ -718,9 +718,9 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
             if(!txin.scriptSig.IsZerocoinSpend()) {
                 return state.DoS(100, false,
                                 REJECT_MALFORMED,
-                                "CheckSpendFiroTransaction: can't mix zerocoin spend input with regular ones");
+                                "CheckSpendBZXTransaction: can't mix zerocoin spend input with regular ones");
             }
-            // Get the CoinDenomination value of each vin for the CheckSpendFiroTransaction function
+            // Get the CoinDenomination value of each vin for the CheckSpendBZXTransaction function
             uint32_t pubcoinId = txin.nSequence;
             if (pubcoinId < 1 || pubcoinId >= INT_MAX) {
                  // coin id should be positive integer
@@ -742,7 +742,7 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
         {
             if(!isVerifyDB) {
                 if (txout.nValue == totalValue * COIN) {
-                    if(!CheckSpendFiroTransaction(tx, params, denominations, state, hashTx, isVerifyDB, nHeight, isCheckWallet, fStatefulZerocoinCheck, zerocoinTxInfo)){
+                    if(!CheckSpendBZXTransaction(tx, params, denominations, state, hashTx, isVerifyDB, nHeight, isCheckWallet, fStatefulZerocoinCheck, zerocoinTxInfo)){
                         return false;
                     }
                 }
@@ -754,7 +754,7 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
     }
 
     if (tx.IsZerocoinRemint())
-        return CheckRemintFiroTransaction(tx, params, state, hashTx, isVerifyDB, nHeight, isCheckWallet, fStatefulZerocoinCheck, zerocoinTxInfo);
+        return CheckRemintBZXTransaction(tx, params, state, hashTx, isVerifyDB, nHeight, isCheckWallet, fStatefulZerocoinCheck, zerocoinTxInfo);
 
     return true;
 }

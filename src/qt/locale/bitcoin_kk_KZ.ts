@@ -70,7 +70,7 @@
         <translation>Құпия сөзді өзгерту</translation>
     </message>
     <message>
-        <source>Firo</source>
+        <source>BZX</source>
         <translation>Биткоин</translation>
     </message>
     <message>
@@ -298,7 +298,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
         <source>Information</source>
         <translation>Информация</translation>

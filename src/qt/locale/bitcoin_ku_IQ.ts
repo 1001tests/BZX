@@ -374,7 +374,7 @@
     </message>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
         <source>Options:</source>
         <translation>هەڵبژاردنەکان:</translation>

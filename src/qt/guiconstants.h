@@ -48,9 +48,9 @@ static const int MAX_URI_LENGTH = 255;
 /* Number of frames in spinner animation */
 #define SPINNER_FRAMES 36
 
-#define QAPP_ORG_NAME "Firo"
-#define QAPP_ORG_DOMAIN "firo.org"
-#define QAPP_APP_NAME_DEFAULT "Firo-Qt"
-#define QAPP_APP_NAME_TESTNET "Firo-Qt-testnet"
+#define QAPP_ORG_NAME "BZX"
+#define QAPP_ORG_DOMAIN "BZX.org"
+#define QAPP_APP_NAME_DEFAULT "BZX-Qt"
+#define QAPP_APP_NAME_TESTNET "BZX-Qt-testnet"
 
 #endif // BITCOIN_QT_GUICONSTANTS_H

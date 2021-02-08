@@ -108,7 +108,7 @@ private:
     AddressBookPage *usedSendingAddressesPage;
     AddressBookPage *usedReceivingAddressesPage;
     QWidget *sendCoinsPage;
-    SendCoinsDialog *sendFiroView;
+    SendCoinsDialog *sendBZXView;
     TradeHistoryDialog *tradeHistoryTab;
     MetaDExDialog *metaDExTab;
     MetaDExCancelDialog *cancelTab;
@@ -120,8 +120,8 @@ private:
     QWidget *lelantusPage;
     QWidget *sigmaPage;
     Zc2SigmaPage *zc2SigmaPage;
-    TransactionView *firoTransactionList;
-    QWidget *firoTransactionsView;
+    TransactionView *BZXTransactionList;
+    QWidget *BZXTransactionsView;
     MasternodeList *masternodeListPage;
 
     QProgressDialog *progressDialog;

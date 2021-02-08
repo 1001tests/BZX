@@ -37,8 +37,8 @@ const std::string ElysiumVersion()
     }
 }
 
-//! Returns formatted Firo Core version, e.g. "0.10", "0.9.3"
-const std::string FiroCoreVersion()
+//! Returns formatted BZX Core version, e.g. "0.10", "0.9.3"
+const std::string BZXCoreVersion()
 {
     if (CLIENT_VERSION_BUILD) {
         return strprintf("%d.%d.%d.%d",

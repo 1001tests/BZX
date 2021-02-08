@@ -170,6 +170,6 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     </context>
 </TS>

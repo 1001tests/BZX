@@ -138,7 +138,7 @@
         <translation>Повторно индексирање на блокови од дискот...</translation>
     </message>
     <message>
-        <source>Send coins to a Firo address</source>
+        <source>Send coins to a BZX address</source>
         <translation>Испрати биткоини на Биткоин адреса</translation>
     </message>
     <message>
@@ -146,7 +146,7 @@
         <translation>&amp;Потврди порака...</translation>
     </message>
     <message>
-        <source>Firo</source>
+        <source>BZX</source>
         <translation>Биткоин</translation>
     </message>
     <message>
@@ -572,13 +572,13 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
         <source>Options:</source>
         <translation>Опции:</translation>
     </message>
     <message>
-        <source>Firo Core</source>
+        <source>BZX Core</source>
         <translation>Биткоин Core</translation>
     </message>
     <message>

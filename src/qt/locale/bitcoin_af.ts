@@ -62,12 +62,12 @@
         <translation>Ontvanger adresse</translation>
     </message>
     <message>
-        <source>These are your Firo addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Hierdie is die adresse vanwaar u Firo betalings stuur. U moet altyd die bedrag en die adres van die ontvanger nagaan voordat u enige munte stuur.</translation>
+        <source>These are your BZX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Hierdie is die adresse vanwaar u BZX betalings stuur. U moet altyd die bedrag en die adres van die ontvanger nagaan voordat u enige munte stuur.</translation>
     </message>
     <message>
-        <source>These are your Firo addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Hierdie is die adresse waar u Firos sal ontvang. Ons beveel aan dat u 'n nuwe adres kies vir elke transaksie</translation>
+        <source>These are your BZX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Hierdie is die adresse waar u BZXs sal ontvang. Ons beveel aan dat u 'n nuwe adres kies vir elke transaksie</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -330,8 +330,8 @@
         <translation>Besig met herindeksering van blokke op hardeskyf...</translation>
     </message>
     <message>
-        <source>Send coins to a Firo address</source>
-        <translation>Stuur munte na 'n Firo adres</translation>
+        <source>Send coins to a BZX address</source>
+        <translation>Stuur munte na 'n BZX adres</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -350,8 +350,8 @@
         <translation>Maak ontfouting en diagnostiese konsole oop</translation>
     </message>
     <message>
-        <source>Firo</source>
-        <translation>Firo</translation>
+        <source>BZX</source>
+        <translation>BZX</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -378,12 +378,12 @@
         <translation>Kodifiseer die private sleutes wat aan jou beursie gekoppel is.</translation>
     </message>
     <message>
-        <source>Sign messages with your Firo addresses to prove you own them</source>
-        <translation>Onderteken boodskappe met u Firo adresse om u eienaarskap te bewys</translation>
+        <source>Sign messages with your BZX addresses to prove you own them</source>
+        <translation>Onderteken boodskappe met u BZX adresse om u eienaarskap te bewys</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Firo addresses</source>
-        <translation>Verifieër boodskappe om seker te maak dat dit met die gespesifiseerde Firo adresse</translation>
+        <source>Verify messages to ensure they were signed with specified BZX addresses</source>
+        <translation>Verifieër boodskappe om seker te maak dat dit met die gespesifiseerde BZX adresse</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -398,8 +398,8 @@
         <translation>Orebalk</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and firo: URIs)</source>
-        <translation>Versoek betalings (genereer QR-kodes en firo: URI's)</translation>
+        <source>Request payments (generates QR codes and BZX: URIs)</source>
+        <translation>Versoek betalings (genereer QR-kodes en BZX: URI's)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -410,8 +410,8 @@
         <translation>Vertoon die lys van gebruikte ontvangers-adresse en etikette</translation>
     </message>
     <message>
-        <source>Open a firo: URI or payment request</source>
-        <translation>Skep 'n firo: URI of betalingsversoek</translation>
+        <source>Open a BZX: URI or payment request</source>
+        <translation>Skep 'n BZX: URI of betalingsversoek</translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
@@ -946,10 +946,10 @@
     </message>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
-        <source>Firo Core</source>
-        <translation>Firo Kern</translation>
+        <source>BZX Core</source>
+        <translation>BZX Kern</translation>
     </message>
     <message>
         <source>Information</source>

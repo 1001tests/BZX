@@ -130,8 +130,8 @@
         <translation>Промени &amp;лозинку...</translation>
     </message>
     <message>
-        <source>Send coins to a Firo address</source>
-        <translation>Пошаљите новац на firo адресу</translation>
+        <source>Send coins to a BZX address</source>
+        <translation>Пошаљите новац на BZX адресу</translation>
     </message>
     <message>
         <source>Change the passphrase used for wallet encryption</source>
@@ -442,7 +442,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
         <source>Options:</source>
         <translation>Opcije</translation>

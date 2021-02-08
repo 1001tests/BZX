@@ -212,7 +212,7 @@ public:
     unsigned int nBits;
     unsigned int nNonce;
 
-    // Firo - MTP
+    // BZX - MTP
     int32_t nVersionMTP = 0x1000;
     uint256 mtpHashValue;
     // Reserved fields
@@ -341,7 +341,7 @@ public:
         block.nBits          = nBits;
         block.nNonce         = nNonce;
 
-        // Firo - MTP
+        // BZX - MTP
         if(block.IsMTP()){
 			block.nVersionMTP = nVersionMTP;
             block.mtpHashValue = mtpHashValue;

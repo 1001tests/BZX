@@ -37,9 +37,9 @@ SendCoinsEntry::SendCoinsEntry(const PlatformStyle *_platformStyle, QWidget *par
     ui->addAsLabel->setPlaceholderText(tr("Enter a label for this address to add it to your address book"));
 #endif
 
-    // normal Firo address field
+    // normal BZX address field
     GUIUtil::setupAddressWidget(ui->payTo, this);
-    // just a label for displaying Firo address(es)
+    // just a label for displaying BZX address(es)
     ui->payTo_is->setFont(GUIUtil::fixedPitchFont());
 
     // Connect signals

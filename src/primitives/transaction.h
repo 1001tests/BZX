@@ -240,7 +240,7 @@ public:
     bool IsDust(const CFeeRate &minRelayTxFee) const
     {
 //        return (nValue < GetDustThreshold(minRelayTxFee));
-        //firo: disable dust
+        //BZX: disable dust
         return false;
     }
 

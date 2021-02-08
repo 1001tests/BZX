@@ -111,8 +111,8 @@ bool fMasternodeMode = false;
 bool fLiteMode = false;
 int nWalletBackups = 10;
 
-const char * const BITCOIN_CONF_FILENAME = "firo.conf";
-const char * const BITCOIN_PID_FILENAME = "firod.pid";
+const char * const BITCOIN_CONF_FILENAME = "BZX.conf";
+const char * const BITCOIN_PID_FILENAME = "BZXd.pid";
 
 CCriticalSection cs_args;
 map<string, string> mapArgs;
@@ -499,13 +499,13 @@ void PrintExceptionContinue(const std::exception_ptr pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\firo
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\firo
-    // Mac: ~/Library/Application Support/firo
-    // Unix: ~/.firo
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\BZX
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\BZX
+    // Mac: ~/Library/Application Support/BZX
+    // Unix: ~/.BZX
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "firo";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "BZX";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -515,10 +515,10 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/firo;
+    return pathRet / "Library/Application Support/BZX;
 #else
     // Unix
-    return pathRet / ".firo";;
+    return pathRet / ".BZX";;
 #endif
 #endif
 }
@@ -609,7 +609,7 @@ void ReadConfigFile(const std::string& confPath)
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile(confPath));
     if (!streamConfig.good())
-        return; // No firo.conf file is OK
+        return; // No BZX.conf file is OK
 
     {
         LOCK(cs_args);
@@ -964,9 +964,9 @@ std::string CopyrightHolders(const std::string& strPrefix)
     const auto copyright_devs = strprintf(_(COPYRIGHT_HOLDERS), _(COPYRIGHT_HOLDERS_SUBSTITUTION));
     std::string strCopyrightHolders = strPrefix + copyright_devs;
 
-    // Make sure Firo Core copyright is not removed by accident
-    if (copyright_devs.find(_("Firo Core")) == std::string::npos) {
-        strCopyrightHolders += '\n' + strPrefix + "The Firo Core developers";
+    // Make sure BZX Core copyright is not removed by accident
+    if (copyright_devs.find(_("BZX Core")) == std::string::npos) {
+        strCopyrightHolders += '\n' + strPrefix + "The BZX Core developers";
     }
     // Make sure Bitcoin Core copyright is not removed by accident
     if (copyright_devs.find("Bitcoin Core") == std::string::npos) {

@@ -133,7 +133,7 @@ void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
 #if QT_VERSION >= 0x040700
     // We don't want translators to use own addresses in translations
     // and this is the only place, where this address is supplied.
-    widget->setPlaceholderText(QObject::tr("Enter a Firo address (e.g. %1)").arg(
+    widget->setPlaceholderText(QObject::tr("Enter a BZX address (e.g. %1)").arg(
         QString::fromStdString(DummyAddress(Params()))));
 #endif
     widget->setValidator(new BitcoinAddressEntryValidator(parent));
@@ -151,8 +151,8 @@ void setupAmountWidget(QLineEdit *widget, QWidget *parent)
 
 bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
 {
-    // return if URI is not valid or is no firo: URI
-    if(!uri.isValid() || uri.scheme() != QString("firo"))
+    // return if URI is not valid or is no BZX: URI
+    if(!uri.isValid() || uri.scheme() != QString("BZX"))
         return false;
 
     SendCoinsRecipient rv;
@@ -212,13 +212,13 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
 
 bool parseBitcoinURI(QString uri, SendCoinsRecipient *out)
 {
-    // Convert firo:// to firo:
+    // Convert BZX:// to BZX:
     //
-    //    Cannot handle this later, because firo:// will cause Qt to see the part after // as host,
+    //    Cannot handle this later, because BZX:// will cause Qt to see the part after // as host,
     //    which will lower-case it (and thus invalidate the address).
-    if(uri.startsWith("firo://", Qt::CaseInsensitive))
+    if(uri.startsWith("BZX://", Qt::CaseInsensitive))
     {
-        uri.replace(0, 10, "firo:");
+        uri.replace(0, 10, "BZX:");
     }
     QUrl uriInstance(uri);
     return parseBitcoinURI(uriInstance, out);
@@ -226,7 +226,7 @@ bool parseBitcoinURI(QString uri, SendCoinsRecipient *out)
 
 QString formatBitcoinURI(const SendCoinsRecipient &info)
 {
-    QString ret = QString("firo:%1").arg(info.address);
+    QString ret = QString("BZX:%1").arg(info.address);
     int paramCount = 0;
 
     if (info.amount)
@@ -605,10 +605,10 @@ boost::filesystem::path static StartupShortcutPath()
 {
     std::string chain = ChainNameFromCommandLine();
     if (chain == CBaseChainParams::MAIN)
-        return GetSpecialFolderPath(CSIDL_STARTUP) / "Firo.lnk";
+        return GetSpecialFolderPath(CSIDL_STARTUP) / "BZX.lnk";
     if (chain == CBaseChainParams::TESTNET) // Remove this special case when CBaseChainParams::TESTNET = "testnet4"
-        return GetSpecialFolderPath(CSIDL_STARTUP) / "Firo (testnet).lnk";
-    return GetSpecialFolderPath(CSIDL_STARTUP) / strprintf("Firo (%s).lnk", chain);
+        return GetSpecialFolderPath(CSIDL_STARTUP) / "BZX (testnet).lnk";
+    return GetSpecialFolderPath(CSIDL_STARTUP) / strprintf("BZX (%s).lnk", chain);
 }
 
 bool GetStartOnSystemStartup()
@@ -705,8 +705,8 @@ boost::filesystem::path static GetAutostartFilePath()
 {
     std::string chain = ChainNameFromCommandLine();
     if (chain == CBaseChainParams::MAIN)
-        return GetAutostartDir() / "firo.desktop";
-    return GetAutostartDir() / strprintf("firo-%s.lnk", chain);
+        return GetAutostartDir() / "BZX.desktop";
+    return GetAutostartDir() / strprintf("BZX-%s.lnk", chain);
 }
 
 bool GetStartOnSystemStartup()
@@ -745,13 +745,13 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         if (!optionFile.good())
             return false;
         std::string chain = ChainNameFromCommandLine();
-        // Write a firo.desktop file to the autostart directory:
+        // Write a BZX.desktop file to the autostart directory:
         optionFile << "[Desktop Entry]\n";
         optionFile << "Type=Application\n";
         if (chain == CBaseChainParams::MAIN)
-            optionFile << "Name=Firo\n";
+            optionFile << "Name=BZX\n";
         else
-            optionFile << strprintf("Name=Firo (%s)\n", chain);
+            optionFile << strprintf("Name=BZX (%s)\n", chain);
         optionFile << "Exec=" << pszExePath << strprintf(" -min -testnet=%d -regtest=%d\n", GetBoolArg("-testnet", false), GetBoolArg("-regtest", false));
         optionFile << "Terminal=false\n";
         optionFile << "Hidden=false\n";
@@ -772,7 +772,7 @@ bool SetStartOnSystemStartup(bool fAutoStart)
 LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl);
 LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl)
 {
-    // loop through the list of startup items and try to find the Firo app
+    // loop through the list of startup items and try to find the BZX app
     CFArrayRef listSnapshot = LSSharedFileListCopySnapshot(list, NULL);
     for(int i = 0; i < CFArrayGetCount(listSnapshot); i++) {
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(listSnapshot, i);
@@ -817,7 +817,7 @@ bool SetStartOnSystemStartup(bool fAutoStart)
     LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcoinAppUrl);
 
     if(fAutoStart && !foundItem) {
-        // add Firo app to startup item list
+        // add BZX app to startup item list
         LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, NULL, NULL, bitcoinAppUrl, NULL, NULL);
     }
     else if(!fAutoStart && foundItem) {

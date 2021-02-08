@@ -353,7 +353,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
             total += subtotal;
         }
         else
-        {   // User-entered Firo address / amount:
+        {   // User-entered BZX address / amount:
             if(!validateAddress(rcp.address))
             {
                 return InvalidAddress;
@@ -468,7 +468,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareJoinSplitTransaction(
         }
         else
         {
-            // User-entered Firo address / amount:
+            // User-entered BZX address / amount:
             if(!validateAddress(rcp.address))
             {
                 return InvalidAddress;
@@ -659,7 +659,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction &tran
                 rcp.paymentRequest.SerializeToString(&value);
                 newTx->vOrderForm.push_back(make_pair(key, value));
             }
-            else if (!rcp.message.isEmpty()) // Message from normal firo:URI (firo:123...?message=example)
+            else if (!rcp.message.isEmpty()) // Message from normal BZX:URI (BZX:123...?message=example)
                 newTx->vOrderForm.push_back(make_pair("Message", rcp.message.toStdString()));
         }
 
@@ -729,7 +729,7 @@ WalletModel::SendCoinsReturn WalletModel::sendPrivateCoins(WalletModelTransactio
                 rcp.paymentRequest.SerializeToString(&value);
                 newTx->vOrderForm.push_back(make_pair(key, value));
             }
-            else if (!rcp.message.isEmpty()) // Message from normal firo:URI (firo:123...?message=example)
+            else if (!rcp.message.isEmpty()) // Message from normal BZX:URI (BZX:123...?message=example)
                 newTx->vOrderForm.push_back(make_pair("Message", rcp.message.toStdString()));
         }
 
@@ -1323,7 +1323,7 @@ WalletModel::SendCoinsReturn WalletModel::sendSigma(WalletModelTransaction &tran
                 rcp.paymentRequest.SerializeToString(&value);
                 newTx->vOrderForm.push_back(std::make_pair(key, value));
             } else if (!rcp.message.isEmpty()) {
-                // Message from normal firo:URI (firo:123...?message=example)
+                // Message from normal BZX:URI (BZX:123...?message=example)
                 newTx->vOrderForm.push_back(std::make_pair("Message", rcp.message.toStdString()));
             }
         }

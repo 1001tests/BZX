@@ -142,8 +142,8 @@
         <translation>Reindexando bloques en disco...</translation>
     </message>
     <message>
-        <source>Send coins to a Firo address</source>
-        <translation>Enviar monedas a una dirección Firo</translation>
+        <source>Send coins to a BZX address</source>
+        <translation>Enviar monedas a una dirección BZX</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -166,8 +166,8 @@
         <translation>&amp;Verificar mensaje...</translation>
     </message>
     <message>
-        <source>Firo</source>
-        <translation>Firo</translation>
+        <source>BZX</source>
+        <translation>BZX</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -194,12 +194,12 @@
         <translation>Cifrar las claves privadas de su monedero</translation>
     </message>
     <message>
-        <source>Sign messages with your Firo addresses to prove you own them</source>
-        <translation>Firmar mensajes con sus direcciones Firo para demostrar la propiedad</translation>
+        <source>Sign messages with your BZX addresses to prove you own them</source>
+        <translation>Firmar mensajes con sus direcciones BZX para demostrar la propiedad</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Firo addresses</source>
-        <translation>Verificar mensajes comprobando que están firmados con direcciones Firo concretas</translation>
+        <source>Verify messages to ensure they were signed with specified BZX addresses</source>
+        <translation>Verificar mensajes comprobando que están firmados con direcciones BZX concretas</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -218,8 +218,8 @@
         <translation>Barra de pestañas</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and firo: URIs)</source>
-        <translation>Solicitar pagos (genera codigo QR y URL's de Firo)</translation>
+        <source>Request payments (generates QR codes and BZX: URIs)</source>
+        <translation>Solicitar pagos (genera codigo QR y URL's de BZX)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -230,8 +230,8 @@
         <translation>Muestra la lista de direcciones de recepción y etiquetas</translation>
     </message>
     <message>
-        <source>Open a firo: URI or payment request</source>
-        <translation>Abrir un firo: URI o petición de pago</translation>
+        <source>Open a BZX: URI or payment request</source>
+        <translation>Abrir un BZX: URI o petición de pago</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
@@ -494,8 +494,8 @@
         <translation>Experto</translation>
     </message>
     <message>
-        <source>Automatically open the Firo client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Abrir automáticamente el puerto del cliente Firo en el router. Esta opción solo funciona si el router admite UPnP y está activado.</translation>
+        <source>Automatically open the BZX client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Abrir automáticamente el puerto del cliente BZX en el router. Esta opción solo funciona si el router admite UPnP y está activado.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -589,8 +589,8 @@
         <translation>Desde</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Firo network after a connection is established, but this process has not completed yet.</source>
-        <translation>La información mostrada puede estar desactualizada. Su monedero se sincroniza automáticamente con la red Firo después de que se haya establecido una conexión, pero este proceso aún no se ha completado.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the BZX network after a connection is established, but this process has not completed yet.</source>
+        <translation>La información mostrada puede estar desactualizada. Su monedero se sincroniza automáticamente con la red BZX después de que se haya establecido una conexión, pero este proceso aún no se ha completado.</translation>
     </message>
     <message>
         <source>Your current spendable balance</source>
@@ -1019,8 +1019,8 @@
         <translation>Copiar la firma actual al portapapeles del sistema</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this Firo address</source>
-        <translation>Firmar el mensaje para demostrar que se posee esta dirección Firo</translation>
+        <source>Sign the message to prove you own this BZX address</source>
+        <translation>Firmar el mensaje para demostrar que se posee esta dirección BZX</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
@@ -1039,8 +1039,8 @@
         <translation>&amp;Verificar mensaje</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified Firo address</source>
-        <translation>Verificar el mensaje para comprobar que fue firmado con la dirección Firo indicada</translation>
+        <source>Verify the message to ensure it was signed with the specified BZX address</source>
+        <translation>Verificar el mensaje para comprobar que fue firmado con la dirección BZX indicada</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>
@@ -1094,7 +1094,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
         <source>Options:</source>
         <translation>Opciones:
@@ -1123,8 +1123,8 @@
 </translation>
     </message>
     <message>
-        <source>Firo Core</source>
-        <translation>Núcleo de Firo</translation>
+        <source>BZX Core</source>
+        <translation>Núcleo de BZX</translation>
     </message>
     <message>
         <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>

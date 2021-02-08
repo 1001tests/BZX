@@ -142,8 +142,8 @@
         <translation>Deschide &amp;URI...</translation>
     </message>
     <message>
-        <source>Send coins to a Firo address</source>
-        <translation>Trimite monedele către o adresă Firo</translation>
+        <source>Send coins to a BZX address</source>
+        <translation>Trimite monedele către o adresă BZX</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -166,8 +166,8 @@
         <translation>&amp;Verifică mesajul...</translation>
     </message>
     <message>
-        <source>Firo</source>
-        <translation>Firo</translation>
+        <source>BZX</source>
+        <translation>BZX</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -194,12 +194,12 @@
         <translation>Criptează cheile private care aparțin portofelului tău.</translation>
     </message>
     <message>
-        <source>Sign messages with your Firo addresses to prove you own them</source>
-        <translation>Semnează mesajele cu adresa ta de Firo pentru a face dovada că îți aparțin.</translation>
+        <source>Sign messages with your BZX addresses to prove you own them</source>
+        <translation>Semnează mesajele cu adresa ta de BZX pentru a face dovada că îți aparțin.</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Firo addresses</source>
-        <translation>Verifică mesajele cu scopul de a asigura faptul că au fost semnate cu adresa de Firo specificată.</translation>
+        <source>Verify messages to ensure they were signed with specified BZX addresses</source>
+        <translation>Verifică mesajele cu scopul de a asigura faptul că au fost semnate cu adresa de BZX specificată.</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -214,12 +214,12 @@
         <translation>&amp;Ajutor</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and firo: URIs)</source>
-        <translation>Cerere plată (generează coduri QR și firo: URIs)</translation>
+        <source>Request payments (generates QR codes and BZX: URIs)</source>
+        <translation>Cerere plată (generează coduri QR și BZX: URIs)</translation>
     </message>
     <message>
-        <source>Open a firo: URI or payment request</source>
-        <translation>Deschide un firo: URI sau cerere de plată</translation>
+        <source>Open a BZX: URI or payment request</source>
+        <translation>Deschide un BZX: URI sau cerere de plată</translation>
     </message>
     <message>
         <source>%1 behind</source>
@@ -746,10 +746,10 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
-        <source>Firo Core</source>
-        <translation>Firo Core</translation>
+        <source>BZX Core</source>
+        <translation>BZX Core</translation>
     </message>
     <message>
         <source>Information</source>

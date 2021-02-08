@@ -954,7 +954,7 @@ bool static AlreadyHave(const CInv& inv) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
         return false;
 
         /*
-            Firo Related Inventory Messages
+            BZX Related Inventory Messages
 
         --
 
@@ -2039,7 +2039,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                 false, /* fOverrideMempoolLimit */
                 0, /* nAbsurdFee */
                 true, /* isCheckWalletTransaction */
-                false /* markFiroSpendTransactionSerial */
+                false /* markBZXSpendTransactionSerial */
             );
 
             if (CNode::isTxDandelionEmbargoed(tx.GetHash())) {
@@ -2098,7 +2098,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                             false, /* fOverrideMempoolLimit */
                             0, /* nAbsurdFee */
                             true, /* isCheckWalletTransaction */
-                            false /* markFiroSpendTransactionSerial */
+                            false /* markBZXSpendTransactionSerial */
                         );
 
                         connman.RelayTransaction(orphanTx);
@@ -2148,7 +2148,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                 false, /* fOverrideMempoolLimit */
                 0, /* nAbsurdFee */
                 true, /* isCheckWalletTransaction */
-                false /* markFiroSpendTransactionSerial */
+                false /* markBZXSpendTransactionSerial */
             );
             if (CNode::isTxDandelionEmbargoed(tx.GetHash())) {
                 CNode::removeDandelionEmbargo(tx.GetHash());
@@ -2262,7 +2262,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                     false, /* fOverrideMempoolLimit */
                     0, /* nAbsurdFee */
                     false, /* isCheckWalletTransaction */
-                    false /* markFiroSpendTransactionSerial */
+                    false /* markBZXSpendTransactionSerial */
                     );
                 if (ret) {
                     LogPrint("mempool",

@@ -3,7 +3,7 @@
 export LC_ALL=C.UTF-8
 
 cd ..
-cd build-ci/firo-$BUILD_TARGET/src
+cd build-ci/BZX-$BUILD_TARGET/src
 mkdir -p bin
 ls -lah
 
@@ -26,10 +26,10 @@ elif [[ $HOST = "x86_64-apple-darwin14" ]]; then
     ARCHIVE_NAME="osx-x64.zip"
 fi
 
-cp qt/firo-qt bin/ || cp qt/firo-qt.exe bin/ || echo "no qt"
-cp firod bin/ || cp firod.exe bin/ || echo "no daemon"
-cp firo-cli bin/ || cp firo-cli.exe bin/ || echo "no cli"
-cp firo-tx bin/ || cp firo-tx.exe bin/ || echo "no tx"
+cp qt/BZX-qt bin/ || cp qt/BZX-qt.exe bin/ || echo "no qt"
+cp BZXd bin/ || cp BZXd.exe bin/ || echo "no daemon"
+cp BZX-cli bin/ || cp BZX-cli.exe bin/ || echo "no cli"
+cp BZX-tx bin/ || cp BZX-tx.exe bin/ || echo "no tx"
 echo "before bin"
 
 cd bin || echo "bin failed"

@@ -62,12 +62,12 @@
         <translation>Vastuvõtvad aadressid</translation>
     </message>
     <message>
-        <source>These are your Firo addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Need on sinu Firo aadressid maksete saatmiseks. Ennem müntide saatmist kontrolli alati summat ja makse saaja aadressi.</translation>
+        <source>These are your BZX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Need on sinu BZX aadressid maksete saatmiseks. Ennem müntide saatmist kontrolli alati summat ja makse saaja aadressi.</translation>
     </message>
     <message>
-        <source>These are your Firo addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Need on sinu Firo aadressid sisenevate maksete vastu võtmiseks. Soovitav on iga tehingu tarbeks kasutada uut aadressi.</translation>
+        <source>These are your BZX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Need on sinu BZX aadressid sisenevate maksete vastu võtmiseks. Soovitav on iga tehingu tarbeks kasutada uut aadressi.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -290,8 +290,8 @@
         <translation>Kettal olevate blokkide re-indekseerimine...</translation>
     </message>
     <message>
-        <source>Send coins to a Firo address</source>
-        <translation>Saada münte Firoi aadressile</translation>
+        <source>Send coins to a BZX address</source>
+        <translation>Saada münte BZXi aadressile</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -314,8 +314,8 @@
         <translation>&amp;Kontrolli sõnumit...</translation>
     </message>
     <message>
-        <source>Firo</source>
-        <translation>Firo</translation>
+        <source>BZX</source>
+        <translation>BZX</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -342,12 +342,12 @@
         <translation>Krüpteeri oma rahakoti privaatvõtmed</translation>
     </message>
     <message>
-        <source>Sign messages with your Firo addresses to prove you own them</source>
-        <translation>Omandi tõestamiseks allkirjasta sõnumid oma Firoi aadressiga</translation>
+        <source>Sign messages with your BZX addresses to prove you own them</source>
+        <translation>Omandi tõestamiseks allkirjasta sõnumid oma BZXi aadressiga</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Firo addresses</source>
-        <translation>Kinnita sõnumid kindlustamaks et need allkirjastati määratud Firoi aadressiga</translation>
+        <source>Verify messages to ensure they were signed with specified BZX addresses</source>
+        <translation>Kinnita sõnumid kindlustamaks et need allkirjastati määratud BZXi aadressiga</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -366,20 +366,20 @@
         <translation>Vahelehe tööriistariba</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and firo: URIs)</source>
-        <translation>Loo maksepäring (genereerib QR koodid ja firoi: URId)</translation>
+        <source>Request payments (generates QR codes and BZX: URIs)</source>
+        <translation>Loo maksepäring (genereerib QR koodid ja BZXi: URId)</translation>
     </message>
     <message>
-        <source>Open a firo: URI or payment request</source>
-        <translation>Ava firoi: URI või maksepäring</translation>
+        <source>Open a BZX: URI or payment request</source>
+        <translation>Ava BZXi: URI või maksepäring</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
         <translation>Käsurea valikud</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to Firo network</source>
-        <translation><numerusform>%n aktiivne ühendus Firoi võrku</numerusform><numerusform>%n aktiivset ühendust Firoi võrku</numerusform></translation>
+        <source>%n active connection(s) to BZX network</source>
+        <translation><numerusform>%n aktiivne ühendus BZXi võrku</numerusform><numerusform>%n aktiivset ühendust BZXi võrku</numerusform></translation>
     </message>
     <message>
         <source>Indexing blocks on disk...</source>
@@ -626,8 +626,8 @@
         <translation>Muuda saatvat aadressi</translation>
     </message>
     <message>
-        <source>The entered address "%1" is not a valid Firo address.</source>
-        <translation>Sisestatud aadress "%1" ei ole korrektne Firo aadress.</translation>
+        <source>The entered address "%1" is not a valid BZX address.</source>
+        <translation>Sisestatud aadress "%1" ei ole korrektne BZX aadress.</translation>
     </message>
     <message>
         <source>The entered address "%1" is already in the address book.</source>
@@ -756,8 +756,8 @@
         <translation>Ekspert</translation>
     </message>
     <message>
-        <source>Automatically open the Firo client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Firoi kliendi pordi automaatne avamine ruuteris. Toimib, kui sinu ruuter aktsepteerib UPnP ühendust.</translation>
+        <source>Automatically open the BZX client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>BZXi kliendi pordi automaatne avamine ruuteris. Toimib, kui sinu ruuter aktsepteerib UPnP ühendust.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -855,7 +855,7 @@
         <translation>Vorm</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Firo network after a connection is established, but this process has not completed yet.</source>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the BZX network after a connection is established, but this process has not completed yet.</source>
         <translation>Kuvatav info ei pruugi olla ajakohane. Ühenduse loomisel süngitakse sinu rahakott automaatselt Bitconi võrgustikuga, kuid see toiming on hetkel lõpetamata.</translation>
     </message>
     <message>
@@ -1337,8 +1337,8 @@
         <translation>Maksepäring aegunud.</translation>
     </message>
     <message>
-        <source>Warning: Invalid Firo address</source>
-        <translation>Hoiatus: Ebakorrektne Firo aadress</translation>
+        <source>Warning: Invalid BZX address</source>
+        <translation>Hoiatus: Ebakorrektne BZX aadress</translation>
     </message>
     <message>
         <source>(no label)</source>
@@ -1417,8 +1417,8 @@
         <translation>&amp;Allkirjastamise teade</translation>
     </message>
     <message>
-        <source>The Firo address to sign the message with</source>
-        <translation>Firo aadress millega sõnum allkirjastada</translation>
+        <source>The BZX address to sign the message with</source>
+        <translation>BZX aadress millega sõnum allkirjastada</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -1449,8 +1449,8 @@
         <translation>Kopeeri praegune signatuur vahemällu</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this Firo address</source>
-        <translation>Allkirjasta sõnum Firoi aadressi sulle kuulumise tõestamiseks</translation>
+        <source>Sign the message to prove you own this BZX address</source>
+        <translation>Allkirjasta sõnum BZXi aadressi sulle kuulumise tõestamiseks</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
@@ -1469,12 +1469,12 @@
         <translation>&amp;Kinnita Sõnum</translation>
     </message>
     <message>
-        <source>The Firo address the message was signed with</source>
-        <translation>Firo aadress millega sõnum on allkirjastatud</translation>
+        <source>The BZX address the message was signed with</source>
+        <translation>BZX aadress millega sõnum on allkirjastatud</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified Firo address</source>
-        <translation>Kinnita sõnum tõestamaks selle allkirjastatust määratud Firoi aadressiga.</translation>
+        <source>Verify the message to ensure it was signed with the specified BZX address</source>
+        <translation>Kinnita sõnum tõestamaks selle allkirjastatust määratud BZXi aadressiga.</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>
@@ -1732,7 +1732,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
         <source>Options:</source>
         <translation>Valikud:</translation>
@@ -1758,8 +1758,8 @@
         <translation>Tööta taustal ning aktsepteeri käsklusi</translation>
     </message>
     <message>
-        <source>Firo Core</source>
-        <translation>Firoi tuumik</translation>
+        <source>BZX Core</source>
+        <translation>BZXi tuumik</translation>
     </message>
     <message>
         <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>

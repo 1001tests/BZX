@@ -62,11 +62,11 @@
         <translation>استقبال العناوين</translation>
     </message>
     <message>
-        <source>These are your Firo addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <source>These are your BZX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation>هذه هي عناوين Bitcion التابعة لك من أجل إرسال الدفعات. تحقق دائما من المبلغ و عنوان المرسل المستقبل قبل إرسال العملات</translation>
     </message>
     <message>
-        <source>These are your Firo addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <source>These are your BZX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
         <translation>هذه هي عناوين Bitcion التابعة لك من أجل إستقبال الدفعات. ينصح استخدام عنوان جديد من أجل كل صفقة</translation>
     </message>
     <message>
@@ -318,7 +318,7 @@
         <translation>إعادة الفهرسة الكتل على القرص ...</translation>
     </message>
     <message>
-        <source>Send coins to a Firo address</source>
+        <source>Send coins to a BZX address</source>
         <translation>ارسل عملات الى عنوان بيتكوين</translation>
     </message>
     <message>
@@ -342,7 +342,7 @@
         <translation>&amp;التحقق من الرسالة...</translation>
     </message>
     <message>
-        <source>Firo</source>
+        <source>BZX</source>
         <translation>بت كوين</translation>
     </message>
     <message>
@@ -370,12 +370,12 @@
         <translation>تشفير المفتاح الخاص بمحفظتك</translation>
     </message>
     <message>
-        <source>Sign messages with your Firo addresses to prove you own them</source>
-        <translation>وقَع الرسائل بواسطة ال: Firo الخاص بك لإثبات امتلاكك لهم</translation>
+        <source>Sign messages with your BZX addresses to prove you own them</source>
+        <translation>وقَع الرسائل بواسطة ال: BZX الخاص بك لإثبات امتلاكك لهم</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Firo addresses</source>
-        <translation>تحقق من الرسائل للتأكد من أنَها وُقعت برسائل Firo محدَدة</translation>
+        <source>Verify messages to ensure they were signed with specified BZX addresses</source>
+        <translation>تحقق من الرسائل للتأكد من أنَها وُقعت برسائل BZX محدَدة</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -394,7 +394,7 @@
         <translation>شريط أدوات علامات التبويب</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and firo: URIs)</source>
+        <source>Request payments (generates QR codes and BZX: URIs)</source>
         <translation>أطلب دفعات (يولد كودات الرمز المربع وبيت كوين: العناوين المعطاة)</translation>
     </message>
     <message>
@@ -406,8 +406,8 @@
         <translation>عرض قائمة عناوين الإستقبال المستخدمة والملصقات</translation>
     </message>
     <message>
-        <source>Open a firo: URI or payment request</source>
-        <translation>فتح URI : Firo أو طلب دفع</translation>
+        <source>Open a BZX: URI or payment request</source>
+        <translation>فتح URI : BZX أو طلب دفع</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
@@ -450,7 +450,7 @@
         <translation>محدث</translation>
     </message>
     <message>
-        <source>Show the %1 help message to get a list with possible Firo command-line options</source>
+        <source>Show the %1 help message to get a list with possible BZX command-line options</source>
         <translation>بين اشارة المساعدة %1 للحصول على قائمة من خيارات اوامر البت كوين المحتملة </translation>
     </message>
     <message>
@@ -668,7 +668,7 @@
         <translation>تعديل عنوان الارسال</translation>
     </message>
     <message>
-        <source>The entered address "%1" is not a valid Firo address.</source>
+        <source>The entered address "%1" is not a valid BZX address.</source>
         <translation>العنوان المدخل "%1" ليس عنوان بيت كوين صحيح.</translation>
     </message>
     <message>
@@ -1418,7 +1418,7 @@
         <translation>هذا دفع اعتيادي</translation>
     </message>
     <message>
-        <source>The Firo address to send the payment to</source>
+        <source>The BZX address to send the payment to</source>
         <translation>عنوان البت كوين المرسل اليه الدفع</translation>
     </message>
     <message>
@@ -1495,7 +1495,7 @@
         <translation>التوقيع</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this Firo address</source>
+        <source>Sign the message to prove you own this BZX address</source>
         <translation>وقع الرسالة لتثبت انك تمتلك عنوان البت كوين هذا</translation>
     </message>
     <message>
@@ -1922,7 +1922,7 @@
     </message>
     </context>
 <context>
-    <name>firo-core</name>
+    <name>BZX-core</name>
     <message>
         <source>Options:</source>
         <translation>خيارات: </translation>
@@ -1932,7 +1932,7 @@
         <translation>حدد مجلد المعلومات</translation>
     </message>
     <message>
-        <source>Firo Core</source>
+        <source>BZX Core</source>
         <translation>جوهر البيت كوين</translation>
     </message>
     <message>
