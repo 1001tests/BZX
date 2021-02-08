@@ -616,7 +616,7 @@ CLEAN_QT = $(nodist_qt_libBZXqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*
 CLEANFILES += $(CLEAN_QT)
 
 BZX_qt_clean: FORCE
-        rm -f $(CLEAN_QT) $(qt_libBZXqt_a_OBJECTS) $(qt_BZX_qt_OBJECTS) qt/BZX-qt$(EXEEXT) $(LIBBITCOINQT)
+	rm -f $(CLEAN_QT) $(qt_libBZXqt_a_OBJECTS) $(qt_BZX_qt_OBJECTS) qt/BZX-qt$(EXEEXT) $(LIBBITCOINQT)
 
 BZX_qt : qt/BZX-qt$(EXEEXT)
 
