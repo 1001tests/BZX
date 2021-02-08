@@ -1718,40 +1718,14 @@ bool ReadBlockHeaderFromDisk(CBlock &block, const CDiskBlockPos &pos) {
     return true;
 }
 
-CAmount GetBlockSubsidyWithMTPFlag(int nHeight, const Consensus::Params &consensusParams, bool fMTP) {
-    // Genesis block is 0 coin
-    if (nHeight == 0)
-        return 0;
-
-    // Subsidy is cut in half after nSubsidyHalvingFirst block, then every nSubsidyHalvingInterval blocks.
-    // After block nSubsidyHalvingStopBlock there will be no subsidy at all
-    if (nHeight >= consensusParams.nSubsidyHalvingStopBlock)
-        return 0;
-    int halvings = nHeight < consensusParams.nSubsidyHalvingFirst ? 0 : (nHeight - consensusParams.nSubsidyHalvingFirst) / consensusParams.nSubsidyHalvingInterval + 1;
-    // Force block reward to zero when right shift is undefined.
-    if (halvings >= 64)
-        return 0;
-
-    CAmount nSubsidy = 50 * COIN;
-    nSubsidy >>= halvings;
-
-    if (nHeight > 0 && fMTP)
-        nSubsidy /= consensusParams.nMTPRewardReduction;
-
-    return nSubsidy;
-}
-
-CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams, int nTime) {
-    return GetBlockSubsidyWithMTPFlag(nHeight, consensusParams, nTime >= (int)consensusParams.nMTPSwitchTime);
+CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams, int nTime)
+{
+    return 1 * COIN; //xxxx
 }
 
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
-    const Consensus::Params &params = Params().GetConsensus();
-    if (nHeight >= params.nSubsidyHalvingFirst)
-        return blockValue*params.stage2ZnodeShare/100;
-    else
-        return blockValue*3/10; // 30%
+    return 1 * COIN; //XXXX
 }
 
 bool IsInitialBlockDownload() {
@@ -4164,9 +4138,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         if (mutated)
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-duplicate", true, "duplicate transaction");
 
-        // BZX - MTP
-        if (block.IsMTP() && !CheckMerkleTreeProof(block, consensusParams))
-            return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
     }
 
     // All potential-corruption validation must be done before we do any
@@ -4400,9 +4371,9 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
                 return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(), "Stage 2 developer reward check failed");
         }
     }
-    else if (!CheckZerocoinFoundersInputs(*block.vtx[0], state, consensusParams, nHeight, block.IsMTP())) {
+    else if (!CheckZerocoinFoundersInputs(*block.vtx[0], state, consensusParams, nHeight)) {
         return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(), "Founders' reward check failed");
-    }
+    }//xxxx
 
     // Enforce rule that the coinbase starts with serialized block height
     /*

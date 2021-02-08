@@ -539,7 +539,7 @@ bool CheckMintBZXTransaction(const CTxOut &txout,
     return true;
 }
 
-bool CheckZerocoinFoundersInputs(const CTransaction &tx, CValidationState &state, const Consensus::Params &params, int nHeight, bool fMTP) {
+bool CheckZerocoinFoundersInputs(const CTransaction &tx, CValidationState &state, const Consensus::Params &params, int nHeight) {
 //xxxx
     return true;
 }

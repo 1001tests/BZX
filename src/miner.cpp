@@ -250,7 +250,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     coinbaseTx.vout[0].nValue = nFees + nBlockSubsidy;
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
 
-    FillFoundersReward(coinbaseTx, fMTP);
+    FillFoundersReward(coinbaseTx);
 
     if (fDIP0003Active_context) {
         coinbaseTx.vin[0].scriptSig = CScript() << OP_RETURN;
@@ -802,7 +802,7 @@ void BlockAssembler::addPriorityTxs()
     fNeedSizeAccounting = fSizeAccounting;
 }
 
-void BlockAssembler::FillFoundersReward(CMutableTransaction &coinbaseTx, bool fMTP)
+void BlockAssembler::FillFoundersReward(CMutableTransaction &coinbaseTx)
 {
 //xxxx
 }
