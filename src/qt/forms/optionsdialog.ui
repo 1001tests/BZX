@@ -20,7 +20,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tabMain">
       <attribute name="title">
@@ -151,6 +151,9 @@
             <property name="text">
              <string>Enable coin &amp;control features</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
@@ -187,12 +190,18 @@
             <property name="text">
              <string>Enable &amp;auto-anonymize features</string>
             </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="lelantusPage">
             <property name="text">
              <string>Enable &amp;lelantus manual-anonymize page</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
