@@ -1,5 +1,5 @@
-#ifndef ZCOIN_SPORKTX_H
-#define ZCOIN_SPORKTX_H
+#ifndef BZX_SPORKTX_H
+#define BZX_SPORKTX_H
 
 #include "consensus/validation.h"
 #include "primitives/transaction.h"
