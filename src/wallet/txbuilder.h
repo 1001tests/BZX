@@ -1,5 +1,5 @@
-#ifndef FIRO_WALLET_TXBUILDER_H
-#define FIRO_WALLET_TXBUILDER_H
+#ifndef BZX_WALLET_TXBUILDER_H
+#define BZX_WALLET_TXBUILDER_H
 
 #include "wallet.h"
 

@@ -1,5 +1,5 @@
-#ifndef FIRO_QT_SIGMAPAGE_H
-#define FIRO_QT_SIGMAPAGE_H
+#ifndef BZX_QT_SIGMAPAGE_H
+#define BZX_QT_SIGMAPAGE_H
 
 #include "addresstablemodel.h"
 #include "clientmodel.h"
@@ -86,4 +86,4 @@ Q_SIGNALS:
     void message(const QString &title, const QString &message, unsigned int style);
 };
 
-#endif // FIRO_QT_SIGMAPAGE_H
+#endif // BZX_QT_SIGMAPAGE_H

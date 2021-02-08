@@ -1,5 +1,5 @@
-#ifndef FIRO_LIBLELANTUS_COIN_H
-#define FIRO_LIBLELANTUS_COIN_H
+#ifndef BZX_LIBLELANTUS_COIN_H
+#define BZX_LIBLELANTUS_COIN_H
 
 #include "lelantus_primitives.h"
 #include "params.h"
@@ -87,4 +87,4 @@ private:
 
 }// namespace lelantus
 
-#endif //FIRO_LIBLELANTUS_COIN_H
+#endif //BZX_LIBLELANTUS_COIN_H

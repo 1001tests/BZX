@@ -1,5 +1,5 @@
-#ifndef FIRO_QT_AUTOMINTMODEL_H
-#define FIRO_QT_AUTOMINTMODEL_H
+#ifndef BZX_QT_AUTOMINTMODEL_H
+#define BZX_QT_AUTOMINTMODEL_H
 
 #include "../amount.h"
 #include "../ui_interface.h"
@@ -109,4 +109,4 @@ private:
     IncomingFundNotifier *notifier;
 };
 
-#endif // FIRO_QT_AUTOMINTMODEL_H
+#endif // BZX_QT_AUTOMINTMODEL_H

@@ -1,5 +1,5 @@
-#ifndef FIRO_ELYSIUM_SIGMADB_H
-#define FIRO_ELYSIUM_SIGMADB_H
+#ifndef BZX_ELYSIUM_SIGMADB_H
+#define BZX_ELYSIUM_SIGMADB_H
 
 #include "convert.h"
 #include "persistence.h"
@@ -118,4 +118,4 @@ extern SigmaDatabase *sigmaDb;
 
 } // namespace elysium
 
-#endif // FIRO_ELYSIUM_SIGMADB_H
+#endif // BZX_ELYSIUM_SIGMADB_H

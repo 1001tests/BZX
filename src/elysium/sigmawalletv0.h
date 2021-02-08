@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_ELYSIUM_SIGMAWALLETV0_H
-#define FIRO_ELYSIUM_SIGMAWALLETV0_H
+#ifndef BZX_ELYSIUM_SIGMAWALLETV0_H
+#define BZX_ELYSIUM_SIGMAWALLETV0_H
 
 #include "sigmawallet.h"
 
@@ -45,4 +45,4 @@ public:
 
 }
 
-#endif // FIRO_ELYSIUM_SIGMAWALLETV0_H
+#endif // BZX_ELYSIUM_SIGMAWALLETV0_H

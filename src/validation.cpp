@@ -3504,7 +3504,7 @@ CAmount GetZnodePayment(const Consensus::Params &params, bool fMTP) {
 //    if (nHeight > nMNPIBlock + (nMNPIPeriod * 7)) ret += blockValue / 40; // 278960 - 47.5% - 2015-06-01
 //    if (nHeight > nMNPIBlock + (nMNPIPeriod * 9)) ret += blockValue / 40; // 313520 - 50.0% - 2015-08-03
     CAmount coin = fMTP ? COIN/params.nMTPRewardReduction : COIN;
-    CAmount ret = 15 * coin; //15 or 7.5 FIRO
+    CAmount ret = 15 * coin; //15 or 7.5 BZX
 
     return ret;
 }

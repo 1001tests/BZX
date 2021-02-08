@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_HDMINTWALLET_H
-#define FIRO_HDMINTWALLET_H
+#ifndef BZX_HDMINTWALLET_H
+#define BZX_HDMINTWALLET_H
 
 #include <map>
 #include "libzerocoin/Zerocoin.h"
@@ -64,4 +64,4 @@ private:
     bool CreateMintSeed(CWalletDB& walletdb, uint512& mintSeed, const int32_t& n, CKeyID& seedId, bool nWriteChain = true);
 };
 
-#endif //FIRO_HDMINTWALLET_H
+#endif //BZX_HDMINTWALLET_H

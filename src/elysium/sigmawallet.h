@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_ELYSIUM_SIGMAWALLET_H
-#define FIRO_ELYSIUM_SIGMAWALLET_H
+#ifndef BZX_ELYSIUM_SIGMAWALLET_H
+#define BZX_ELYSIUM_SIGMAWALLET_H
 
 #include "property.h"
 #include "sigmaprimitives.h"
@@ -192,4 +192,4 @@ protected:
 
 } // namespace elysium
 
-#endif // FIRO_ELYSIUM_SIGMAWALLET_H
+#endif // BZX_ELYSIUM_SIGMAWALLET_H

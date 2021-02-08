@@ -1,5 +1,5 @@
-#ifndef FIRO_ELYSIUM_SP_H
-#define FIRO_ELYSIUM_SP_H
+#ifndef BZX_ELYSIUM_SP_H
+#define BZX_ELYSIUM_SP_H
 
 #include "log.h"
 #include "persistence.h"
@@ -315,4 +315,4 @@ string to_string(SigmaStatus status);
 
 } // namespace std
 
-#endif // FIRO_ELYSIUM_SP_H
+#endif // BZX_ELYSIUM_SP_H

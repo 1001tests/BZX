@@ -1,5 +1,5 @@
-#ifndef FIRO_LIBLELANTUS_PARAMS_H
-#define FIRO_LIBLELANTUS_PARAMS_H
+#ifndef BZX_LIBLELANTUS_PARAMS_H
+#define BZX_LIBLELANTUS_PARAMS_H
 
 #include <secp256k1/include/Scalar.h>
 #include <secp256k1/include/GroupElement.h>
@@ -49,4 +49,4 @@ private:
 
 } // namespace lelantus
 
-#endif // FIRO_LIBLELANTUS_PARAMS_H
+#endif // BZX_LIBLELANTUS_PARAMS_H

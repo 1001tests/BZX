@@ -1,5 +1,5 @@
-#ifndef FIRO_ELYSIUM_SCRIPT_H
-#define FIRO_ELYSIUM_SCRIPT_H
+#ifndef BZX_ELYSIUM_SCRIPT_H
+#define BZX_ELYSIUM_SCRIPT_H
 
 #include "../script/script.h"
 #include "../script/standard.h"
@@ -45,4 +45,4 @@ Output GetPushedValues(const CScript& script, Output output)
 
 } // namespace elysium
 
-#endif // FIRO_ELYSIUM_SCRIPT_H
+#endif // BZX_ELYSIUM_SCRIPT_H

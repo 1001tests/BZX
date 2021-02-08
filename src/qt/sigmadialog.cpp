@@ -209,7 +209,7 @@ void SigmaDialog::on_mintButton_clicked()
 
     if (amount < smallestDenominationValue) {
         QMessageBox::critical(this, tr("Amount too small to mint"),
-            tr("Amount to mint must not be lower than %1 FIRO.").arg(formatAmount(smallestDenominationValue)),
+            tr("Amount to mint must not be lower than %1 BZX.").arg(formatAmount(smallestDenominationValue)),
             QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
@@ -218,7 +218,7 @@ void SigmaDialog::on_mintButton_clicked()
         amount -= amount % smallestDenominationValue;
         auto reply = QMessageBox::question(
             this, tr("Unable to mint."),
-            tr("Amount to mint must be a multiple of 0.05 FIRO. Do you want to mint %1 FIRO?"
+            tr("Amount to mint must be a multiple of 0.05 BZX. Do you want to mint %1 BZX?"
             ).arg(formatAmount(amount)));
 
         if (reply == QMessageBox::No) {
@@ -754,7 +754,7 @@ void SigmaDialog::processSpendCoinsReturn(const WalletModel::SendCoinsReturn &se
         msgParams.second = CClientUIInterface::MSG_ERROR;
         break;
     case WalletModel::ExceedLimit:
-        msgParams.first = tr("Transaction exceeds max number of spends (35) or value (500 FIRO per transaction), please reduce the amount you wish to spend.");
+        msgParams.first = tr("Transaction exceeds max number of spends (35) or value (500 BZX per transaction), please reduce the amount you wish to spend.");
         msgParams.second = CClientUIInterface::MSG_ERROR;
         break;
     // included to prevent a compiler warning.

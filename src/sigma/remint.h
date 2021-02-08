@@ -1,5 +1,5 @@
-#ifndef FIRO_SIGMA_REMINT_H
-#define FIRO_SIGMA_REMINT_H
+#ifndef BZX_SIGMA_REMINT_H
+#define BZX_SIGMA_REMINT_H
 
 #include "amount.h"
 #include "primitives/transaction.h"

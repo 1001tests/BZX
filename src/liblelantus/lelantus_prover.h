@@ -1,5 +1,5 @@
-#ifndef FIRO_LIBLELANTUS_LELANTUSPROVER_H
-#define FIRO_LIBLELANTUS_LELANTUSPROVER_H
+#ifndef BZX_LIBLELANTUS_LELANTUSPROVER_H
+#define BZX_LIBLELANTUS_LELANTUSPROVER_H
 
 #include "schnorr_prover.h"
 #include "sigmaextended_prover.h"
@@ -40,4 +40,4 @@ private:
 };
 }// namespace lelantus
 
-#endif //FIRO_LIBLELANTUS_LELANTUSPROVER_H
+#endif //BZX_LIBLELANTUS_LELANTUSPROVER_H

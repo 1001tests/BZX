@@ -1,5 +1,5 @@
-#ifndef FIRO_SIGMA_SIGMAPLUS_PROVER_H
-#define FIRO_SIGMA_SIGMAPLUS_PROVER_H
+#ifndef BZX_SIGMA_SIGMAPLUS_PROVER_H
+#define BZX_SIGMA_SIGMAPLUS_PROVER_H
 
 #include "r1_proof_generator.h"
 #include "sigmaplus_proof.h"
@@ -31,4 +31,4 @@ private:
 
 #include "sigmaplus_prover.hpp"
 
-#endif // FIRO_SIGMA_SIGMAPLUS_PROVER_H
+#endif // BZX_SIGMA_SIGMAPLUS_PROVER_H

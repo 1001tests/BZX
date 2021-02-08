@@ -1,5 +1,5 @@
-#ifndef FIRO_LIBLELANTUS_LELANTUSPROOF_H
-#define FIRO_LIBLELANTUS_LELANTUSPROOF_H
+#ifndef BZX_LIBLELANTUS_LELANTUSPROOF_H
+#define BZX_LIBLELANTUS_LELANTUSPROOF_H
 
 #include "schnorr_proof.h"
 #include "range_proof.h"
@@ -33,4 +33,4 @@ public:
 };
 }//namespace lelantus
 
-#endif //FIRO_LIBLELANTUS_LELANTUSPROOF_H
+#endif //BZX_LIBLELANTUS_LELANTUSPROOF_H

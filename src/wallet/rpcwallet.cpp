@@ -2521,8 +2521,8 @@ UniValue settxfee(const JSONRPCRequest& request)
             "\nResult\n"
             "true|false        (boolean) Returns true if successful\n"
             "\nExamples:\n"
-            + HelpExampleCli("settxfee", "0.00000001 FIRO")
-            + HelpExampleRpc("settxfee", "0.00000001 FIRO")
+            + HelpExampleCli("settxfee", "0.00000001 BZX")
+            + HelpExampleRpc("settxfee", "0.00000001 BZX")
         );
 
     LOCK2(cs_main, pwallet->cs_wallet);
@@ -3406,7 +3406,7 @@ UniValue mintmanyzerocoin(const JSONRPCRequest& request)
                 "\nArguments:\n"
                 "1. \"denomination\"             (integer, required) zerocoin denomination\n"
                 "2. \"numberOfMints\"            (integer, required) amount of mints for chosen denomination\n"
-                "\nExamples:\nThe first example mints denomination 1, one time, for a total FIRO valuation of 1.\nThe next example mints denomination 25, ten times, and denomination 50, five times, for a total FIRO valuation of 500.\n"
+                "\nExamples:\nThe first example mints denomination 1, one time, for a total BZX valuation of 1.\nThe next example mints denomination 25, ten times, and denomination 50, five times, for a total BZX valuation of 500.\n"
                     + HelpExampleCli("mintmanyzerocoin", "1 1")
                     + HelpExampleCli("mintmanyzerocoin", "25 10 50 5")
         );

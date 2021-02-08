@@ -1,5 +1,5 @@
-#ifndef FIRO_ELYSIUM_RULES_H
-#define FIRO_ELYSIUM_RULES_H
+#ifndef BZX_ELYSIUM_RULES_H
+#define BZX_ELYSIUM_RULES_H
 
 #include "../amount.h"
 #include "../base58.h"
@@ -249,7 +249,7 @@ public:
     int PROPERTY_CREATION_FEE_BLOCK;
 
     /**
-     * Amount of FIRO to pay when create a new property on main ecosystem.
+     * Amount of BZX to pay when create a new property on main ecosystem.
      **/
     CAmount PROPERTY_CREATION_FEE;
 
@@ -337,4 +337,4 @@ bool VerifyCheckpoint(int block, const uint256& blockHash);
 
 } // namespace elysium
 
-#endif // FIRO_ELYSIUM_RULES_H
+#endif // BZX_ELYSIUM_RULES_H

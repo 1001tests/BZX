@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_ELYSIUM_SIGNATUREBUILDER_H
-#define FIRO_ELYSIUM_SIGNATUREBUILDER_H
+#ifndef BZX_ELYSIUM_SIGNATUREBUILDER_H
+#define BZX_ELYSIUM_SIGNATUREBUILDER_H
 
 #include "ecdsa_signature.h"
 
@@ -37,4 +37,4 @@ protected:
 
 }
 
-#endif // FIRO_ELYSIUM_SIGNATUREBUILDER_H
+#endif // BZX_ELYSIUM_SIGNATUREBUILDER_H

@@ -1,5 +1,5 @@
-#ifndef FIRO_LIBLELANTUS_RANGE_VERIFIER_H
-#define FIRO_LIBLELANTUS_RANGE_VERIFIER_H
+#ifndef BZX_LIBLELANTUS_RANGE_VERIFIER_H
+#define BZX_LIBLELANTUS_RANGE_VERIFIER_H
 
 #include "innerproduct_proof_verifier.h"
 
@@ -32,4 +32,4 @@ private:
 
 }//namespace lelantus
 
-#endif //FIRO_LIBLELANTUS_RANGE_VERIFIER_H
+#endif //BZX_LIBLELANTUS_RANGE_VERIFIER_H

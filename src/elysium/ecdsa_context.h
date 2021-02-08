@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_ELYSIUM_ECDSA_CONTEXT_H
-#define FIRO_ELYSIUM_ECDSA_CONTEXT_H
+#ifndef BZX_ELYSIUM_ECDSA_CONTEXT_H
+#define BZX_ELYSIUM_ECDSA_CONTEXT_H
 
 #include <secp256k1.h>
 
@@ -35,4 +35,4 @@ private:
 
 } // elysium
 
-#endif // FIRO_ELYSIUM_ECDSA_CONTEXT_H
+#endif // BZX_ELYSIUM_ECDSA_CONTEXT_H

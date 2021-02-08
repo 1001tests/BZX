@@ -1,5 +1,5 @@
-#ifndef FIRO_QT_AUTOMINTNOTIFICATION_H
-#define FIRO_QT_AUTOMINTNOTIFICATION_H
+#ifndef BZX_QT_AUTOMINTNOTIFICATION_H
+#define BZX_QT_AUTOMINTNOTIFICATION_H
 
 #include "lelantusmodel.h"
 #include "walletmodel.h"
@@ -36,4 +36,4 @@ private:
     LelantusModel *lelantusModel;
 };
 
-#endif // FIRO_QT_AUTOMINTNOTIFICATION_H
+#endif // BZX_QT_AUTOMINTNOTIFICATION_H

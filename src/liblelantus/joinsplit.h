@@ -1,5 +1,5 @@
-#ifndef FIRO_LIBLELANTUS_JOINSPLIT_H
-#define FIRO_LIBLELANTUS_JOINSPLIT_H
+#ifndef BZX_LIBLELANTUS_JOINSPLIT_H
+#define BZX_LIBLELANTUS_JOINSPLIT_H
 
 #include "coin.h"
 #include "lelantus_proof.h"
@@ -126,4 +126,4 @@ private:
 
 } //namespace lelantus
 
-#endif //FIRO_LIBLELANTUS_JOINSPLIT_H
+#endif //BZX_LIBLELANTUS_JOINSPLIT_H

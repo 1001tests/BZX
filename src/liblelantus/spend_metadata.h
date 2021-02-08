@@ -1,5 +1,5 @@
-#ifndef FIRO_LIBLELANTUS_SPENDMETADATA_H_
-#define FIRO_LIBLELANTUS_SPENDMETADATA_H_
+#ifndef BZX_LIBLELANTUS_SPENDMETADATA_H_
+#define BZX_LIBLELANTUS_SPENDMETADATA_H_
 
 #include "../uint256.h"
 #include "../serialize.h"
@@ -29,4 +29,4 @@ public:
 
 } // namespace lelantus
 
-#endif // FIRO_LIBLELANTUS_SPENDMETADATA_H_
+#endif // BZX_LIBLELANTUS_SPENDMETADATA_H_

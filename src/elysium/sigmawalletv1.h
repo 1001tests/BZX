@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_ELYSIUM_SIGMAWALLETV1_H
-#define FIRO_ELYSIUM_SIGMAWALLETV1_H
+#ifndef BZX_ELYSIUM_SIGMAWALLETV1_H
+#define BZX_ELYSIUM_SIGMAWALLETV1_H
 
 #include "ecdsa_context.h"
 #include "sigmawallet.h"
@@ -62,4 +62,4 @@ private:
 
 }
 
-#endif // FIRO_ELYSIUM_SIGMAWALLETV1_H
+#endif // BZX_ELYSIUM_SIGMAWALLETV1_H

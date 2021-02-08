@@ -1,5 +1,5 @@
-#ifndef FIRO_ELYSIUM_PROPERTY_H
-#define FIRO_ELYSIUM_PROPERTY_H
+#ifndef BZX_ELYSIUM_PROPERTY_H
+#define BZX_ELYSIUM_PROPERTY_H
 
 #include <string>
 
@@ -30,4 +30,4 @@ bool IsRequireCreationFee(EcosystemId ecosystem, int block, const std::string& n
 
 } // namespace elysium
 
-#endif // FIRO_ELYSIUM_PROPERTY_H
+#endif // BZX_ELYSIUM_PROPERTY_H

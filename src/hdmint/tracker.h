@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_HDMINTTRACKER_H
-#define FIRO_HDMINTTRACKER_H
+#ifndef BZX_HDMINTTRACKER_H
+#define BZX_HDMINTTRACKER_H
 
 #include "primitives/zerocoin.h"
 #include "hdmint/mintpool.h"
@@ -69,4 +69,4 @@ public:
     void Clear();
 };
 
-#endif //FIRO_HDMINTTRACKER_H
+#endif //BZX_HDMINTTRACKER_H

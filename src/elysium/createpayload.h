@@ -1,5 +1,5 @@
-#ifndef FIRO_ELYSIUM_CREATEPAYLOAD_H
-#define FIRO_ELYSIUM_CREATEPAYLOAD_H
+#ifndef BZX_ELYSIUM_CREATEPAYLOAD_H
+#define BZX_ELYSIUM_CREATEPAYLOAD_H
 
 #include "ecdsa_signature.h"
 #include "sp.h"
@@ -49,4 +49,4 @@ std::vector<unsigned char> CreatePayload_DeactivateFeature(uint16_t featureId);
 std::vector<unsigned char> CreatePayload_ActivateFeature(uint16_t featureId, uint32_t activationBlock, uint32_t minClientVersion);
 std::vector<unsigned char> CreatePayload_CreateDenomination(uint32_t propertyId, uint64_t value);
 
-#endif // FIRO_ELYSIUM_CREATEPAYLOAD_H
+#endif // BZX_ELYSIUM_CREATEPAYLOAD_H

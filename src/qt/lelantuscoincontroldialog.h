@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_QT_LELANTUSCOINCONTROLDIALOG_H
-#define FIRO_QT_LELANTUSCOINCONTROLDIALOG_H
+#ifndef BZX_QT_LELANTUSCOINCONTROLDIALOG_H
+#define BZX_QT_LELANTUSCOINCONTROLDIALOG_H
 
 #include "../amount.h"
 #include "../script/standard.h"
@@ -111,4 +111,4 @@ private Q_SLOTS:
     void updateLabelLocked();
 };
 
-#endif // FIRO_QT_LELANTUSCOINCONTROLDIALOG_H
+#endif // BZX_QT_LELANTUSCOINCONTROLDIALOG_H

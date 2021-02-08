@@ -1,5 +1,5 @@
-#ifndef FIRO_SIGMA_COIN_H
-#define FIRO_SIGMA_COIN_H
+#ifndef BZX_SIGMA_COIN_H
+#define BZX_SIGMA_COIN_H
 
 #include "params.h"
 #include "sigma_primitives.h"
@@ -149,4 +149,4 @@ template<> struct hash<sigma::CoinDenomination> {
 
 }// namespace std
 
-#endif // FIRO_SIGMA_COIN_H
+#endif // BZX_SIGMA_COIN_H

@@ -1,5 +1,5 @@
-#ifndef FIRO_QT_LELANTUSMODEL_H
-#define FIRO_QT_LELANTUSMODEL_H
+#ifndef BZX_QT_LELANTUSMODEL_H
+#define BZX_QT_LELANTUSMODEL_H
 
 #include "automintdialog.h"
 #include "automintmodel.h"
@@ -53,4 +53,4 @@ private:
     CWallet *wallet;
 };
 
-#endif // FIRO_QT_LELANTUSMODEL_H
+#endif // BZX_QT_LELANTUSMODEL_H

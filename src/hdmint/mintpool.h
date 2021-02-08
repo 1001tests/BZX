@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_MINTPOOL_H
-#define FIRO_MINTPOOL_H
+#ifndef BZX_MINTPOOL_H
+#define BZX_MINTPOOL_H
 
 #include <map>
 #include <list>
@@ -33,4 +33,4 @@ public:
     bool Get(int32_t nCount, uint160 hashSeedMaster, pair<uint256, MintPoolEntry>& result);
 };
 
-#endif // FIRO_MINTPOOL_H
+#endif // BZX_MINTPOOL_H

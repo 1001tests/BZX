@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef FIRO_HDMINT_H
-#define FIRO_HDMINT_H
+#ifndef BZX_HDMINT_H
+#define BZX_HDMINT_H
 
 #include "primitives/zerocoin.h"
 #include "sigma.h"
@@ -71,5 +71,5 @@ public:
     };
 };
 
-#endif //FIRO_HDMINT_H
+#endif //BZX_HDMINT_H
 

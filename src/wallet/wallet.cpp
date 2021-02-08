@@ -129,7 +129,7 @@ CPubKey CWallet::GetKeyFromKeypath(uint32_t nChange, uint32_t nChild, CKey& secr
 
     boost::optional<bool> regTest = GetOptBoolArg("-regtest")
     , testNet = GetOptBoolArg("-testnet");
-    uint32_t nIndex = (regTest || testNet) ? BIP44_TEST_INDEX : BIP44_FIRO_INDEX;
+    uint32_t nIndex = (regTest || testNet) ? BIP44_TEST_INDEX : BIP44_BZX_INDEX;
 
     // Fail if not using HD wallet (no keypaths)
     if (hdChain.masterKeyID.IsNull())
@@ -195,7 +195,7 @@ CPubKey CWallet::GenerateNewKey(uint32_t nChange, bool fWriteChain)
     boost::optional<bool> regTest = GetOptBoolArg("-regtest")
     , testNet = GetOptBoolArg("-testnet");
 
-    uint32_t nIndex = (regTest || testNet) ? BIP44_TEST_INDEX : BIP44_FIRO_INDEX;
+    uint32_t nIndex = (regTest || testNet) ? BIP44_TEST_INDEX : BIP44_BZX_INDEX;
 
     // use HD key derivation if HD was enabled during wallet creation
     // TODO: change code to foloow bitcoin structure more closely
@@ -3159,7 +3159,7 @@ bool CWallet::GetCoinsToJoinSplit(
     // amount to spend, resulting to a possible crash due to out of memory condition.
     if (!MoneyRange(required)) {
         throw WalletError(
-                _("The required amount exceeds 21 MLN FIRO"));
+                _("The required amount exceeds 21 MLN BZX"));
     }
 
     if (!MoneyRange(amountToSpendLimit)) {

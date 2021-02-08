@@ -1,5 +1,5 @@
-#ifndef FIRO_SIGMA_R1_PROOF_VERIFIER_H
-#define FIRO_SIGMA_R1_PROOF_VERIFIER_H
+#ifndef BZX_SIGMA_R1_PROOF_VERIFIER_H
+#define BZX_SIGMA_R1_PROOF_VERIFIER_H
 
 namespace sigma {
 
@@ -35,4 +35,4 @@ private:
 
 #include "r1_proof_verifier.hpp"
 
-#endif // FIRO_SIGMA_R1_PROOF_VERIFIER_H
+#endif // BZX_SIGMA_R1_PROOF_VERIFIER_H

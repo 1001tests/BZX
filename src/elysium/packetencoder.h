@@ -1,5 +1,5 @@
-#ifndef FIRO_ELYSIUM_PACKETENCODER_H
-#define FIRO_ELYSIUM_PACKETENCODER_H
+#ifndef BZX_ELYSIUM_PACKETENCODER_H
+#define BZX_ELYSIUM_PACKETENCODER_H
 
 #include "script.h"
 
@@ -228,4 +228,4 @@ basic_ostream<Char, Traits>& operator<<(basic_ostream<Char, Traits>& os, PacketC
 
 } // namespace std
 
-#endif // FIRO_ELYSIUM_PACKETENCODER_H
+#endif // BZX_ELYSIUM_PACKETENCODER_H
