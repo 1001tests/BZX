@@ -73,6 +73,9 @@
            <property name="text">
             <string>My masternodes only</string>
            </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
          <item>
