@@ -13,7 +13,6 @@ static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 #define ZC_LELANTUS_STARTING_BLOCK         336888
 #define ZC_LELANTUS_TESTNET_STARTING_BLOCK 15700
 
-// Number of blocks after ZC_SIGMA_STARTING_BLOCK during which we still accept zerocoin V2 mints into mempool.
 #define ZC_MODULUS_V2_START_BLOCK		89300
 
 #define ZC_MODULUS_V2_TESTNET_START_BLOCK       87000
@@ -42,15 +41,6 @@ static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 
 // number of mint confirmations needed to spend coin
 #define ZC_MINT_CONFIRMATIONS               6
-
-// Value of sigma spends allowed per block
-#define ZC_SIGMA_VALUE_SPEND_LIMIT_PER_BLOCK  (600 * COIN)
-
-// Amount of sigma spends allowed per block
-#define ZC_SIGMA_INPUT_LIMIT_PER_BLOCK         50
-
-// Value of sigma spends allowed per transaction
-#define ZC_SIGMA_VALUE_SPEND_LIMIT_PER_TRANSACTION     (500 * COIN)
 
 // Value of lelantus spends allowed per block
 #define ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_BLOCK  (5100 * COIN)
