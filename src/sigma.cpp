@@ -61,12 +61,12 @@ bool IsSigmaAllowed()
 
 bool IsSigmaAllowed(int height)
 {
-	return height >= ::Params().GetConsensus().nSigmaStartBlock && height < ::Params().GetConsensus().nLelantusStartBlock;
+    return false;
 }
 
 bool IsRemintWindow(int height) {
-    const Consensus::Params& params = ::Params().GetConsensus();
-    return IsSigmaAllowed(height) && height < params.nSigmaStartBlock + params.nZerocoinToSigmaRemintWindowSize;
+
+    return false;
 }
 
 secp_primitives::GroupElement ParseSigmaMintScript(const CScript& script)
@@ -442,7 +442,7 @@ bool CheckSigmaTransaction(
     }
 
     // accept sigma tx into 5 more blocks, to allow mempool cleared
-    if (!isVerifyDB && realHeight >= (::Params().GetConsensus().nLelantusStartBlock + 5))
+    if (!isVerifyDB)
         return state.DoS(100, false,
                          REJECT_INVALID,
                          "Sigma already is not available, start using Lelantus.");
