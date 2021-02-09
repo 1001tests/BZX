@@ -3389,7 +3389,7 @@ UniValue mintmanyzerocoin(const JSONRPCRequest& request)
                 + HelpRequiringPassphrase(pwallet)
                 + "\nMint 1 or more zerocoins in a single transaction. Amounts must be of denominations specified.\n"
                 + "Specify each denomination followed by the number of them to mint, for all denominations desired.\n"
-                + "Total amount for all must be less than " + to_string(ZC_MINT_LIMIT) + ".  \n"
+                + "Total amount for all must be 0"
                 "\nArguments:\n"
                 "1. \"denomination\"             (integer, required) zerocoin denomination\n"
                 "2. \"numberOfMints\"            (integer, required) amount of mints for chosen denomination\n"
