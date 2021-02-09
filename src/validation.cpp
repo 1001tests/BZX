@@ -4257,7 +4257,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
                 return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
         }
     }
-    else (block.nBits != GetNextWorkRequired(pindexPrev, &block))
+    else if (block.nBits != GetNextWorkRequired(pindexPrev, &block))
         return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
 
     // Check timestamp against prev
