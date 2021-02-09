@@ -659,7 +659,7 @@ bool ConnectBlockZC(CValidationState &state, const CChainParams &chainParams, CB
     if (pblock && pblock->zerocoinTxInfo) {
         if (pblock->zerocoinTxInfo->fHasSpendV1) {
             if (true) {
-                LogPrintf("ConnectTipZC: spend v1 is not allowed after block %d\n", allowV1Height);
+                LogPrintf("ConnectTipZC: spend v1 is not allowed after block %d\n");
                 return false;
             }
         }
