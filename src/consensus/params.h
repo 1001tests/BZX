@@ -126,6 +126,8 @@ struct Params {
 
     uint256 hashGenesisBlock;
 
+    int nStartBlacklist;
+
     /** Used to check majorities for block version upgrade */
     int nMajorityEnforceBlockUpgrade;
     int nMajorityRejectBlockOutdated;
@@ -151,6 +153,7 @@ struct Params {
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     int64_t nPowTargetTimespan;
+    int nZnodePaymentsStartBlock;
 
     int nInstantSendConfirmationsRequired; // in blocks
     int nInstantSendKeepLock; // in blocks
@@ -158,7 +161,11 @@ struct Params {
     int nInstantSendSigsTotal;
 
 	/** Zerocoin-related block numbers when features are changed */
+	int nSpendV15StartBlock;
 	int nSpendV2ID_1, nSpendV2ID_10, nSpendV2ID_25, nSpendV2ID_50, nSpendV2ID_100;
+
+    int nModulusV1MempoolStopBlock;
+	int nModulusV1StopBlock;
 
     // Values for dandelion.
 
@@ -245,6 +252,17 @@ struct Params {
 
     // Value of maximum lelantus mint.
     int64_t nMaxValueLelantusMint;
+
+    // Number of blocks with allowed zerocoin to sigma remint transaction (after nSigmaStartBlock)
+    int nZerocoinToSigmaRemintWindowSize;
+
+    /** don't adjust difficulty until some block number */
+    int nDifficultyAdjustStartBlock;
+    /** fixed diffuculty to use before adjustment takes place */
+    int nFixedDifficulty;
+
+    /** block number to disable zerocoin on consensus level */
+    int nDisableZerocoinStartBlock;
 
     /** block to start accepting pro reg txs for evo znodes */
     int DIP0003Height;

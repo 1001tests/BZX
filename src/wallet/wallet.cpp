@@ -4544,7 +4544,7 @@ bool CWallet::CreateZerocoinMintModel(string &stringError, const string& denomAm
     // do not use v2 mint until certain moment when it would be understood by peers
     {
         LOCK(cs_main);
-        if (true)
+        if (chainActive.Height() >= Params().GetConsensus().nSpendV15StartBlock)
             mintVersion = ZEROCOIN_TX_VERSION_2;
     }
 
@@ -5807,7 +5807,7 @@ bool CWallet::CreateZerocoinSpendTransaction(std::string &thirdPartyaddress, int
                     LOCK(cs_main);
                     nHeight = chainActive.Height();
                 }
-                if (true)
+                if (nHeight >= Params().GetConsensus().nSpendV15StartBlock)
                     txVersion = ZEROCOIN_TX_VERSION_1_5;
             }
 
@@ -6089,7 +6089,7 @@ bool CWallet::CreateMultipleZerocoinSpendTransaction(std::string &thirdPartyaddr
                         LOCK(cs_main);
                         nHeight = chainActive.Height();
                     }
-                    if (true){
+                    if (nHeight >= Params().GetConsensus().nSpendV15StartBlock){
                         txVersion = ZEROCOIN_TX_VERSION_1_5;
                     }
                 }

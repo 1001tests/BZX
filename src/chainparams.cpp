@@ -176,6 +176,7 @@ public:
 
         consensus.chainType = Consensus::chainMain;
 
+        consensus.nStartBlacklist = 293990;
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;
         consensus.nMajorityWindow = 1000;
@@ -210,11 +211,17 @@ public:
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("50aff78270725ec253a722ec18069deb233f2e57eb7d64479f027141619cdda4 "); //184200
 
+	    consensus.nSpendV15StartBlock = ZC_V1_5_STARTING_BLOCK;
 	    consensus.nSpendV2ID_1 = ZC_V2_SWITCH_ID_1;
 	    consensus.nSpendV2ID_10 = ZC_V2_SWITCH_ID_10;
 	    consensus.nSpendV2ID_25 = ZC_V2_SWITCH_ID_25;
 	    consensus.nSpendV2ID_50 = ZC_V2_SWITCH_ID_50;
 	    consensus.nSpendV2ID_100 = ZC_V2_SWITCH_ID_100;
+        consensus.nModulusV1MempoolStopBlock = ZC_MODULUS_V1_MEMPOOL_STOP_BLOCK;
+	    consensus.nModulusV1StopBlock = ZC_MODULUS_V1_STOP_BLOCK;
+
+        // znode params
+        consensus.nZnodePaymentsStartBlock = HF_ZNODE_PAYMENT_START; // not true, but it's ok as long as it's less then nZnodePaymentsIncreaseBlock
 
         // evo znodes
         consensus.DIP0003Height = 278300; // Approximately June 22 2020, 12:00 UTC
@@ -231,7 +238,13 @@ public:
         consensus.llmqChainLocks = Consensus::LLMQ_400_60;
         consensus.llmqForInstantSend = Consensus::LLMQ_50_60;
 
+        consensus.nDifficultyAdjustStartBlock = 0;//XXXX
+        consensus.nFixedDifficulty = 0x2000ffff;
+
+        consensus.nDisableZerocoinStartBlock = 157000;
+
         nMaxTipAge = 6 * 60 * 60; // ~144 blocks behind -> 2 x fork detection time, was 24 * 60 * 60 in bitcoin
+
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
 
@@ -294,12 +307,14 @@ public:
                             //   (the tx=... number in the SetBestChain debug.log lines)
                 0.014       // * estimated number of transactions per second after checkpoint
         };
-
+        consensus.nSpendV15StartBlock = ZC_V1_5_STARTING_BLOCK;
         consensus.nSpendV2ID_1 = ZC_V2_SWITCH_ID_1;
         consensus.nSpendV2ID_10 = ZC_V2_SWITCH_ID_10;
         consensus.nSpendV2ID_25 = ZC_V2_SWITCH_ID_25;
         consensus.nSpendV2ID_50 = ZC_V2_SWITCH_ID_50;
         consensus.nSpendV2ID_100 = ZC_V2_SWITCH_ID_100;
+        consensus.nModulusV1MempoolStopBlock = ZC_MODULUS_V1_MEMPOOL_STOP_BLOCK;
+        consensus.nModulusV1StopBlock = ZC_MODULUS_V1_STOP_BLOCK;
 
         // Sigma related values.
         consensus.nSigmaStartBlock = ZC_SIGMA_STARTING_BLOCK;
@@ -322,6 +337,7 @@ public:
         consensus.nMaxLelantusInputPerTransaction = ZC_LELANTUS_INPUT_LIMIT_PER_TRANSACTION;
         consensus.nMaxValueLelantusSpendPerTransaction = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_TRANSACTION;
         consensus.nMaxValueLelantusMint = ZC_LELANTUS_MAX_MINT;
+        consensus.nZerocoinToSigmaRemintWindowSize = 50000;
 
         consensus.evoSporkKeyID = "a78fERshquPsTv2TuKMSsxTeKom56uBwLP";
         consensus.nEvoSporkStartBlock = ZC_LELANTUS_STARTING_BLOCK;
