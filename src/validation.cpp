@@ -4335,21 +4335,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
         }
     }
 
-    if (nHeight >= consensusParams.nSubsidyHalvingFirst) {
-        if (nHeight < consensusParams.nSubsidyHalvingFirst + consensusParams.nSubsidyHalvingInterval) {
-            // "stage 2" interval between first and second halvings
-            CScript devPayoutScript = GetScriptForDestination(CBitcoinAddress(consensusParams.stage2DevelopmentFundAddress).Get());
-            CAmount devPayoutValue = (GetBlockSubsidy(nHeight, consensusParams, block.nTime) * consensusParams.stage2DevelopmentFundShare) / 100;
-            bool found = false;
-            for (const CTxOut &txout: block.vtx[0]->vout) {
-                if ((found = txout.scriptPubKey == devPayoutScript && txout.nValue == devPayoutValue) == true)
-                    break;
-            }
-            if (!found)
-                return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(), "Stage 2 developer reward check failed");
-        }
-    }
-    else if (!CheckZerocoinFoundersInputs(*block.vtx[0], state, consensusParams, nHeight)) {
+    if (!CheckZerocoinFoundersInputs(*block.vtx[0], state, consensusParams, nHeight)) {
         return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(), "Founders' reward check failed");
     }//xxxx
 

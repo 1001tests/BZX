@@ -34,7 +34,7 @@ libzerocoin::Params *ZCParamsV2 = new libzerocoin::Params(bnTrustedModulusV2, bn
 static CZerocoinState zerocoinState;
 
 static bool CheckZerocoinSpendSerial(CValidationState &state, const Consensus::Params &params, CZerocoinTxInfo *zerocoinTxInfo, libzerocoin::CoinDenomination denomination, const CBigNum &serial, int nHeight, bool fConnectTip) {
-    if (nHeight > params.nCheckBugFixedAtBlock) {
+    if (true) {
         // check for zerocoin transaction in this block as well
         if (zerocoinTxInfo && !zerocoinTxInfo->fInfoIsComplete && zerocoinTxInfo->spentSerials.count(serial) > 0)
             return state.DoS(0, error("CTransaction::CheckTransaction() : two or more spends with same serial in the same block"));
@@ -340,7 +340,7 @@ bool CheckSpendBZXTransaction(const CTransaction &tx,
         CBigNum serial = spend->getCoinSerialNumber();
         // check if there are spends with the same serial within one block
         // do not check for duplicates in case we've seen exact copy of this tx in this block before
-        if (nHeight >= params.nDontAllowDupTxsStartBlock || !(zerocoinTxInfo && zerocoinTxInfo->zcTransactions.count(hashTx) > 0)) {
+        if (true) {
             if (serialsUsedInThisTx.count(serial) > 0)
                 return state.DoS(0, error("CTransaction::CheckTransaction() : two or more spends with same serial in the same block"));
             serialsUsedInThisTx.insert(serial);
@@ -456,15 +456,7 @@ bool CheckSpendBZXTransaction(const CTransaction &tx,
                             REJECT_MALFORMED,
                             "CheckSpendBZXTransaction: can't mix zerocoin spend input with regular ones");
         }
-        else if (tx.vin.size() > 1) {
-            // having tx with several zerocoin spend inputs is possible since nMultipleSpendInputsInOneTxStartBlock
-            if ((nHeight == INT_MAX && txHeight < params.nMultipleSpendInputsInOneTxStartBlock) ||
-                    (nHeight < params.nMultipleSpendInputsInOneTxStartBlock)) {
-                return state.DoS(100, false,
-                             REJECT_MALFORMED,
-                             "CheckSpendBZXTransaction: can't have more than one input");
-            }
-        }
+
     }
 
     return true;
@@ -688,7 +680,7 @@ bool ConnectBlockZC(CValidationState &state, const CChainParams &chainParams, CB
             pindexNew->alternativeAccumulatorChanges.clear();
         }
 
-        if (pindexNew->nHeight > chainParams.GetConsensus().nCheckBugFixedAtBlock) {
+        if (true) {
             BOOST_FOREACH(const PAIRTYPE(CBigNum,int) &serial, pblock->zerocoinTxInfo->spentSerials) {
                 if (!CheckZerocoinSpendSerial(state, chainParams.GetConsensus(), pblock->zerocoinTxInfo.get(), (libzerocoin::CoinDenomination)serial.second, serial.first, pindexNew->nHeight, true))
                     return false;
@@ -880,7 +872,7 @@ void CZerocoinState::AddBlock(CBlockIndex *index, const Consensus::Params &param
         }
     }
 
-    if (index->nHeight > params.nCheckBugFixedAtBlock) {
+    if (true) {
         BOOST_FOREACH(const CBigNum &serial, index->spentSerials) {
             usedCoinSerials.insert(serial);
         }
