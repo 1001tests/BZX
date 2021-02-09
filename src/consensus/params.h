@@ -217,9 +217,6 @@ struct Params {
     /** block to start using chainlocks */
     int DIP0008Height;
 
-    /** whitelisted transactions */
-    std::set<uint256> txidWhitelist;
-
     int nEvoZnodeMinimumConfirmations;
 
     std::map<LLMQType, LLMQParams> llmqs;
