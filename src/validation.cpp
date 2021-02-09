@@ -603,8 +603,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
     }
 
     // Check for duplicate inputs - note that this check is slow so we skip it in CheckBlock
-    bool const check_di = nHeight != INT_MAX && nHeight > ::Params().GetConsensus().nStartDuplicationCheck;
-    if (fCheckDuplicateInputs || check_di) {
+    if (true) {
         std::set<COutPoint> vInOutPoints;
         if (tx.IsZerocoinSpend() || tx.IsSigmaSpend() || tx.IsZerocoinRemint() || tx.IsLelantusJoinSplit()) {
             std::set<CScript> spendScripts;

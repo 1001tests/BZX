@@ -179,16 +179,10 @@ public:
         consensus.stage2DevelopmentFundShare = 15;
         consensus.stage2ZnodeShare = 35;
         consensus.stage2DevelopmentFundAddress = "aFrAVZFr8pva5mG8XKaUH8EXcFVVNxLiuB";
-
         consensus.nStartBlacklist = 293990;
-        consensus.nStartDuplicationCheck = 293526;
-
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;
         consensus.nMajorityWindow = 1000;
-        consensus.nMinNFactor = 10;
-        consensus.nMaxNFactor = 30;
-        consensus.nChainStartTime = 1389306217;
         consensus.BIP34Height = 227931;
         consensus.BIP34Hash = uint256S("0x000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8");
         consensus.BIP65Height = INT_MAX;

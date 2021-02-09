@@ -132,8 +132,6 @@ struct Params {
     int stage2DevelopmentFundShare;
     /** percentage of block subsidy going to znode */
     int stage2ZnodeShare;
-
-    int nStartDuplicationCheck;
     int nStartBlacklist;
 
     /** Used to check majorities for block version upgrade */
@@ -161,9 +159,6 @@ struct Params {
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     int64_t nPowTargetTimespan;
-    int64_t nChainStartTime;
-    unsigned char nMinNFactor;
-    unsigned char nMaxNFactor;
     int nZnodePaymentsStartBlock;
 
     int nInstantSendConfirmationsRequired; // in blocks
