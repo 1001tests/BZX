@@ -288,7 +288,6 @@ BITCOIN_CORE_H = \
   zerocoin.h \
   sigma.h \
   lelantus.h \
-  blacklists.h \
   coin_containers.h \
   zerocoin_params.h \
   addresstype.h \
@@ -703,7 +702,6 @@ libsigma_a_SOURCES = \
   sigma/spend_metadata.h \
   sigma/remint.h \
   sigma/remint.cpp \
-  sigma/remint-blacklist.cpp \
   sigma/params.h \
   sigma/params.cpp \
   sigma/openssl_context.h
