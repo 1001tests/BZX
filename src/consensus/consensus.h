@@ -10,14 +10,6 @@
 
 #include <stdint.h>
 
-// HF constants
-static const int HF_ZNODE_HEIGHT = 66550;
-static const int HF_ZNODE_PAYMENT_START = HF_ZNODE_HEIGHT + 150; // 66700 - about 25h after HF
-
-static const int HF_ZNODE_HEIGHT_TESTNET = 500;
-
-static const int HF_ZEROSPEND_FIX = 22000;
-
 /** The maximum allowed size for a serialized block, in bytes (only for buffer size limits) */
 static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 2000000;
 /** The maximum allowed weight for a block, see BIP 141 (network rule) */

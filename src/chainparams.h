@@ -84,12 +84,8 @@ public:
     int FulfilledRequestExpireTime() const { return nFulfilledRequestExpireTime; }
 	
 	/** Zerocoin-related block numbers when features are changed */
-	int nSpendV15StartBlock;
 	int nSpendV2ID_1, nSpendV2ID_10, nSpendV2ID_25, nSpendV2ID_50, nSpendV2ID_100;
 	
-    int nModulusV1MempoolStopBlock;
-	int nModulusV1StopBlock;
-
     const ChainTxData& TxData() const { return chainTxData; }
     virtual bool SkipUndoForBlock(int /*nHeight*/) const { return false; }
     virtual bool ApplyUndoForTxout(int /*nHeight*/, uint256 const & /*txid*/, int /*n*/) const { return true; }

@@ -278,12 +278,7 @@ bool CheckSigmaSpendTransaction(
             if (index->sigmaMintedPubCoins.count(denominationAndId) > 0) {
                 BOOST_FOREACH(const sigma::PublicCoin& pubCoinValue,
                         index->sigmaMintedPubCoins[denominationAndId]) {
-                    if (nHeight >= params.nStartSigmaBlacklist) {
-                        std::vector<unsigned char> vch = pubCoinValue.getValue().getvch();
-                        if(sigma_blacklist.count(HexStr(vch.begin(), vch.end())) > 0) {
-                            continue;
-                        }
-                    }
+
                     anonymity_set.push_back(pubCoinValue);
                 }
             }
@@ -305,7 +300,7 @@ bool CheckSigmaSpendTransaction(
 
         // add proofs into container
         if(batchProofContainer->fCollectProofs) {
-            batchProofContainer->add(spend.get(), fPadding, coinGroupId, anonymity_set.size(), nHeight >= params.nStartSigmaBlacklist);
+            batchProofContainer->add(spend.get(), fPadding, coinGroupId, anonymity_set.size());
         }
 
         if (passVerify) {

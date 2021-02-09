@@ -43,7 +43,7 @@ static bool CheckZerocoinSpendSerial(CValidationState &state, const Consensus::P
         if (zerocoinState.IsUsedCoinSerial(serial)) {
             // Proceed with checks ONLY if we're accepting tx into the memory pool or connecting block to the existing blockchain
             if (nHeight == INT_MAX || fConnectTip) {
-                if (nHeight < params.nSpendV15StartBlock)
+                if (false)
                     LogPrintf("ZCSpend: height=%d, denomination=%d, serial=%s\n", nHeight, (int)denomination, serial.ToString());
                 else
                     return state.DoS(0, error("CTransaction::CheckTransaction() : The CoinSpend serial has been used"));
@@ -109,7 +109,7 @@ bool CheckRemintBZXTransaction(const CTransaction &tx,
     }
 
     if(!isVerifyDB)
-        if (txHeight < params.nSigmaStartBlock || txHeight >= params.nSigmaStartBlock + params.nZerocoinToSigmaRemintWindowSize)
+        if (true)
             // we allow transactions of remint type only during specific window
             return false;
     
@@ -310,14 +310,6 @@ bool CheckSpendBZXTransaction(const CTransaction &tx,
 
         int txHeight = chainActive.Height();
 
-        if (spendVersion == ZEROCOIN_TX_VERSION_1 && nHeight == INT_MAX) {
-            int allowedV1Height = params.nSpendV15StartBlock;
-            if (txHeight >= allowedV1Height + ZC_V1_5_GRACEFUL_MEMPOOL_PERIOD) {
-                LogPrintf("CheckSpendBZXTransaction: cannot allow spend v1 into mempool after block %d\n",
-                          allowedV1Height + ZC_V1_5_GRACEFUL_MEMPOOL_PERIOD);
-                return false;
-            }
-        }
 
         // test if given modulus version is allowed at this point
         if (fModulusV2)
@@ -548,8 +540,6 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
                               CZerocoinTxInfo *zerocoinTxInfo)
 {
     if (tx.IsZerocoinSpend() || tx.IsZerocoinMint()) {
-        if ((nHeight != INT_MAX && nHeight >= params.nDisableZerocoinStartBlock)    // transaction is a part of block: disable after specific block number
-                    || (nHeight == INT_MAX && !params.IsRegtest() && !isVerifyDB))  // transaction is accepted to the memory pool: always disable except if regtest chain (need remint tests)
             return state.DoS(1, error("Zerocoin is disabled at this point"));
     }
 
@@ -662,16 +652,6 @@ CBigNum ZerocoinGetSpendSerialNumber(const CTransaction &tx, const CTxIn &txin) 
  */
 bool ConnectBlockZC(CValidationState &state, const CChainParams &chainParams, CBlockIndex *pindexNew, const CBlock *pblock, bool fJustCheck) {
 
-    // Add zerocoin transaction information to index
-    if (pblock && pblock->zerocoinTxInfo) {
-        if (pblock->zerocoinTxInfo->fHasSpendV1) {
-            // Don't allow spend v1s after some point of time
-            int allowV1Height = chainParams.GetConsensus().nSpendV15StartBlock;
-            if (pindexNew->nHeight >= allowV1Height + ZC_V1_5_GRACEFUL_PERIOD) {
-                LogPrintf("ConnectTipZC: spend v1 is not allowed after block %d\n", allowV1Height);
-                return false;
-            }
-        }
 
 	    if (!fJustCheck) {
             // clear the state
