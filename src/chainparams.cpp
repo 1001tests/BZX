@@ -176,9 +176,6 @@ public:
 
         consensus.chainType = Consensus::chainMain;
 
-        consensus.stage2DevelopmentFundShare = 15;
-        consensus.stage2ZnodeShare = 35;
-        consensus.stage2DevelopmentFundAddress = "aFrAVZFr8pva5mG8XKaUH8EXcFVVNxLiuB";
         consensus.nStartBlacklist = 293990;
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;
@@ -220,7 +217,6 @@ public:
 	    consensus.nSpendV2ID_25 = ZC_V2_SWITCH_ID_25;
 	    consensus.nSpendV2ID_50 = ZC_V2_SWITCH_ID_50;
 	    consensus.nSpendV2ID_100 = ZC_V2_SWITCH_ID_100;
-	    consensus.nModulusV2StartBlock = ZC_MODULUS_V2_START_BLOCK;
         consensus.nModulusV1MempoolStopBlock = ZC_MODULUS_V1_MEMPOOL_STOP_BLOCK;
 	    consensus.nModulusV1StopBlock = ZC_MODULUS_V1_STOP_BLOCK;
 
@@ -317,7 +313,6 @@ public:
         consensus.nSpendV2ID_25 = ZC_V2_SWITCH_ID_25;
         consensus.nSpendV2ID_50 = ZC_V2_SWITCH_ID_50;
         consensus.nSpendV2ID_100 = ZC_V2_SWITCH_ID_100;
-        consensus.nModulusV2StartBlock = ZC_MODULUS_V2_START_BLOCK;
         consensus.nModulusV1MempoolStopBlock = ZC_MODULUS_V1_MEMPOOL_STOP_BLOCK;
         consensus.nModulusV1StopBlock = ZC_MODULUS_V1_STOP_BLOCK;
 

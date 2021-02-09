@@ -126,12 +126,6 @@ struct Params {
 
     uint256 hashGenesisBlock;
 
-    /** P2PKH or P2SH address for developer funds */
-    std::string stage2DevelopmentFundAddress;
-    /** percentage of block subsidy going to developer fund */
-    int stage2DevelopmentFundShare;
-    /** percentage of block subsidy going to znode */
-    int stage2ZnodeShare;
     int nStartBlacklist;
 
     /** Used to check majorities for block version upgrade */
@@ -170,7 +164,6 @@ struct Params {
 	int nSpendV15StartBlock;
 	int nSpendV2ID_1, nSpendV2ID_10, nSpendV2ID_25, nSpendV2ID_50, nSpendV2ID_100;
 
-	int nModulusV2StartBlock;
     int nModulusV1MempoolStopBlock;
 	int nModulusV1StopBlock;
 

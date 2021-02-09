@@ -320,15 +320,16 @@ bool CheckSpendBZXTransaction(const CTransaction &tx,
         }
 
         // test if given modulus version is allowed at this point
-        if (fModulusV2) {
-            if ((nHeight == INT_MAX && txHeight < params.nModulusV2StartBlock) || nHeight < params.nModulusV2StartBlock)
+        if (fModulusV2)
+        {
+            if (true)
                 return state.DoS(100, false,
                                  NSEQUENCE_INCORRECT,
                                  "CheckSpendBZXTransaction: cannon use modulus v2 at this point");
         }
-        else {
-            if ((nHeight == INT_MAX && txHeight >= params.nModulusV1MempoolStopBlock) ||
-                    (nHeight != INT_MAX && nHeight >= params.nModulusV1StopBlock))
+        else
+        {
+            if (true)
                 return state.DoS(100, false,
                                  NSEQUENCE_INCORRECT,
                                  "CheckSpendBZXTransaction: cannon use modulus v1 at this point");
