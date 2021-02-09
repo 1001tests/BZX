@@ -16,11 +16,11 @@ extern libzerocoin::Params *ZCParams, *ZCParamsV2;
 
 // Test for zerocoin transaction version 2
 inline bool IsZerocoinTxV2(libzerocoin::CoinDenomination denomination, const Consensus::Params &params, int coinId) {
-	return ((denomination == libzerocoin::ZQ_LOVELACE) && (coinId >= params.nSpendV2ID_1))
-	    || ((denomination == libzerocoin::ZQ_GOLDWASSER) && (coinId >= params.nSpendV2ID_10))
-	    || ((denomination == libzerocoin::ZQ_RACKOFF) && (coinId >= params.nSpendV2ID_25))
-	    || ((denomination == libzerocoin::ZQ_PEDERSEN) && (coinId >= params.nSpendV2ID_50))
-	    || ((denomination == libzerocoin::ZQ_WILLIAMSON) && (coinId >= params.nSpendV2ID_100));
+    return ((denomination == libzerocoin::ZQ_LOVELACE) && (coinId >= 200))
+        || ((denomination == libzerocoin::ZQ_GOLDWASSER) && (coinId >= 30))
+        || ((denomination == libzerocoin::ZQ_RACKOFF) && (coinId >= 15))
+        || ((denomination == libzerocoin::ZQ_PEDERSEN) && (coinId >= 15))
+        || ((denomination == libzerocoin::ZQ_WILLIAMSON) && (coinId >= 100));
 }
 
 // Zerocoin transaction info, added to the CBlock to ensure zerocoin mint/spend transactions got their info stored into
