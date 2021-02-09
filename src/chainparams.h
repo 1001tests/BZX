@@ -83,8 +83,6 @@ public:
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     int FulfilledRequestExpireTime() const { return nFulfilledRequestExpireTime; }
 	
-	/** Zerocoin-related block numbers when features are changed */
-	int nSpendV2ID_1, nSpendV2ID_10, nSpendV2ID_25, nSpendV2ID_50, nSpendV2ID_100;
 
     const ChainTxData& TxData() const { return chainTxData; }
     virtual bool SkipUndoForBlock(int /*nHeight*/) const { return false; }
