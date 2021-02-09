@@ -457,6 +457,7 @@ public:
         READWRITE(nNonce);
 
 
+        const auto &params = Params().GetConsensus();
         if (!(s.GetType() & SER_GETHASH)
                 && nHeight >= params.nLelantusStartBlock
                 && nVersion >= LELANTUS_PROTOCOL_ENABLEMENT_VERSION) {
