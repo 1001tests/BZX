@@ -451,7 +451,7 @@ bool BlockAssembler::TestForBlock(CTxMemPool::txiter iter)
 
 void BlockAssembler::AddToBlock(CTxMemPool::txiter iter)
 {
-
+    const CTransaction &tx = iter->GetTx()
     if(tx.IsLelantusJoinSplit()) {
         CAmount spendAmount = lelantus::GetSpendTransparentAmount(tx);
         size_t spendNumber = lelantus::GetSpendInputs(tx);
