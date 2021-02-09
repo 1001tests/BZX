@@ -560,7 +560,7 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
     // Check Mint Zerocoin Transaction
     for (const CTxOut &txout : tx.vout) {
         if (!txout.scriptPubKey.empty() && txout.scriptPubKey.IsZerocoinMint()) {
-            if (!isWalletCheck && realHeight > params.nSigmaStartBlock + params.nZerocoinV2MintGracefulPeriod)
+            if (!isWalletCheck)
                 return state.DoS(100, false, REJECT_OBSOLETE, "bad-txns-mint-obsolete");
 
             if (!CheckMintBZXTransaction(txout, state, hashTx, zerocoinTxInfo))
@@ -571,7 +571,7 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
     // Check Spend Zerocoin Transaction
     vector<libzerocoin::CoinDenomination> denominations;
     if (tx.IsZerocoinSpend()) {
-        if (!isWalletCheck && realHeight > params.nSigmaStartBlock + params.nZerocoinV2SpendGracefulPeriod)
+        if (!isWalletCheck)
             return state.DoS(100, false, REJECT_OBSOLETE, "bad-txns-spend-obsolete");
 
         if (tx.vout.size() > 1) {
@@ -580,7 +580,7 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
         }
 
         // First check number of inputs does not exceed transaction limit
-        if(tx.vin.size() > ZC_SPEND_LIMIT){
+        if(tx.vin.size() > 0){
             return false;
         }
 

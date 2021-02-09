@@ -43,19 +43,8 @@ static CCriticalSection cs_nWalletUnlockTime;
 
 static void EnsureZerocoinMintIsAllowed()
 {
-    // We want to make sure the new mint still accept by network when we broadcast.
-    // So we will not allow users to use this RPC anymore 10 blocks before it completely
-    // disabled at consensus level. We don't need this for spend because it does not make sense
-    // since users still lost their mints when it completely disable.
-    auto& consensus = Params().GetConsensus();
-    constexpr int threshold = 10; // 10 blocks should be enough for mints to get mined.
-    int disableHeight = consensus.nSigmaStartBlock + consensus.nZerocoinV2MintMempoolGracefulPeriod - threshold;
 
-    LOCK(cs_main);
-
-    if (chainActive.Height() > disableHeight) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Zerocoin mint is not allowed on network anymore");
-    }
 }
 
 CWallet *GetWalletForJSONRPCRequest(const JSONRPCRequest& request)

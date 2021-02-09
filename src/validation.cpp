@@ -752,10 +752,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
     const Consensus::Params& consensus = Params().GetConsensus();
 
     if (tx.IsZerocoinMint()) {
-        // Shows if old zerocoin mints are allowed yet in the mempool.
-        bool allow = (chainActive.Height() <= consensus.nSigmaStartBlock + consensus.nZerocoinV2MintMempoolGracefulPeriod);
-
-        if (!allow) {
+        if (true) {
             return state.DoS(100, error("Old zerocoin mints no more allowed in mempool"),
                              REJECT_INVALID, "bad-txns-zerocoin");
         }
