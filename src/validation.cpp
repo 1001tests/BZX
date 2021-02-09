@@ -2234,7 +2234,7 @@ static DisconnectResult DisconnectBlock(const CBlock& block, CValidationState& s
                 return DISCONNECT_FAILED;
             }
             for (unsigned int j = tx.vin.size(); j-- > 0;) {
-                const COutPoint &out = tx.vin[j].prevout;
+                const COutPoint &out = tx.vin[j].prevout;//XXXX
                 if (Params().ApplyUndoForTxout(pindex->nHeight, tx.GetHash(), j)) {
                     int res = ApplyTxInUndo(std::move(txundo.vprevout[j]), view, out);
                     if (res == DISCONNECT_FAILED) return DISCONNECT_FAILED;
