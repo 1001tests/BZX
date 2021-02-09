@@ -160,9 +160,6 @@ struct Params {
     int nInstantSendSigsRequired;
     int nInstantSendSigsTotal;
 
-	/** Zerocoin-related block numbers when features are changed */
-	int nSpendV2ID_1, nSpendV2ID_10, nSpendV2ID_25, nSpendV2ID_50, nSpendV2ID_100;
-
     // Values for dandelion.
 
     // The minimum amount of time a Dandelion transaction is embargoed (seconds).
@@ -219,11 +216,6 @@ struct Params {
 
     /** block to start using chainlocks */
     int DIP0008Height;
-
-    /** maximum reorg depth */
-    int nMaxReorgDepth;
-    /** block to start reorg depth enforcement */
-    int nMaxReorgDepthEnforcementBlock;
 
     /** whitelisted transactions */
     std::set<uint256> txidWhitelist;
