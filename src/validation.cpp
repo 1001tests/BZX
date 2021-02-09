@@ -3449,7 +3449,7 @@ int GetInputAge(const CTxIn &txin) {
 
 CAmount GetZnodePayment(const Consensus::Params &params)
 {
-    return 1 * coin;
+    return 1 * COIN;
 //XXXX
 }
 
