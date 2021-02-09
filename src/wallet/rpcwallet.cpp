@@ -4740,19 +4740,18 @@ UniValue listspendzerocoins(const JSONRPCRequest& request) {
 
         const CTxIn &txin = pwtx->tx->vin[0];
         int pubcoinId = txin.nSequence;
-        bool fModulusV2 = pubcoinId >= ZC_MODULUS_V2_BASE_ID;
-        if (fModulusV2)
+        if (true)
             pubcoinId -= ZC_MODULUS_V2_BASE_ID;
 
         CDataStream serializedCoinSpend((const char *)&*(txin.scriptSig.begin() + 4),
                                         (const char *)&*txin.scriptSig.end(),
                                         SER_NETWORK, PROTOCOL_VERSION);
-        libzerocoin::CoinSpend spend(fModulusV2 ? ZCParamsV2 : ZCParams, serializedCoinSpend);
+        libzerocoin::CoinSpend spend(ZCParamsV2, serializedCoinSpend);
         int spendVersion = spend.getVersion();
 
         entry.push_back(Pair("denomination", (int)spend.getDenomination()));
         entry.push_back(Pair("spendid", pubcoinId));
-        entry.push_back(Pair("modversion", fModulusV2 ? 2 : 1));
+        entry.push_back(Pair("modversion", 2));
         entry.push_back(Pair("version", spendVersion==ZEROCOIN_TX_VERSION_1 ? "1.0" :
                                          (spendVersion==ZEROCOIN_TX_VERSION_1_5 ? "1.5" : "2.0")));
         entry.push_back(Pair("serial", spend.getCoinSerialNumber().GetHex()));

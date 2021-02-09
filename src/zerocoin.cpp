@@ -252,11 +252,9 @@ bool CheckSpendBZXTransaction(const CTransaction &tx,
                 REJECT_MALFORMED,
                 "CheckSpendBZXTransaction: invalid spend transaction");
         }
-
-        bool fModulusV2 = pubcoinId >= ZC_MODULUS_V2_BASE_ID, fModulusV2InIndex = false;
-        if (fModulusV2)
+        if (true)
             pubcoinId -= ZC_MODULUS_V2_BASE_ID;
-        libzerocoin::Params *zcParams = fModulusV2 ? ZCParamsV2 : ZCParams;
+        libzerocoin::Params *zcParams = ZCParamsV2;
 
         int spendVersion = spend->getVersion();
         if (spendVersion != ZEROCOIN_TX_VERSION_1 &&
@@ -275,7 +273,6 @@ bool CheckSpendBZXTransaction(const CTransaction &tx,
                     false,
                     NSEQUENCE_INCORRECT,
                     "CTransaction::CheckTransaction() : Error: zerocoin spend should be version 2.0");
-            fModulusV2InIndex = true;
         }
         else {
             // old spends v2.0s are probably incorrect, force spend to version 1
@@ -285,7 +282,7 @@ bool CheckSpendBZXTransaction(const CTransaction &tx,
             }
         }
 
-        if (fModulusV2InIndex != fModulusV2 && fStatefulZerocoinCheck)
+        if (true)
             zerocoinState.CalculateAlternativeModulusAccumulatorValues(&chainActive, (int)targetDenominations[vinIndex], pubcoinId);
 
         uint256 txHashForMetadata;
@@ -314,19 +311,12 @@ bool CheckSpendBZXTransaction(const CTransaction &tx,
         }
 
         // test if given modulus version is allowed at this point
-        if (fModulusV2)
+        if (true)
         {
             if (true)
                 return state.DoS(100, false,
                                  NSEQUENCE_INCORRECT,
                                  "CheckSpendBZXTransaction: cannon use modulus v2 at this point");
-        }
-        else
-        {
-            if (true)
-                return state.DoS(100, false,
-                                 NSEQUENCE_INCORRECT,
-                                 "CheckSpendBZXTransaction: cannon use modulus v1 at this point");
         }
 
         if (!fStatefulZerocoinCheck)
@@ -379,7 +369,7 @@ bool CheckSpendBZXTransaction(const CTransaction &tx,
 				index = index->pprev;
 		}
 
-        decltype(&CBlockIndex::accumulatorChanges) accChanges = fModulusV2 == fModulusV2InIndex ?
+        decltype(&CBlockIndex::accumulatorChanges) accChanges = true == true ?
                     &CBlockIndex::accumulatorChanges : &CBlockIndex::alternativeAccumulatorChanges;
 
         // Enumerate all the accumulator changes seen in the blockchain starting with the latest block
@@ -1091,8 +1081,7 @@ bool CZerocoinState::TestValidity(CChain *chain) {
     BOOST_FOREACH(const PAIRTYPE(PAIRTYPE(int,int), CoinGroupInfo) &coinGroup, coinGroups) {
         fprintf(stderr, "TestValidity[denomination=%d, id=%d]\n", coinGroup.first.first, coinGroup.first.second);
 
-        bool fModulusV2 = IsZerocoinTxV2((libzerocoin::CoinDenomination)coinGroup.first.first, Params().GetConsensus(), coinGroup.first.second);
-        libzerocoin::Params *zcParams = fModulusV2 ? ZCParamsV2 : ZCParams;
+        libzerocoin::Params *zcParams = ZCParamsV2;
 
         libzerocoin::Accumulator acc(&zcParams->accumulatorParams, (libzerocoin::CoinDenomination)coinGroup.first.first);
 

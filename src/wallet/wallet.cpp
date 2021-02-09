@@ -5744,8 +5744,7 @@ bool CWallet::CreateZerocoinSpendTransaction(std::string &thirdPartyaddress, int
                                     denomination,
                                     id,
                                     accumulatorValue,
-                                    accumulatorBlockHash,
-                                    fModulusV2) > 1
+                                    accumulatorBlockHash
                             ) {
                         coinId = id;
                         coinToUse = minIdPubcoin;
@@ -5777,9 +5776,9 @@ bool CWallet::CreateZerocoinSpendTransaction(std::string &thirdPartyaddress, int
                                                       chainActive.Height()-(ZC_MINT_CONFIRMATIONS-1),
                                                       denomination, coinId,
                                                       coinToUse.value,
-                                                      fModulusV2);
+                                                      true);
 
-            int serializedId = coinId + (fModulusV2 ? ZC_MODULUS_V2_BASE_ID : 0);
+            int serializedId = coinId + (ZC_MODULUS_V2_BASE_ID);
 
             CTxIn newTxIn;
             newTxIn.nSequence = serializedId;
@@ -6032,7 +6031,7 @@ bool CWallet::CreateMultipleZerocoinSpendTransaction(std::string &thirdPartyaddr
                                     id,
                                     accumulatorValue,
                                     accumulatorBlockHash,
-                                    fModulusV2) > 1) {
+                                    true) {
                             coinId = id;
                             coinToUse = minIdPubcoin;
                             tempCoinsToUse.insert(minIdPubcoin.value);
@@ -6064,10 +6063,10 @@ bool CWallet::CreateMultipleZerocoinSpendTransaction(std::string &thirdPartyaddr
                                                           chainActive.Height()-(ZC_MINT_CONFIRMATIONS-1),
                                                           denomination, coinId,
                                                           coinToUse.value,
-                                                          fModulusV2);
+                                                          true);
 
                 // Generate TxIn info
-                int serializedId = coinId + (fModulusV2 ? ZC_MODULUS_V2_BASE_ID : 0);
+                int serializedId = coinId + (ZC_MODULUS_V2_BASE_ID);
                 CTxIn newTxIn;
                 newTxIn.nSequence = serializedId;
                 newTxIn.scriptSig = CScript();
@@ -6156,7 +6155,7 @@ bool CWallet::CreateMultipleZerocoinSpendTransaction(std::string &thirdPartyaddr
                                                   chainActive.Height()-(ZC_MINT_CONFIRMATIONS-1),
                                                   tempStorage.denomination, tempStorage.coinId,
                                                   coinToUse.value,
-                                                  fModulusV2);
+                                                  true);
 
                 // Recreate CoinSpend object
                  libzerocoin::CoinSpend spend(zcParams,
