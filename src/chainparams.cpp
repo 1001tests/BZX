@@ -290,11 +290,6 @@ public:
                             //   (the tx=... number in the SetBestChain debug.log lines)
                 0.014       // * estimated number of transactions per second after checkpoint
         };
-        consensus.nSpendV2ID_1 = 200;
-        consensus.nSpendV2ID_10 = 30;
-        consensus.nSpendV2ID_25 = 15;
-        consensus.nSpendV2ID_50 = 15;
-        consensus.nSpendV2ID_100 = 100;
 
         consensus.nLelantusStartBlock = ZC_LELANTUS_STARTING_BLOCK;
         consensus.nMaxLelantusInputPerBlock = ZC_LELANTUS_INPUT_LIMIT_PER_BLOCK;
@@ -306,10 +301,6 @@ public:
         consensus.evoSporkKeyID = "a78fERshquPsTv2TuKMSsxTeKom56uBwLP";
         consensus.nEvoSporkStartBlock = ZC_LELANTUS_STARTING_BLOCK;
         consensus.nEvoSporkStopBlock = ZC_LELANTUS_STARTING_BLOCK + 24*12*365;  // one year after lelantus
-
-        // reorg
-        consensus.nMaxReorgDepth = 5;
-        consensus.nMaxReorgDepthEnforcementBlock = 338000;
 
         // whitelist
         consensus.txidWhitelist.insert(uint256S("3ecea345c7b174271bbdcde8cad6097d9a3dc420259743d52cc9cf1945aaba03"));
