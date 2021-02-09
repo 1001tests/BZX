@@ -315,7 +315,7 @@ public:
         // Bip39
         consensus.nMnemonicBlock = 222400;
     }
-    virtual bool SkipUndoForBlock(int nHeight) const
+    //XXXXvirtual bool SkipUndoForBlock(int nHeight) const
     {
         return nHeight == 293526;
     }
