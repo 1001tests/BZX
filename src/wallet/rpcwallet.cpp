@@ -91,7 +91,8 @@ void EnsureWalletIsUnlocked(CWallet * const pwallet)
     }
 }
 
-bool ValidMultiMint(CWallet * const pwallet, const UniValue& data){
+bool ValidMultiMint(CWallet * const pwallet, const UniValue& data)
+{
     vector<string> keys = data.getKeys();
     CAmount totalValue = 0;
     int totalInputs = 0;
@@ -104,7 +105,7 @@ bool ValidMultiMint(CWallet * const pwallet, const UniValue& data){
         totalValue += denomination * amount * COIN;
     }
 
-    return ((totalValue <= pwallet->GetBalance())
+    return ((totalValue <= pwallet->GetBalance());
 }
 
 void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry)
