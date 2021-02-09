@@ -83,10 +83,8 @@ public:
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     int FulfilledRequestExpireTime() const { return nFulfilledRequestExpireTime; }
 	
-
     const ChainTxData& TxData() const { return chainTxData; }
-    virtual bool SkipUndoForBlock(int /*nHeight*/) const { return false; }
-    virtual bool ApplyUndoForTxout(int /*nHeight*/, uint256 const & /*txid*/, int /*n*/) const { return true; }
+
 protected:
     CChainParams() {}
 
