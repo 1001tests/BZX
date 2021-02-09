@@ -426,17 +426,7 @@ bool BlockAssembler::TestForBlock(CTxMemPool::txiter iter)
 
     // Check transaction against sigma limits
     if (tx.IsSigmaSpend() || tx.IsZerocoinRemint()) {
-        // Sigma spend and zerocoin->sigma remint are subject to the same limits
-        CAmount spendAmount = tx.IsSigmaSpend() ? sigma::GetSpendAmount(tx) : sigma::CoinRemintToV3::GetAmount(tx);
-        auto &params = chainparams.GetConsensus();
 
-        if (tx.vin.size() > params.nMaxSigmaInputPerTransaction || spendAmount > params.nMaxValueSigmaSpendPerTransaction)
-            return false;
-
-        if (tx.vin.size() + nSigmaSpendInputs > params.nMaxSigmaInputPerBlock)
-            return false;
-
-        if (spendAmount + nSigmaSpendAmount > params.nMaxValueSigmaSpendPerBlock)
             return false;
     }
 
@@ -461,17 +451,6 @@ bool BlockAssembler::TestForBlock(CTxMemPool::txiter iter)
 
 void BlockAssembler::AddToBlock(CTxMemPool::txiter iter)
 {
-    const CTransaction &tx = iter->GetTx();
-    if (tx.IsSigmaSpend() || tx.IsZerocoinRemint()) {
-        // Update sigma stats
-        CAmount spendAmount = tx.IsSigmaSpend() ? sigma::GetSpendAmount(tx) : sigma::CoinRemintToV3::GetAmount(tx);
-
-        if ((nSigmaSpendAmount += spendAmount) > chainparams.GetConsensus().nMaxValueSigmaSpendPerBlock)
-            return;
-
-        if ((nSigmaSpendInputs += tx.vin.size()) > chainparams.GetConsensus().nMaxSigmaInputPerBlock)
-            return;
-    }
 
     if(tx.IsLelantusJoinSplit()) {
         CAmount spendAmount = lelantus::GetSpendTransparentAmount(tx);

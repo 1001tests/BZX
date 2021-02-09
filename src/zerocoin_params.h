@@ -9,35 +9,6 @@
 /** Dust Hard Limit, ignored as wallet inputs (mininput default) */
 static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 
-// The mint id number to change to zerocoin v2
-#define ZC_V2_SWITCH_ID_1 200
-#define ZC_V2_SWITCH_ID_10 30
-#define ZC_V2_SWITCH_ID_25 15
-#define ZC_V2_SWITCH_ID_50 15
-#define ZC_V2_SWITCH_ID_100 100
-
-// Same for testnet
-#define ZC_V2_TESTNET_SWITCH_ID_1 18
-#define ZC_V2_TESTNET_SWITCH_ID_10 7
-#define ZC_V2_TESTNET_SWITCH_ID_25 5
-#define ZC_V2_TESTNET_SWITCH_ID_50 4
-#define ZC_V2_TESTNET_SWITCH_ID_100 10
-
-// Block after which sigma mints are activated.
-#define ZC_SIGMA_STARTING_BLOCK         184200 //Approx July 30th, 2019, 8:00 AM UTC
-#define ZC_SIGMA_TESTNET_STARTING_BLOCK 50000
-
-// Block after which anonymity sets are being padded.
-#define ZC_SIGMA_PADDING_BLOCK         220720 //Approx December 5th 12PM UTC
-#define ZC_SIGMA_TESTNET_PADDING_BLOCK 110000
-
-//Block after whinch we are disabling sigma to enable after starting padding
-#define ZC_SIGMA_DISABLE_UNPADDED_BLOCK         219904 //December 2nd 12PM UTC
-#define ZC_SIGMA_TESTNET_DISABLE_UNPADDED_BLOCK 109160
-
-// The block number after which old sigma clients are banned.
-#define ZC_OLD_SIGMA_BAN_BLOCK          181850 //Approx July 22nd, 2019, 4:00 AM UTC
-
 // Block after which lelantus mints are activated.
 #define ZC_LELANTUS_STARTING_BLOCK         336888
 #define ZC_LELANTUS_TESTNET_STARTING_BLOCK 15700
@@ -81,9 +52,6 @@ static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 // Value of sigma spends allowed per transaction
 #define ZC_SIGMA_VALUE_SPEND_LIMIT_PER_TRANSACTION     (500 * COIN)
 
-// Amount of sigma spends allowed per transaction
-#define ZC_SIGMA_INPUT_LIMIT_PER_TRANSACTION            35
-
 // Value of lelantus spends allowed per block
 #define ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_BLOCK  (5100 * COIN)
 
@@ -98,9 +66,6 @@ static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 
 // Maximum amount of lelantus mint
 #define ZC_LELANTUS_MAX_MINT            (5001 * COIN)
-
-// Number of zerocoin mints allowed per transaction
-#define ZC_MINT_LIMIT         100
 
 /** Maximum number of outbound peers designated as Dandelion destinations */
 #define DANDELION_MAX_DESTINATIONS 2

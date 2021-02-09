@@ -211,12 +211,6 @@ public:
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("50aff78270725ec253a722ec18069deb233f2e57eb7d64479f027141619cdda4 "); //184200
 
-	    consensus.nSpendV2ID_1 = ZC_V2_SWITCH_ID_1;
-	    consensus.nSpendV2ID_10 = ZC_V2_SWITCH_ID_10;
-	    consensus.nSpendV2ID_25 = ZC_V2_SWITCH_ID_25;
-	    consensus.nSpendV2ID_50 = ZC_V2_SWITCH_ID_50;
-	    consensus.nSpendV2ID_100 = ZC_V2_SWITCH_ID_100;
-
         // evo znodes
         consensus.DIP0003Height = 278300; // Approximately June 22 2020, 12:00 UTC
         consensus.DIP0003EnforcementHeight = 284400; // Approximately July 13 2020, 12:00 UTC
@@ -296,24 +290,13 @@ public:
                             //   (the tx=... number in the SetBestChain debug.log lines)
                 0.014       // * estimated number of transactions per second after checkpoint
         };
-        consensus.nSpendV2ID_1 = ZC_V2_SWITCH_ID_1;
-        consensus.nSpendV2ID_10 = ZC_V2_SWITCH_ID_10;
-        consensus.nSpendV2ID_25 = ZC_V2_SWITCH_ID_25;
-        consensus.nSpendV2ID_50 = ZC_V2_SWITCH_ID_50;
-        consensus.nSpendV2ID_100 = ZC_V2_SWITCH_ID_100;
+        consensus.nSpendV2ID_1 = 200;
+        consensus.nSpendV2ID_10 = 30;
+        consensus.nSpendV2ID_25 = 15;
+        consensus.nSpendV2ID_50 = 15;
+        consensus.nSpendV2ID_100 = 100;
 
-        // Sigma related values.
-        consensus.nSigmaStartBlock = ZC_SIGMA_STARTING_BLOCK;
-        consensus.nSigmaPaddingBlock = ZC_SIGMA_PADDING_BLOCK;
-        consensus.nDisableUnpaddedSigmaBlock = ZC_SIGMA_DISABLE_UNPADDED_BLOCK;
-        consensus.nStartSigmaBlacklist = 293790;
-        consensus.nRestartSigmaWithBlacklistCheck = 296900;
-        consensus.nOldSigmaBanBlock = ZC_OLD_SIGMA_BAN_BLOCK;
         consensus.nLelantusStartBlock = ZC_LELANTUS_STARTING_BLOCK;
-        consensus.nMaxSigmaInputPerBlock = ZC_SIGMA_INPUT_LIMIT_PER_BLOCK;
-        consensus.nMaxValueSigmaSpendPerBlock = ZC_SIGMA_VALUE_SPEND_LIMIT_PER_BLOCK;
-        consensus.nMaxSigmaInputPerTransaction = ZC_SIGMA_INPUT_LIMIT_PER_TRANSACTION;
-        consensus.nMaxValueSigmaSpendPerTransaction = ZC_SIGMA_VALUE_SPEND_LIMIT_PER_TRANSACTION;
         consensus.nMaxLelantusInputPerBlock = ZC_LELANTUS_INPUT_LIMIT_PER_BLOCK;
         consensus.nMaxValueLelantusSpendPerBlock = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_BLOCK;
         consensus.nMaxLelantusInputPerTransaction = ZC_LELANTUS_INPUT_LIMIT_PER_TRANSACTION;

@@ -180,21 +180,6 @@ struct Params {
     // Probability (percentage) that a Dandelion transaction enters fluff phase.
     uint32_t nDandelionFluff;
 
-    // Values for sigma implementation.
-
-    // The block number after which sigma are accepted.
-    int nSigmaStartBlock;
-
-    int nSigmaPaddingBlock;
-
-    int nDisableUnpaddedSigmaBlock;
-
-    int nStartSigmaBlacklist;
-    int nRestartSigmaWithBlacklistCheck;
-
-    // The block number after which old sigma clients are banned.
-    int nOldSigmaBanBlock;
-
     // The block number after which lelantus is accepted.
     int nLelantusStartBlock;
 
@@ -209,18 +194,6 @@ struct Params {
 
     // The block number when Bip39 was implemented
     int nMnemonicBlock;
-
-    // Amount of maximum sigma spend per block.
-    unsigned nMaxSigmaInputPerBlock;
-
-    // Value of maximum sigma spend per block.
-    int64_t nMaxValueSigmaSpendPerBlock;
-
-    // Amount of maximum sigma spend per transaction.
-    unsigned nMaxSigmaInputPerTransaction;
-
-    // Value of maximum sigma spend per transaction.
-    int64_t nMaxValueSigmaSpendPerTransaction;
 
     // Amount of maximum lelantus spend per block.
     unsigned nMaxLelantusInputPerBlock;

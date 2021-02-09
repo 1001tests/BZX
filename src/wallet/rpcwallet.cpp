@@ -104,9 +104,7 @@ bool ValidMultiMint(CWallet * const pwallet, const UniValue& data){
         totalValue += denomination * amount * COIN;
     }
 
-    return ((totalValue <= pwallet->GetBalance()) &&
-            (totalInputs <= ZC_MINT_LIMIT));
-
+    return ((totalValue <= pwallet->GetBalance())
 }
 
 void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry)

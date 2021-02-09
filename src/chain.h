@@ -456,18 +456,6 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
 
-        const auto &params = Params().GetConsensus();
-
-        if (!(s.GetType() & SER_GETHASH) && nVersion >= ZC_ADVANCED_INDEX_VERSION) {
-            READWRITE(mintedPubCoins);
-		    READWRITE(accumulatorChanges);
-            READWRITE(spentSerials);
-	    }
-
-        if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nSigmaStartBlock) {
-            READWRITE(sigmaMintedPubCoins);
-            READWRITE(sigmaSpentSerials);
-        }
 
         if (!(s.GetType() & SER_GETHASH)
                 && nHeight >= params.nLelantusStartBlock

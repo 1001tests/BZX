@@ -151,12 +151,12 @@ bool CheckSigmaBlock(CValidationState &state, const CBlock& block) {
             }
         }
 
-        if (txSpendsAmount > consensus.nMaxSigmaInputPerTransaction) {
+        if (txSpendsAmount > 0) {
             return state.DoS(100, false, REJECT_INVALID,
                 "bad-txns-spend-invalid");
         }
 
-        if (txSpendsValue > consensus.nMaxValueSigmaSpendPerTransaction) {
+        if (txSpendsValue > 0) {
             return state.DoS(100, false, REJECT_INVALID,
                 "bad-txns-spend-invalid");
         }
@@ -165,15 +165,7 @@ bool CheckSigmaBlock(CValidationState &state, const CBlock& block) {
         blockSpendsValue += txSpendsValue;
     }
 
-    if (blockSpendsAmount > consensus.nMaxSigmaInputPerBlock) {
-        return state.DoS(100, false, REJECT_INVALID,
-            "bad-txns-spend-invalid");
-    }
 
-    if (blockSpendsValue > consensus.nMaxValueSigmaSpendPerBlock) {
-        return state.DoS(100, false, REJECT_INVALID,
-            "bad-txns-spend-invalid");
-    }
     return true;
 }
 
@@ -197,7 +189,6 @@ bool CheckSigmaSpendTransaction(
     Consensus::Params const & params = ::Params().GetConsensus();
 
     if(!isVerifyDB && !isCheckWallet) {
-        if(nRealHeight >= params.nDisableUnpaddedSigmaBlock && nRealHeight < params.nSigmaPaddingBlock)
              return state.DoS(100, error("Sigma is disabled at this period."));
     }
 
@@ -278,7 +269,7 @@ bool CheckSigmaSpendTransaction(
             if (index->sigmaMintedPubCoins.count(denominationAndId) > 0) {
                 BOOST_FOREACH(const sigma::PublicCoin& pubCoinValue,
                         index->sigmaMintedPubCoins[denominationAndId]) {
-                    if (nHeight >= params.nStartSigmaBlacklist) {
+                    if (true) {
                         std::vector<unsigned char> vch = pubCoinValue.getValue().getvch();
                         if(sigma_blacklist.count(HexStr(vch.begin(), vch.end())) > 0) {
                             continue;
@@ -294,8 +285,7 @@ bool CheckSigmaSpendTransaction(
 
         bool fPadding = spend->getVersion() >= ZEROCOIN_TX_VERSION_3_1;
         if (!isVerifyDB) {
-            bool fShouldPad = nHeight >= params.nSigmaPaddingBlock;
-            if (fPadding != fShouldPad)
+            if (fPadding != true)
                 return state.DoS(1, error("Incorrect sigma spend transaction version"));
         }
 
@@ -305,7 +295,7 @@ bool CheckSigmaSpendTransaction(
 
         // add proofs into container
         if(batchProofContainer->fCollectProofs) {
-            batchProofContainer->add(spend.get(), fPadding, coinGroupId, anonymity_set.size(), nHeight >= params.nStartSigmaBlacklist);
+            batchProofContainer->add(spend.get(), fPadding, coinGroupId, anonymity_set.size(), true);
         }
 
         if (passVerify) {
@@ -446,7 +436,7 @@ bool CheckSigmaTransaction(
         return state.DoS(100, false,
                          REJECT_INVALID,
                          "Sigma already is not available, start using Lelantus.");
-    bool const allowSigma = (realHeight >= consensus.nSigmaStartBlock);
+    bool const allowSigma = true;
 
     if (!isVerifyDB && !isCheckWallet) {
         if (allowSigma && sigmaState.IsSurgeConditionDetected()) {
@@ -469,17 +459,12 @@ bool CheckSigmaTransaction(
     // Check Sigma Spend Transaction
     if(tx.IsSigmaSpend()) {
         // First check number of inputs does not exceed transaction limit
-        if (tx.vin.size() > consensus.nMaxSigmaInputPerTransaction) {
+        if (tx.vin.size() > 0) {
             return state.DoS(100, false,
                 REJECT_INVALID,
                 "bad-txns-spend-invalid");
         }
 
-        if (GetSpendAmount(tx) > consensus.nMaxValueSigmaSpendPerTransaction) {
-            return state.DoS(100, false,
-                REJECT_INVALID,
-                "bad-txns-spend-invalid");
-        }
 
         vector<sigma::CoinDenomination> denominations;
         uint64_t totalValue = 0;
@@ -1070,7 +1055,7 @@ int CSigmaState::GetCoinSetForSpend(
                 }
                 BOOST_FOREACH(const sigma::PublicCoin& pubCoinValue,
                         block->sigmaMintedPubCoins[denomAndId]) {
-                    if (chainActive.Height() >= ::Params().GetConsensus().nStartSigmaBlacklist) {
+                    if (true) {
                         std::vector<unsigned char> vch = pubCoinValue.getValue().getvch();
                         if(sigma_blacklist.count(HexStr(vch.begin(), vch.end())) > 0) {
                             continue;
@@ -1103,7 +1088,7 @@ void CSigmaState::GetAnonymitySet(
 
     SigmaCoinGroupInfo coinGroup = coinGroups[denomAndId];
     auto params = ::Params().GetConsensus();
-    int maxHeight = fStartSigmaBlacklist ? (chainActive.Height() - (ZC_MINT_CONFIRMATIONS - 1)) : (params.nStartSigmaBlacklist - 1);
+    int maxHeight = (chainActive.Height() - (ZC_MINT_CONFIRMATIONS - 1));
 
     for (CBlockIndex *block = coinGroup.lastBlock;
             ;
@@ -1113,7 +1098,7 @@ void CSigmaState::GetAnonymitySet(
             if (block->nHeight <= maxHeight) {
                 BOOST_FOREACH(const sigma::PublicCoin& pubCoinValue,
                         block->sigmaMintedPubCoins[denomAndId]) {
-                    if (fStartSigmaBlacklist && chainActive.Height() >= params.nStartSigmaBlacklist) {
+                    if (true) {
                         std::vector<unsigned char> vch = pubCoinValue.getValue().getvch();
                         if(sigma_blacklist.count(HexStr(vch.begin(), vch.end())) > 0) {
                             continue;
