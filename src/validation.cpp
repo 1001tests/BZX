@@ -2204,7 +2204,8 @@ static DisconnectResult DisconnectBlock(const CBlock& block, CValidationState& s
     }
 
     // undo transactions in reverse order
-    for (int i = block.vtx.size() - 1; i >= 0; i--) {
+    for (int i = block.vtx.size() - 1; i >= 0; i--)
+    {
         const CTransaction &tx = *(block.vtx[i]);
         uint256 hash = tx.GetHash();
 
@@ -2230,14 +2231,14 @@ static DisconnectResult DisconnectBlock(const CBlock& block, CValidationState& s
                 error("DisconnectBlock(): transaction and undo data inconsistent");
                 return DISCONNECT_FAILED;
             }
-            for (unsigned int j = tx.vin.size(); j-- > 0;) {
+            for (unsigned int j = tx.vin.size(); j-- > 0;)
+            {
                 const COutPoint &out = tx.vin[j].prevout;
                 int undoHeight = txundo.vprevout[j].nHeight;
                 int res = ApplyTxInUndo(std::move(txundo.vprevout[j]), view, out);
                 if (res == DISCONNECT_FAILED) return DISCONNECT_FAILED;
                 fClean = fClean && res != DISCONNECT_UNCLEAN;
 
-                }
             }
             // At this point, all of txundo.vprevout should have been moved out.
         }
