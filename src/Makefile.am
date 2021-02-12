@@ -528,7 +528,6 @@ libbitcoin_consensus_a_SOURCES = \
   prevector.h \
   crypto/scrypt.h \
   primitives/block.h \
-  primitives/precomputed_hash.h \
   primitives/transaction.cpp \
   primitives/transaction.h \
   pubkey.cpp \
