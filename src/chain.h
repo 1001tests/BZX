@@ -454,7 +454,7 @@ public:
         READWRITE(lelantusMintedPubCoins);
         READWRITE(lelantusSpentSerials);
 
-
+        const auto &params = Params().GetConsensus();
         if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nEvoSporkStartBlock && nHeight < params.nEvoSporkStopBlock)
             READWRITE(activeDisablingSporks);
 
