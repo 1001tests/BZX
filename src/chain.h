@@ -225,13 +225,6 @@ public:
     //! Maps <denomination,id> to vector of public coins
     map<pair<int,int>, vector<CBigNum>> mintedPubCoins;
 
-    //! Accumulator updates. Contains only changes made by mints in this block
-    //! Maps <denomination, id> to <accumulator value (CBigNum), number of such mints in this block>
-    map<pair<int,int>, pair<CBigNum,int>> accumulatorChanges;
-
-	//! Same as accumulatorChanges but for alternative modulus
-	map<pair<int,int>, pair<CBigNum,int>> alternativeAccumulatorChanges;
-
     //! Values of coin serials spent in this block
 	set<CBigNum> spentSerials;
 
@@ -277,7 +270,6 @@ public:
         mintedPubCoins.clear();
         sigmaMintedPubCoins.clear();
         lelantusMintedPubCoins.clear();
-        accumulatorChanges.clear();
         spentSerials.clear();
         sigmaSpentSerials.clear();
         lelantusSpentSerials.clear();
@@ -455,25 +447,13 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
+        READWRITE(mintedPubCoins);
+        READWRITE(spentSerials);
+        READWRITE(sigmaMintedPubCoins);
+        READWRITE(sigmaSpentSerials);
+        READWRITE(lelantusMintedPubCoins);
+        READWRITE(lelantusSpentSerials);
 
-
-        const auto &params = Params().GetConsensus();
-        if (!(s.GetType() & SER_GETHASH)
-                && nHeight >= params.nLelantusStartBlock//xxxx
-                && nVersion >= LELANTUS_PROTOCOL_ENABLEMENT_VERSION) {
-            if(nVersion == LELANTUS_PROTOCOL_ENABLEMENT_VERSION) {
-                std::map<int, vector<lelantus::PublicCoin>>  lelantusPubCoins;
-                READWRITE(lelantusPubCoins);
-                for(auto& itr : lelantusPubCoins) {
-                    if(!itr.second.empty()) {
-                        for(auto& coin : itr.second)
-                        lelantusMintedPubCoins[itr.first].push_back(std::make_pair(coin, uint256()));
-                    }
-                }
-            } else
-                READWRITE(lelantusMintedPubCoins);
-            READWRITE(lelantusSpentSerials);
-        }
 
         if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nEvoSporkStartBlock && nHeight < params.nEvoSporkStopBlock)
             READWRITE(activeDisablingSporks);
