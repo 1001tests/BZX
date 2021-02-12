@@ -118,7 +118,6 @@ public:
 
     // memory only
     mutable CTxOut txoutZnode; // znode payment
-    mutable std::vector<CTxOut> voutSuperblock; // superblock payment
     mutable bool fChecked;
 
     // memory only, zerocoin tx info
@@ -165,7 +164,6 @@ public:
         CBlockHeader::SetNull();
         vtx.clear();
         txoutZnode = CTxOut();
-        voutSuperblock.clear();
         fChecked = false;
     }
 
