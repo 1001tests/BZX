@@ -47,8 +47,6 @@ public:
 
     static const int CURRENT_VERSION = 2;
 
-    mutable uint256 cachedPoWHash;//XXXX
-
     CBlockHeader()
     {
         SetNull();
@@ -88,8 +86,6 @@ public:
         nTime = 0;
         nBits = 0;
         nNonce = 0;
-        cachedPoWHash.SetNull();
-
     }
 
     int GetChainID() const
@@ -110,7 +106,6 @@ public:
     {
         return (int64_t)nTime;
     }
-    void InvalidateCachedPoWHash(int nHeight) const;
 };
 
 class CZerocoinTxInfo;
