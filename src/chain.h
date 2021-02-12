@@ -225,6 +225,13 @@ public:
     //! Maps <denomination,id> to vector of public coins
     map<pair<int,int>, vector<CBigNum>> mintedPubCoins;
 
+    //! Accumulator updates. Contains only changes made by mints in this block
+    //! Maps <denomination, id> to <accumulator value (CBigNum), number of such mints in this block>
+    map<pair<int,int>, pair<CBigNum,int>> accumulatorChanges;
+
+    //! Same as accumulatorChanges but for alternative modulus
+    map<pair<int,int>, pair<CBigNum,int>> alternativeAccumulatorChanges;
+
     //! Values of coin serials spent in this block
 	set<CBigNum> spentSerials;
 
