@@ -459,7 +459,7 @@ public:
 
         const auto &params = Params().GetConsensus();
         if (!(s.GetType() & SER_GETHASH)
-                && nHeight >= params.nLelantusStartBlock
+                && nHeight >= params.nLelantusStartBlock//xxxx
                 && nVersion >= LELANTUS_PROTOCOL_ENABLEMENT_VERSION) {
             if(nVersion == LELANTUS_PROTOCOL_ENABLEMENT_VERSION) {
                 std::map<int, vector<lelantus::PublicCoin>>  lelantusPubCoins;
