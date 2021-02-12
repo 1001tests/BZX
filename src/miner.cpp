@@ -932,6 +932,9 @@ static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainpar
     return true;
 }
 
+double dHashesPerSec = 0.0;
+int64_t nHPSTimerStart = 0;
+
 void static BZXMiner(const CChainParams &chainparams) {
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("BZX-miner");
