@@ -505,7 +505,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Unix: ~/.BZX
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "zzz";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "firo";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -515,10 +515,10 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/zzz;
+    return pathRet / "Library/Application Support/firo;
 #else
     // Unix
-    return pathRet / ".zzz";;
+    return pathRet / ".firo";;
 #endif
 #endif
 }
