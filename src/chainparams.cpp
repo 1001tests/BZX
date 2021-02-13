@@ -23,20 +23,22 @@
 
 static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesisOutputScript, uint32_t nTime, uint32_t nNonce,
         uint32_t nBits, int32_t nVersion, const CAmount &genesisReward,
-        std::vector<unsigned char> extraNonce) {
+        std::vector<unsigned char> extraNonce)
+{
+
     CMutableTransaction txNew;
     txNew.nVersion = 1;
     txNew.vin.resize(1);
     txNew.vout.resize(1);
-    txNew.vin[0].scriptSig = CScript() << 504365040 << CBigNum(4).getvch() << std::vector < unsigned char >
+    txNew.vin[0].scriptSig = CScript() << 0x1f0fffff << CBigNum(4).getvch() << std::vector < unsigned char >
     ((const unsigned char *) pszTimestamp, (const unsigned char *) pszTimestamp + strlen(pszTimestamp)) << extraNonce;
     txNew.vout[0].nValue = genesisReward;
     txNew.vout[0].scriptPubKey = genesisOutputScript;
 
     CBlock genesis;
-    genesis.nTime    = nTime;
-    genesis.nBits    = nBits;
-    genesis.nNonce   = nNonce;
+    genesis.nTime = nTime;
+    genesis.nBits = nBits;
+    genesis.nNonce = nNonce;
     genesis.nVersion = nVersion;
     genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
     genesis.hashPrevBlock.SetNull();
@@ -44,24 +46,12 @@ static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesi
     return genesis;
 }
 
-/**
- * Build the genesis block. Note that the output of its generation
- * transaction cannot be spent since it did not originally exist in the
- * database.
- *
- * CBlock(hash=000000000019d6, ver=1, hashPrevBlock=00000000000000, hashMerkleRoot=4a5e1e, nTime=1231006505, nBits=1d00ffff, nNonce=2083236893, vtx=1)
- *   CTransaction(hash=4a5e1e, ver=1, vin.size=1, vout.size=1, nLockTime=0)
- *     CTxIn(COutPoint(000000, -1), coinbase 04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73)
- *     CTxOut(nValue=50.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
- *   vMerkleTree: 4a5e1e
- */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount &genesisReward,
-                   std::vector<unsigned char> extraNonce) {
-    //btzc: BZX timestamp
-    const char *pszTimestamp = "Times 2014/10/31 Maine Judge Says Nurse Must Follow Ebola Quarantine for Now";
+                   std::vector<unsigned char> extraNonce)
+{
+    const char *pszTimestamp = "Lets Swap Hexx";
     const CScript genesisOutputScript = CScript();
-    return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward,
-                              extraNonce);
+    return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward, extraNonce);
 }
 
 // this one is for testing only
@@ -184,9 +174,9 @@ public:
         consensus.BIP34Hash = uint256S("0x000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8");
         consensus.BIP65Height = INT_MAX;
         consensus.BIP66Height = INT_MAX;
-        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 60 * 60; // 60 minutes between retargets
-        consensus.nPowTargetSpacing = 10 * 60; // 10 minute blocks
+        consensus.powLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.nPowTargetTimespan = 150;
+        consensus.nPowTargetSpacing = 150;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
@@ -237,40 +227,32 @@ public:
        `  * a large 32-bit integer with any alignment.
          */
         //btzc: update BZX pchMessage
-        pchMessageStart[0] = 0xe3;
-        pchMessageStart[1] = 0xd9;
-        pchMessageStart[2] = 0xfe;
-        pchMessageStart[3] = 0xf1;
-        nDefaultPort = 8168;
+        pchMessageStart[0] = { 'b' };
+        pchMessageStart[1] = { 'z' };
+        pchMessageStart[2] = { 'x' };
+        pchMessageStart[3] = { '0' };
+        nDefaultPort = 29301;  //nRPCPort = 29201;
         nPruneAfterHeight = 100000;
-        /**
-         * btzc: BZX init genesis block
-         * nBits = 0x1e0ffff0
-         * nTime = 1414776286
-         * nNonce = 142392
-         * genesisReward = 0 * COIN
-         * nVersion = 2
-         * extraNonce
-         */
         std::vector<unsigned char> extraNonce(4);
         extraNonce[0] = 0x82;
         extraNonce[1] = 0x3f;
         extraNonce[2] = 0x00;
         extraNonce[3] = 0x00;
-        genesis = CreateGenesisBlock(1414776286, 142392, 0x1e0ffff0, 2, 0 * COIN, extraNonce);
-        const std::string s = genesis.GetHash().ToString();
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"));
-        assert(genesis.hashMerkleRoot == uint256S("0x365d2aa75d061370c9aefdabac3985716b1e3b4bb7c4af4ed54f25e5aaa42783"));
-        vSeeds.push_back(CDNSSeedData("amsterdam.BZX.org", "amsterdam.BZX.org", false));
-
+        genesis = CreateGenesisBlock(1485785935, 2610, 0x1f0fffff, 2, 0 * COIN, extraNonce);
+        consensus.hashGenesisBlock = genesis.GetHash();
+        assert(consensus.hashGenesisBlock == uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f"));
+        assert(genesis.hashMerkleRoot == uint256S("0x31f49b23f8a1185f85a6a6972446e72a86d50ca0e3b3ffe217d0c2fea30473db"));
+        vSeeds.push_back(CDNSSeedData("51.77.145.35", "51.77.145.35", false));
+        vSeeds.push_back(CDNSSeedData("51.91.156.249", "51.91.156.249", false));
+        vSeeds.push_back(CDNSSeedData("51.91.156.251", "51.91.156.251", false));
+        vSeeds.push_back(CDNSSeedData("51.91.156.252", "51.91.156.252", false));
         // Note that of those with the service bits flag, most only support a subset of possible options
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 82);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 7);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 75);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 34);
         base58Prefixes[SECRET_KEY] = std::vector < unsigned char > (1, 210);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container < std::vector < unsigned char > > ();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container < std::vector < unsigned char > > ();
-
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
         fMiningRequiresPeers = true;
@@ -281,14 +263,23 @@ public:
 
         checkpointData = (CCheckpointData) {
                 boost::assign::map_list_of
-                (0, uint256S("0x0"))
+                (     0, uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f"))
+                (     1, uint256S("0x795fcecd49d16d708b321b585f69bc263e5f40e5b1f79db1b8a0d657a366fdcf"))
+                (    44, uint256S("0xd80509a0be76e25d454f09b005f7c20adf50d9f57287cfcb6b78ebe2b5e90d11"))
+                ( 50981, uint256S("0x89d9afe555611e5baf616bd004f68d6a156d1c03619176a92d52221578170033"))
+                ( 52032, uint256S("0x7e6367d9977795e615927c1070c467308a4213377b160e547361a213cc0555b7"))
+                (146175, uint256S("0x39cf3d6ff60aeb8574d3dbd0156e2d22d397849351a6fe31bc7ae232c267547d"))
+                (152022, uint256S("0xa4e283a26c46ac0011988249b2cd89789e2cac4b5dd568b07c162b95f81dcce9"))
+                (156282, uint256S("0x7c49328bc840279dc41e1a138fc26318e1d61f1e69ddf8ec4a392a5d54142608"))
+                (156283, uint256S("0xedd5e5bc7ffa040057881baba79178f786926d763dc8671e257f7756a034494e")),
+
         };
 
         chainTxData = ChainTxData{
-                1545712287, // * UNIX timestamp of last checkpoint block
-                933513,     // * total number of transactions between genesis and last checkpoint
-                            //   (the tx=... number in the SetBestChain debug.log lines)
-                0.014       // * estimated number of transactions per second after checkpoint
+                1568580531, // * UNIX timestamp of last checkpoint block
+                43798,    // * total number of transactions between genesis and last checkpoint
+                          //   (the tx=... number in the SetBestChain debug.log lines)
+                576.0 // * estimated number of transactions per day after checkpoint
         };
 
         consensus.nLelantusStartBlock = ZC_LELANTUS_STARTING_BLOCK;
