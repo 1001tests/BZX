@@ -26,10 +26,10 @@ elif [[ $HOST = "x86_64-apple-darwin14" ]]; then
     ARCHIVE_NAME="osx-x64.zip"
 fi
 
-cp qt/BZX-qt bin/ || cp qt/BZX-qt.exe bin/ || echo "no qt"
-cp BZXd bin/ || cp BZXd.exe bin/ || echo "no daemon"
-cp BZX-cli bin/ || cp BZX-cli.exe bin/ || echo "no cli"
-cp BZX-tx bin/ || cp BZX-tx.exe bin/ || echo "no tx"
+cp qt/bitcoinzero-qt bin/ || cp qt/bitcoinzero-qt.exe bin/ || echo "no qt"
+cp bitcoinzerod bin/ || cp bitcoinzerod.exe bin/ || echo "no daemon"
+cp bitcoinzero-cli bin/ || cp bitcoinzero-cli.exe bin/ || echo "no cli"
+cp bitcoinzero-tx bin/ || cp bitcoin-tx.exe bin/ || echo "no tx"
 echo "before bin"
 
 cd bin || echo "bin failed"
