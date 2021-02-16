@@ -50,7 +50,7 @@ static const int MAX_URI_LENGTH = 255;
 
 #define QAPP_ORG_NAME "BZX"
 #define QAPP_ORG_DOMAIN "BZX.org"
-#define QAPP_APP_NAME_DEFAULT "BZX-Qt"
-#define QAPP_APP_NAME_TESTNET "BZX-Qt-testnet"
+#define QAPP_APP_NAME_DEFAULT "bitcoinzero-Qt"
+#define QAPP_APP_NAME_TESTNET "bitcoinzero-Qt-testnet"
 
 #endif // BITCOIN_QT_GUICONSTANTS_H
