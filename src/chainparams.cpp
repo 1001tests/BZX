@@ -204,7 +204,7 @@ public:
         // evo znodes
         consensus.DIP0003Height = INT_MAX;; // Approximately June 22 2020, 12:00 UTC
         consensus.DIP0003EnforcementHeight = INT_MAX;; // Approximately July 13 2020, 12:00 UTC
-        consensus.DIP0003EnforcementHash = uint256S("0x8b8d7c05bb2d75f8c5e076cb6c10ef464e94ddcda2744740db03aeda2d6cc006");
+        consensus.DIP0003EnforcementHash = uint256S("0x0");
         consensus.DIP0008Height = INT_MAX;; // Approximately Jan 28 2021, 11:00 UTC
         consensus.nEvoZnodeMinimumConfirmations = 15;
 

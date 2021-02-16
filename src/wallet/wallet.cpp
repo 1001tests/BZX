@@ -2135,7 +2135,7 @@ CBlockIndex* CWallet::ScanForWalletTransactions(CBlockIndex *pindexStart, bool f
         // our wallet birthday (as adjusted for block time variability)
         // if you are recovering wallet with mnemonics start rescan from block when mnemonics implemented in BZX
         if (fRecoverMnemonic) {
-            pindex = chainActive[chainParams.GetConsensus().nMnemonicBlock];//xxxx
+            pindex = chainActive[chainParams.GetConsensus().nMnemonicBlock];
             if (pindex == NULL)
                 pindex = chainActive.Tip();
         } else

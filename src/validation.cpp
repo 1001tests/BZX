@@ -765,8 +765,8 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
     }
 
     if (tx.IsSigmaMint() || tx.IsSigmaSpend()) {
-        if (true)
-            return state.DoS(100, error("Sigma is temporarily disabled"),
+        if ((chainActive.Height() >= 450000))
+            return state.DoS(100, error("Sigma is disabled"),
                              REJECT_INVALID, "bad-txns-zerocoin");
     }
 
