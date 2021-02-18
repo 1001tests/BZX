@@ -2,7 +2,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-bin_PROGRAMS += qt/bitcoinzero-qt
+bin_PROGRAMS += qt/BZX-qt
 EXTRA_LIBRARIES += qt/libBZXqt.a
 
 # bitcoin qt core #
@@ -618,7 +618,7 @@ CLEANFILES += $(CLEAN_QT)
 BZX_qt_clean: FORCE
 	rm -f $(CLEAN_QT) $(qt_libBZXqt_a_OBJECTS) $(qt_BZX_qt_OBJECTS) qt/BZX-qt$(EXEEXT) $(LIBBITCOINQT)
 
-BZX_qt : qt/bitcoinzero-qt$(EXEEXT)
+BZX_qt : qt/BZX-qt$(EXEEXT)
 
 ui_%.h: %.ui
 	@test -f $(UIC)
