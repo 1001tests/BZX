@@ -19,10 +19,10 @@ BEGIN
             VALUE "CompanyName",        "BZX"
             VALUE "FileDescription",    "BZX-cli (JSON-RPC client for " PACKAGE_NAME ")"
             VALUE "FileVersion",        VER_FILEVERSION_STR
-            VALUE "InternalName",       "BZX-cli"
+            VALUE "InternalName",       "bitcoinzero-cli"
             VALUE "LegalCopyright",     COPYRIGHT_STR
             VALUE "LegalTrademarks1",   "Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
-            VALUE "OriginalFilename",   "BZX-cli.exe"
+            VALUE "OriginalFilename",   "bitcoinzero-cli.exe"
             VALUE "ProductName",        "BZX-cli"
             VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
         END

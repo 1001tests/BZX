@@ -19,10 +19,10 @@ BEGIN
             VALUE "CompanyName",        "BZX"
             VALUE "FileDescription",    "BZXd"
             VALUE "FileVersion",        VER_FILEVERSION_STR
-            VALUE "InternalName",       "BZXd"
+            VALUE "InternalName",       "bitcoinzerod"
             VALUE "LegalCopyright",     COPYRIGHT_STR
             VALUE "LegalTrademarks1",   "Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
-            VALUE "OriginalFilename",   "BZXd.exe"
+            VALUE "OriginalFilename",   "bitcoinzerod.exe"
             VALUE "ProductName",        "BZXd"
             VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
         END

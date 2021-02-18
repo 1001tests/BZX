@@ -19,10 +19,10 @@ BEGIN
             VALUE "CompanyName",        "BZX"
             VALUE "FileDescription",    "BZX-tx (CLI BZX transaction editor utility)"
             VALUE "FileVersion",        VER_FILEVERSION_STR
-            VALUE "InternalName",       "BZX-tx"
+            VALUE "InternalName",       "bitcoinzero-tx"
             VALUE "LegalCopyright",     COPYRIGHT_STR
             VALUE "LegalTrademarks1",   "Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
-            VALUE "OriginalFilename",   "BZX-tx.exe"
+            VALUE "OriginalFilename",   "bitcoinzero-tx.exe"
             VALUE "ProductName",        "BZX-tx"
             VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
         END
