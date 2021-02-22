@@ -150,11 +150,11 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += BZXd
+  bin_PROGRAMS += bitcoinzerod
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += BZX-cli BZX-tx
+  bin_PROGRAMS += bitcoinzero-cli bitcoinzero-tx
 endif
 
 .PHONY: FORCE check-symbols check-security

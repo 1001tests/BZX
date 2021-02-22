@@ -111,8 +111,8 @@ bool fMasternodeMode = false;
 bool fLiteMode = false;
 int nWalletBackups = 10;
 
-const char * const BITCOIN_CONF_FILENAME = "BZX.conf";
-const char * const BITCOIN_PID_FILENAME = "BZXd.pid";
+const char * const BITCOIN_CONF_FILENAME = "bitcoinzero.conf";
+const char * const BITCOIN_PID_FILENAME = "bitcoinzero.pid";
 
 CCriticalSection cs_args;
 map<string, string> mapArgs;
