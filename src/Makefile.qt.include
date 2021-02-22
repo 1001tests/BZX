@@ -616,7 +616,7 @@ CLEAN_QT = $(nodist_qt_libbitcoinqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda 
 CLEANFILES += $(CLEAN_QT)
 
 bitcoinzero_qt_clean: FORCE
-        rm -f $(CLEAN_QT) $(qt_libbitcoinqt_a_OBJECTS) $(qt_bitcoinzero_qt_OBJECTS) qt/bitcoinzero-qt$(EXEEXT) $(LIBBITCOINQT)
+	rm -f $(CLEAN_QT) $(qt_libbitcoinqt_a_OBJECTS) $(qt_bitcoinzero_qt_OBJECTS) qt/bitcoinzero-qt$(EXEEXT) $(LIBBITCOINQT)
 
 bitcoinzero_qt : qt/bitcoinzero-qt$(EXEEXT)
 
