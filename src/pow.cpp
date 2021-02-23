@@ -116,16 +116,20 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
+
     if (pindexLast->nHeight > 100)
     {
+        LogPrintf("DarkGravityWave3 nHeight=%s = %s\n", pindexLast);
         return DarkGravityWave3(pindexLast, pblock);
     }
     else if (pindexLast->nHeight > 46)
     {
+        LogPrintf("GetNextWorkRequiredBTC nHeight=%s = %s\n", pindexLast);
         return GetNextWorkRequiredBTC(pindexLast, pblock);
     }
     else
     {
+        LogPrintf("bnProofOfWorkLimit nHeight=%s = %s\n", pindexLast);
         return bnProofOfWorkLimit.GetCompact();
     }
 }

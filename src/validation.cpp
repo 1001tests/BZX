@@ -4306,7 +4306,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
         if (chainActive.Height() > 52033)//xxxx
         {
             if (block.nBits != NexxtD(pindexPrev, &block))
-                return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
+                return state.DoS(100, false, REJECT_INVALID, "bad-diffbits nexxt", false, "incorrect proof of work");
         }
     }
     else if (block.nBits != GetNextWorkRequired(pindexPrev, &block))
