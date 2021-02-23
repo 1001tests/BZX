@@ -29,7 +29,7 @@ fi
 cp qt/bitcoinzero-qt bin/ || cp qt/bitcoinzero-qt.exe bin/ || echo "no qt"
 cp bitcoinzerod bin/ || cp bitcoinzerod.exe bin/ || echo "no daemon"
 cp bitcoinzero-cli bin/ || cp bitcoinzero-cli.exe bin/ || echo "no cli"
-cp bitcoinzero-tx bin/ || cp bitcoin-tx.exe bin/ || echo "no tx"
+cp bitcoinzero-tx bin/ || cp bitcoinzero-tx.exe bin/ || echo "no tx"
 echo "before bin"
 
 cd bin || echo "bin failed"

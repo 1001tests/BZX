@@ -199,7 +199,7 @@ public:
         consensus.nMinimumChainWork = uint256S("0x0");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("50aff78270725ec253a722ec18069deb233f2e57eb7d64479f027141619cdda4 "); //184200
+        consensus.defaultAssumeValid = uint256S("edd5e5bc7ffa040057881baba79178f786926d763dc8671e257f7756a034494e"); //184200
 
         // evo znodes
         consensus.DIP0003Height = INT_MAX;; // Approximately June 22 2020, 12:00 UTC
