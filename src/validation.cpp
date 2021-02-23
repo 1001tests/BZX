@@ -4162,8 +4162,10 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         LogPrintf("CheckBlock - first tx is not coinbase -> failed!\n");
         return state.DoS(100, false, REJECT_INVALID, "bad-cb-missing", false, "first tx is not coinbase");
     }
+
+    int chainHeight = chainActive.Height();
     for (unsigned int i = 1; i < block.vtx.size(); i++)
-        if (block.vtx[i]->IsCoinBase() && nHeight > 46)
+        if (block.vtx[i]->IsCoinBase() && chainHeight > 46)
         {
             LogPrintf("CheckBlock - more than one coinbase -> failed!\n");
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-multiple", false, "more than one coinbase");
