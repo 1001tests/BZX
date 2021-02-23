@@ -1707,12 +1707,50 @@ bool ReadBlockHeaderFromDisk(CBlock &block, const CDiskBlockPos &pos) {
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams, int nTime)
 {
-    return 1 * COIN; //xxxx
+    if (nHeight == 0) // Genesis block is 0 coins
+        return 0;
+
+    else if (nHeight <= 46)
+        return 0 * COIN;
+
+    else if (nHeight <= 576)
+        return 1 * COIN;
+
+    else if (nHeight <= 51000)
+        return 30 * COIN;
+
+    else if (nHeight <= 156111 + 576)
+        return 75 * COIN;
+
+    else
+        return 45 * COIN;
 }
 
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
-    return 1 * COIN; //XXXX
+    if (nHeight <= 51000)
+    {
+    CAmount ret = 10.5 * COIN;
+        return ret;
+    }
+
+    else if (nHeight <= 156111 + 576)
+    {
+    CAmount ret = 22 * COIN;
+        return ret;
+    }
+
+    else if (nHeight <= 250000)
+    {
+    CAmount ret = 11 * COIN;
+        return ret;
+    }
+
+    else
+    {
+    CAmount ret = 18 * COIN;
+        return ret;
+    }
 }
 
 bool IsInitialBlockDownload() {

@@ -1017,7 +1017,7 @@ void static BZXMiner(const CChainParams &chainparams) {
                 uint256 thash;
 
                 while (true) {
-                    if (pindexPrev->nHeight >= 1 -1) //XXXX
+                    if (pindexPrev->nHeight >= 1 -1)
                     {
                     lyra2z_hash(BEGIN(pblock->nVersion), BEGIN(thash));
                     }
