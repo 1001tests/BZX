@@ -4304,14 +4304,11 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 
     if (masternodeSync.IsSynced())
     {
-        if (chainActive.Height() > 52033)//xxxx
+        if (chainActive.Height() > 52033 && block.nBits != NexxtD(pindexPrev, &block))//xxxx
         {
-            if (block.nBits != NexxtD(pindexPrev, &block))
-                return state.DoS(100, false, REJECT_INVALID, "bad-diffbits nexxt", false, "incorrect proof of work");
+        return state.DoS(100, false, REJECT_INVALID, "bad-diffbits nexxt", false, "incorrect proof of work");
         }
     }
-    else if (block.nBits != GetNextWorkRequired(pindexPrev, &block))
-        return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
