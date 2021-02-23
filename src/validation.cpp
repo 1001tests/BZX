@@ -4128,13 +4128,19 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         bool mutated;
         uint256 hashMerkleRoot2 = BlockMerkleRoot(block, &mutated);
         if (block.hashMerkleRoot != hashMerkleRoot2)
+        {
+            LogPrintf("CheckBlock - merkle root mismatch!\n");
             return state.DoS(100, false, REJECT_INVALID, "bad-txnmrklroot", true, "hashMerkleRoot mismatch");
+        }
 
         // Check for merkle tree malleability (CVE-2012-2459): repeating sequences
         // of transactions in a block without affecting the merkle root of a block,
         // while still invalidating it.
         if (mutated)
+        {
+            LogPrintf("CheckBlock - merkle root failed!\n");
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-duplicate", true, "duplicate transaction");
+        }
 
     }
 
@@ -4145,26 +4151,38 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     // checks that use witness data may be performed here.
     // Size limits
     if (block.vtx.empty() || block.vtx.size() > MAX_BLOCK_BASE_SIZE || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_BASE_SIZE)
+    {
+        LogPrintf("CheckBlock - size limits failed -> failed!\n");
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-length", false, "size limits failed");
+    }
 
     // First transaction must be coinbase, the rest must not be
     if (block.vtx.empty() || !block.vtx[0]->IsCoinBase())
+    {
+        LogPrintf("CheckBlock - first tx is not coinbase -> failed!\n");
         return state.DoS(100, false, REJECT_INVALID, "bad-cb-missing", false, "first tx is not coinbase");
+    }
     for (unsigned int i = 1; i < block.vtx.size(); i++)
         if (block.vtx[i]->IsCoinBase() && nHeight > 46)
+        {
+            LogPrintf("CheckBlock - more than one coinbase -> failed!\n");
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-multiple", false, "more than one coinbase");
+        }
 
     // Check transactions
     if (nHeight == INT_MAX)
         nHeight = ZerocoinGetNHeight(block.GetBlockHeader());
 
-    for (CTransactionRef tx : block.vtx) {
+    for (CTransactionRef tx : block.vtx)
+    {
 //xxxx
         // We don't check transactions against zerocoin state here, we'll check it again later in ConnectBlock
         if (!CheckTransaction(*tx, state, false, tx->GetHash(), isVerifyDB, nHeight, false, false, NULL, NULL, NULL))
+        {
+            LogPrintf("CheckBlock - CheckTransaction -> failed!\n");
             return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(),
                                 strprintf("Transaction check failed (tx hash %s) %s", tx->GetHash().ToString(), state.GetDebugMessage()));
-
+        }
     }
     unsigned int nSigOps = 0;
     for (const auto& tx : block.vtx)
@@ -4172,16 +4190,26 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         nSigOps += GetLegacySigOpCount(*tx);
     }
     if (nSigOps * WITNESS_SCALE_FACTOR > MAX_BLOCK_SIGOPS_COST)
+
+    {
+        LogPrintf("CheckBlock - SigOpCount -> failed!\n");
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-sigops", false, "out-of-bounds SigOpCount");
+    }
 
     if (fCheckPOW && fCheckMerkleRoot)
         block.fChecked = true;
 
     if (!sigma::CheckSigmaBlock(state, block))
+    {
+        LogPrintf("CheckBlock - CheckSigmaBlock -> failed!\n");
         return false;
+    }
 
     if (!lelantus::CheckLelantusBlock(state, block))
+    {
+        LogPrintf("CheckBlock - CheckLelantusBlock -> failed!\n");
         return false;
+    }
 
     return true;
 }
