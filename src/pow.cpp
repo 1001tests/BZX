@@ -116,7 +116,7 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
-     if (pindexLast->nHeight > 52033)
+     if (pindexLast->nHeight > 51000)
      {
          return NexxtDG(pindexLast, pblock);
      }
