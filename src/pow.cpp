@@ -116,6 +116,11 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
+     if (pindexLast->nHeight > 52033)
+     {
+         return NexxtDG(pindexLast, pblock);
+     }
+
     if (pindexLast->nHeight > 100)
     {
         return DarkGravityWave3(pindexLast, pblock);
@@ -173,19 +178,6 @@ unsigned int NexxtDG(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
     }
 
     return bnNew.GetCompact();
-}
-
-unsigned int NexxtD(const CBlockIndex* pindexPrev, const CBlockHeader* pblock)
-{
-    int nHeight = pindexPrev->nHeight + 1;
-    if (nHeight > 52033)
-    {
-        return NexxtDG(pindexPrev, pblock);
-    }
-    else
-    {
-        return GetNextWorkRequired(pindexPrev, pblock);
-    }
 }
 
 int64_t Nexxt(const CBlockIndex* pindexPrev, const CBlockHeader* pblock)//add on the fly check

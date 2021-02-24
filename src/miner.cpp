@@ -97,7 +97,7 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
 
 void UpdateDiff(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
 {
-    pblock->nBits = NexxtD(pindexPrev, pblock);
+    pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
 }
 
 
