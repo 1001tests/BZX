@@ -121,7 +121,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return bnProofOfWorkLimit.GetCompact();
     }
 
-    else if (pindexLast->nHeight > 101)
+    else if (pindexLast->nHeight < 101)
     {
        return GetNextWorkRequiredBTC(pindexLast, pblock);
     }
