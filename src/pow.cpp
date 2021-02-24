@@ -180,7 +180,7 @@ unsigned int NexxtDG(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
     return bnNew.GetCompact();
 }
 
-int64_t Nexxt(const CBlockIndex* pindexPrev, const CBlockHeader* pblock)//add on the fly check
+int64_t Nexxt(const CBlockIndex* pindexPrev, const CBlockHeader* pblock)
 {
         if      (pblock->GetBlockTime() > (pindexPrev->GetBlockTime() + (60 * 60) + 0)) {
             return 1; }
