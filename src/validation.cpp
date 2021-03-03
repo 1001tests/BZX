@@ -738,6 +738,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                               bool* pfMissingInputs, int64_t nAcceptTime, std::list<CTransactionRef>* plTxnReplaced,
                               bool fOverrideMempoolLimit, const CAmount& nAbsurdFee, std::vector<COutPoint>& coins_to_uncache,
                               bool isCheckWalletTransaction, bool markBZXSpendTransactionSerial)
+
 {
     bool fTestNet = Params().GetConsensus().IsTestnet();
     LogPrintf("AcceptToMemoryPoolWorker(), tx.IsZerocoinSpend()=%s, fTestNet=%s\n", ptx->IsZerocoinSpend() || ptx->IsSigmaSpend() || ptx->IsLelantusJoinSplit(), fTestNet);
@@ -749,35 +750,143 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         *pfMissingInputs = false;
 
     const Consensus::Params& consensus = Params().GetConsensus();
-
+//XXXX
     if (tx.IsZerocoinMint()) {
-        if (chainActive.Height() >= 450000) {
+        if (chainActive.Height() >= 450000)
             return state.DoS(100, error("Old zerocoin mints no more allowed in mempool"),
                              REJECT_INVALID, "bad-txns-zerocoin");
-        }
     }
 
     if (tx.IsZerocoinSpend()) {
-        if (chainActive.Height() >= 450000) {
+        if (chainActive.Height() >= 450000)
             return state.DoS(100, error("Old zerocoin spends no more allowed in mempool"),
+                             REJECT_INVALID, "bad-txns-zerocoin");
+    }
+
+    if(tx.IsSigmaMint() || tx.IsSigmaSpend()) {
+        if (chainActive.Height() >= 450000 {
+            return state.DoS(100, error("Sigma transactions no more allowed in mempool"),
+                             REJECT_INVALID, "bad-txns-zerocoin");
+    }
+
+    else {
+        if(tx.IsLelantusTransaction()) {
+            return state.DoS(100, error("Lelantus transactions are not allowed in mempool yet"),
                              REJECT_INVALID, "bad-txns-zerocoin");
         }
     }
 
-    if (tx.IsSigmaMint() || tx.IsSigmaSpend()) {
-        if (chainActive.Height() >= 450000)
-            return state.DoS(100, error("Sigma is disabled"),
-                             REJECT_INVALID, "bad-txns-zerocoin");
-    }
-    if (tx.IsSigmaMint() || tx.IsSigmaSpend()) {
-        if(chainActive.Height() >= 450000) {
-            return state.DoS(100, error("Sigma transactions no more allowed in mempool"),
-                             REJECT_INVALID, "bad-txns-zerocoin");
+    //btzc
+    CZerocoinState *zcState = CZerocoinState::GetZerocoinState();
+    vector<CBigNum> zcSpendSerials;
+    CBigNum zcSpendSerial;
+
+    // V3 sigma spends.
+    sigma::CSigmaState *sigmaState = sigma::CSigmaState::GetState();
+    vector<Scalar> zcSpendSerialsV3;
+    vector<GroupElement> zcMintPubcoinsV3;
+
+    //lelantus
+    lelantus::CLelantusState *lelantusState = lelantus::CLelantusState::GetState();
+    vector<Scalar> lelantusSpendSerials;
+    vector<GroupElement> lelantusMintPubcoins;
+    vector<uint64_t> lelantusAmounts;
+    {
+        LOCK(pool.cs);
+        if (tx.IsZerocoinSpend()) {
+            BOOST_FOREACH(const CTxIn &txin, tx.vin)
+            {
+                zcSpendSerial = ZerocoinGetSpendSerialNumber(tx, txin);
+                if (!zcSpendSerial)
+                    return state.Invalid(false, REJECT_INVALID, "txn-invalid-zerocoin-spend");
+                if (!zcState->CanAddSpendToMempool(zcSpendSerial)) {
+                    LogPrintf("AcceptToMemoryPool(): serial number %s has been used\n", zcSpendSerial.ToString());
+                    return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
+                }
+                zcSpendSerials.push_back(zcSpendSerial);
+            }
         }
-    } else {
-        if(tx.IsLelantusTransaction()) {
-            return state.DoS(100, error("Lelantus transactions are not allowed in mempool yet"),
-                             REJECT_INVALID, "bad-txns-zerocoin");
+        else if (tx.IsZerocoinRemint()) {
+            zcSpendSerial = sigma::CoinRemintToV3::GetSerialNumber(tx);
+
+            if (!zcSpendSerial)
+                return state.Invalid(false, REJECT_INVALID, "txn-invalid-zerocoin-spend");
+
+            if (!zcState->CanAddSpendToMempool(zcSpendSerial)) {
+                LogPrintf("AcceptToMemoryPool(): serial number %s has been used\n", zcSpendSerial.ToString());
+                return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
+            }
+
+            zcSpendSerials.push_back(zcSpendSerial);
+        }
+        else if (tx.IsSigmaSpend()) {
+
+            BOOST_FOREACH(const CTxIn &txin, tx.vin)
+            {
+                Scalar zcSpendSerial = sigma::GetSigmaSpendSerialNumber(tx, txin);
+                Scalar zero;
+
+                if (zcSpendSerial == zero)
+                    return state.Invalid(false, REJECT_INVALID, "txn-invalid-zerocoin-spend");
+                if (!sigmaState->CanAddSpendToMempool(zcSpendSerial)) {
+                    LogPrintf("AcceptToMemoryPool(): sigma serial number %s has been used\n", zcSpendSerial.tostring());
+                    return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
+                }
+                zcSpendSerialsV3.push_back(zcSpendSerial);
+            }
+        }
+        else if (tx.IsLelantusJoinSplit()) {
+            if (tx.vin.size() > 1) {
+                return state.Invalid(false, REJECT_CONFLICT, "txn-invalid-lelantus-joinsplit");
+            }
+            std::vector<Scalar> serials;
+            try {
+                serials = lelantus::GetLelantusJoinSplitSerialNumbers(tx, tx.vin[0]);
+            }
+            catch (CBadTxIn&) {
+                return state.Invalid(false, REJECT_CONFLICT, "txn-invalid-lelantus-joinsplit");
+            }
+            for (const auto& serial : serials) {
+                if (!serial.isMember() || serial.isZero())
+                    return state.Invalid(false, REJECT_INVALID, "txn-invalid-lelantus-joinsplit-serial");
+                if (lelantusState->IsUsedCoinSerial(serial) || pool.lelantusState.HasCoinSerial(serial) ||
+                    !sigmaState->CanAddSpendToMempool(serial)) {
+                    LogPrintf("AcceptToMemoryPool(): lelantus serial number %s has been used\n", serial.tostring());
+                    return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
+                }
+                lelantusSpendSerials.push_back(serial);
+            }
+        }
+
+        BOOST_FOREACH(const CTxOut &txout, tx.vout)
+        {
+            if (txout.scriptPubKey.IsSigmaMint()) {
+                GroupElement pubCoinValue;
+                try {
+                    pubCoinValue = sigma::ParseSigmaMintScript(txout.scriptPubKey);
+                } catch (std::invalid_argument&) {
+                    return state.DoS(100, false, PUBCOIN_NOT_VALIDATE, "bad-txns-zerocoin");
+                }
+                if (!sigmaState->CanAddMintToMempool(pubCoinValue)) {
+                    LogPrintf("AcceptToMemoryPool(): sigma mint with the same value %s is already in the mempool\n", pubCoinValue.tostring());
+                    return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
+                }
+                zcMintPubcoinsV3.push_back(pubCoinValue);
+            }
+
+            if (txout.scriptPubKey.IsLelantusMint() || txout.scriptPubKey.IsLelantusJMint()) {
+                GroupElement pubCoinValue;
+                try {
+                    lelantus::ParseLelantusMintScript(txout.scriptPubKey, pubCoinValue);
+                } catch (std::invalid_argument&) {
+                    return state.DoS(100, false, PUBCOIN_NOT_VALIDATE, "bad-txns-zerocoin");
+                }
+                if (lelantusState->HasCoin(pubCoinValue) || pool.lelantusState.HasMint(pubCoinValue)) {
+                    LogPrintf("AcceptToMemoryPool(): lelantus mint with the same value %s is already in the mempool\n", pubCoinValue.tostring());
+                    return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
+                }
+                lelantusMintPubcoins.push_back(pubCoinValue);
+            }
         }
     }
 
@@ -826,88 +935,9 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
 
     // Check for conflicts with in-memory transactions
     std::set<uint256> setConflicts;
-    //btzc
-    CZerocoinState *zcState = CZerocoinState::GetZerocoinState();
-    vector<CBigNum> zcSpendSerials;
-    CBigNum zcSpendSerial;
-
-    // V3 sigma spends.
-    sigma::CSigmaState *sigmaState = sigma::CSigmaState::GetState();
-    vector<Scalar> zcSpendSerialsV3;
-    vector<GroupElement> zcMintPubcoinsV3;
-
-    //lelantus
-    lelantus::CLelantusState *lelantusState = lelantus::CLelantusState::GetState();
-    vector<Scalar> lelantusSpendSerials;
-    vector<GroupElement> lelantusMintPubcoins;
-    vector<uint64_t> lelantusAmounts;
     {
     LOCK(pool.cs); // protect pool.mapNextTx
-    if (tx.IsZerocoinSpend()) {
-        BOOST_FOREACH(const CTxIn &txin, tx.vin)
-        {
-            zcSpendSerial = ZerocoinGetSpendSerialNumber(tx, txin);
-            if (!zcSpendSerial)
-                return state.Invalid(false, REJECT_INVALID, "txn-invalid-zerocoin-spend");
-            if (!zcState->CanAddSpendToMempool(zcSpendSerial)) {
-                LogPrintf("AcceptToMemoryPool(): serial number %s has been used\n", zcSpendSerial.ToString());
-                return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
-            }
-            zcSpendSerials.push_back(zcSpendSerial);
-        }
-    }
-    else if (tx.IsZerocoinRemint()) {
-        zcSpendSerial = sigma::CoinRemintToV3::GetSerialNumber(tx);
-
-        if (!zcSpendSerial)
-            return state.Invalid(false, REJECT_INVALID, "txn-invalid-zerocoin-spend");
-
-        if (!zcState->CanAddSpendToMempool(zcSpendSerial)) {
-            LogPrintf("AcceptToMemoryPool(): serial number %s has been used\n", zcSpendSerial.ToString());
-            return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
-        }
-
-        zcSpendSerials.push_back(zcSpendSerial);
-    }
-    else if (tx.IsSigmaSpend()) {
-
-        BOOST_FOREACH(const CTxIn &txin, tx.vin)
-        {
-            Scalar zcSpendSerial = sigma::GetSigmaSpendSerialNumber(tx, txin);
-            Scalar zero;
-
-            if (zcSpendSerial == zero)
-                return state.Invalid(false, REJECT_INVALID, "txn-invalid-zerocoin-spend");
-            if (!sigmaState->CanAddSpendToMempool(zcSpendSerial)) {
-                LogPrintf("AcceptToMemoryPool(): sigma serial number %s has been used\n", zcSpendSerial.tostring());
-                return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
-            }
-            zcSpendSerialsV3.push_back(zcSpendSerial);
-        }
-    }
-    else if (tx.IsLelantusJoinSplit()) {
-        if(tx.vin.size() > 1) {
-            return state.Invalid(false, REJECT_CONFLICT, "txn-invalid-lelantus-joinsplit");
-        }
-        std::vector<Scalar> serials;
-        try {
-            serials = lelantus::GetLelantusJoinSplitSerialNumbers(tx, tx.vin[0]);
-        }
-        catch (CBadTxIn&) {
-            return state.Invalid(false, REJECT_CONFLICT, "txn-invalid-lelantus-joinsplit");
-        }
-        for(const auto& serial : serials) {
-            if(!serial.isMember() || serial.isZero())
-                return state.Invalid(false, REJECT_INVALID, "txn-invalid-lelantus-joinsplit-serial");
-            if (lelantusState->IsUsedCoinSerial(serial) || pool.lelantusState.HasCoinSerial(serial) ||
-                    !sigmaState->CanAddSpendToMempool(serial)) {
-                LogPrintf("AcceptToMemoryPool(): lelantus serial number %s has been used\n", serial.tostring());
-                return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
-            }
-            lelantusSpendSerials.push_back(serial);
-        }
-    }
-    else {
+    if (!tx.IsZerocoinSpend() && !tx.IsZerocoinRemint() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit()) {
         BOOST_FOREACH(const CTxIn &txin, tx.vin)
         {
             auto itConflicting = pool.mapNextTx.find(txin.prevout);
@@ -946,40 +976,6 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                     }
                 }
             }
-        }
-    }
-
-    BOOST_FOREACH(const CTxOut &txout, tx.vout)
-    {
-        if (txout.scriptPubKey.IsSigmaMint()) {
-            GroupElement pubCoinValue;
-            try {
-                pubCoinValue = sigma::ParseSigmaMintScript(txout.scriptPubKey);
-            } catch (std::invalid_argument&) {
-                return state.DoS(100, false, PUBCOIN_NOT_VALIDATE, "bad-txns-zerocoin");
-            }
-            if (!sigmaState->CanAddMintToMempool(pubCoinValue)) {
-                LogPrintf("AcceptToMemoryPool(): sigma mint with the same value %s is already in the mempool\n", pubCoinValue.tostring());
-                return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
-            }
-            zcMintPubcoinsV3.push_back(pubCoinValue);
-        }
-    }
-
-    BOOST_FOREACH(const CTxOut &txout, tx.vout)
-    {
-        if (txout.scriptPubKey.IsLelantusMint() || txout.scriptPubKey.IsLelantusJMint()) {
-            GroupElement pubCoinValue;
-            try {
-                lelantus::ParseLelantusMintScript(txout.scriptPubKey, pubCoinValue);
-            } catch (std::invalid_argument&) {
-                return state.DoS(100, false, PUBCOIN_NOT_VALIDATE, "bad-txns-zerocoin");
-            }
-            if (lelantusState->HasCoin(pubCoinValue) || pool.lelantusState.HasMint(pubCoinValue)) {
-                LogPrintf("AcceptToMemoryPool(): lelantus mint with the same value %s is already in the mempool\n", pubCoinValue.tostring());
-                return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
-            }
-            lelantusMintPubcoins.push_back(pubCoinValue);
         }
     }
 
@@ -1315,7 +1311,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                 scriptVerifyFlags = GetArg("-promiscuousmempoolflags", scriptVerifyFlags);
             }
             */
-//xxxx
+
             // Check against previous transactions
             // This is done last to help prevent CPU exhaustion denial-of-service attacks.
             PrecomputedTransactionData txdata(tx);
