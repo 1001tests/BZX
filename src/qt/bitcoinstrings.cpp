@@ -117,7 +117,7 @@ QT_TRANSLATE_NOOP("BZX-core", ""
 "Found unconfirmed denominated outputs, will wait till they confirm to "
 "continue."),
 QT_TRANSLATE_NOOP("BZX-core", ""
-"Has to have at least two mint coins with at least 6 confirmation in order to "
+"Has to have at least two mint coins with at least 2 confirmation in order to "
 "spend a coin"),
 QT_TRANSLATE_NOOP("BZX-core", ""
 "How thorough the block verification of -checkblocks is (0-4, default: %u)"),
@@ -321,10 +321,10 @@ QT_TRANSLATE_NOOP("BZX-core", ""
 "Exodus will now shutdown - please restart the client for your new "
 "configuration to take effect."),
 QT_TRANSLATE_NOOP("BZX-core", ""
-"it has to have at least two mint coins with at least 6 confirmation in order "
+"it has to have at least two mint coins with at least 2 confirmation in order "
 "to spend a coin"),
 QT_TRANSLATE_NOOP("BZX-core", ""
-"znodeaddr option is deprecated. Please use znode.conf to manage your remote "
+"znodeaddr option is deprecated. Please use masternode.conf to manage your remote "
 "znodes."),
 QT_TRANSLATE_NOOP("BZX-core", "%s - %d confirmations"),
 QT_TRANSLATE_NOOP("BZX-core", "%s Daemon"),
@@ -379,7 +379,7 @@ QT_TRANSLATE_NOOP("BZX-core", "Connect to a node to retrieve peer addresses, and
 QT_TRANSLATE_NOOP("BZX-core", "Connection options:"),
 QT_TRANSLATE_NOOP("BZX-core", "Copyright (C) %i-%i"),
 QT_TRANSLATE_NOOP("BZX-core", "Corrupted block database detected"),
-QT_TRANSLATE_NOOP("BZX-core", "Could not parse znode.conf"),
+QT_TRANSLATE_NOOP("BZX-core", "Could not parse masternode.conf"),
 QT_TRANSLATE_NOOP("BZX-core", "Create hex-encoded BZX transaction"),
 QT_TRANSLATE_NOOP("BZX-core", "Create new, empty TX."),
 QT_TRANSLATE_NOOP("BZX-core", "Debugging/Testing options:"),
@@ -440,7 +440,7 @@ QT_TRANSLATE_NOOP("BZX-core", "Invalid amount for -mininput=<amount>: '%s'"),
 QT_TRANSLATE_NOOP("BZX-core", "Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
 QT_TRANSLATE_NOOP("BZX-core", "Invalid amount"),
 QT_TRANSLATE_NOOP("BZX-core", "Invalid netmask specified in -whitelist: '%s'"),
-QT_TRANSLATE_NOOP("BZX-core", "Invalid port detected in znode.conf"),
+QT_TRANSLATE_NOOP("BZX-core", "Invalid port detected in masternode.conf"),
 QT_TRANSLATE_NOOP("BZX-core", "Invalid script detected."),
 QT_TRANSLATE_NOOP("BZX-core", "Keep at most <n> unconnectable transactions in memory (default: %u)"),
 QT_TRANSLATE_NOOP("BZX-core", "Keep the transaction memory pool below <n> megabytes (default: %u)"),

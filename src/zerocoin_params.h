@@ -40,7 +40,7 @@ static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 #define EVOSPORK_MIN_VERSION                140200
 
 // number of mint confirmations needed to spend coin
-#define ZC_MINT_CONFIRMATIONS               6
+#define ZC_MINT_CONFIRMATIONS               2
 
 // Value of lelantus spends allowed per block
 #define ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_BLOCK  (5100 * COIN)

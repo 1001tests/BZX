@@ -665,7 +665,7 @@ int main(int argc, char *argv[])
     // - mnemonic not set (default, not setting mnemonic from conf file instead) and
     // - hdseed not set (default, not setting hd seed from conf file instead)
 
-    if(GetBoolArg("-usemnemonic", DEFAULT_USE_MNEMONIC) &&
+    if(GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) &&
        !GetBoolArg("-disablewallet", false) &&
        GetArg("-mnemonic", "").empty() &&
        GetArg("-hdseed", "not hex")=="not hex"){
