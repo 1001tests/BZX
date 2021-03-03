@@ -37,7 +37,7 @@ jobs:
     # build source
     - <<: *buildsrc
       env: BUILD_TARGET=win64
-    #- <<: *buildsrc
+    #- <<: *buildsrcz
       #env: BUILD_TARGET=linux64
       
 before_cache:
