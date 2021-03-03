@@ -764,7 +764,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
     }
 
     if(tx.IsSigmaMint() || tx.IsSigmaSpend()) {
-        if (chainActive.Height() >= 450000 {
+        if (chainActive.Height() >= 450000
             return state.DoS(100, error("Sigma transactions no more allowed in mempool"),
                              REJECT_INVALID, "bad-txns-zerocoin");
     }
