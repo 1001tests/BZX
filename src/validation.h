@@ -62,7 +62,7 @@ static const bool DEFAULT_WHITELISTFORCERELAY = true;
 /** Default for -minrelaytxfee, minimum relay fee for transactions */
 //btzc: update BZX fee
 static const unsigned int DEFAULT_MIN_RELAY_TX_FEE = 0.1 * CENT;
-static const unsigned int MAX_STANDARD_TX_SIZE = 300000;
+static const unsigned int MAX_STANDARD_TX_SIZE = 800000;
 //! -maxtxfee default
 static const CAmount DEFAULT_TRANSACTION_MAXFEE = 1 * COIN;
 //! Discourage users to set fees higher than this amount (in satoshis) per kB
