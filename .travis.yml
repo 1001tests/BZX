@@ -13,12 +13,12 @@ cache:
     - $HOME/cache
 
 stages:
-  #- build depends
+  - build depends
   - build src
 
 #builddepends: &builddepends
- # stage: build depends
-  #script:
+  stage: build depends
+  script:
     - $DOCKER_RUN_IN_BUILDER ./ci/build_depends.sh
 
 buildsrc: &buildsrc
