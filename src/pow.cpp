@@ -116,19 +116,19 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
-    if (pindexLast->nHeight + 1 <= 47)
+    if (pindexLast->nHeight + 1 >= 0)
     {
-        return bnProofOfWorkLimit.GetCompact();
+		return bnProofOfWorkLimit.GetCompact();
     }
 
-    else// if(pindexLast->nHeight +1 <= 101)
+    if (pindexLast->nHeight +1 >= 48)
     {
-       return GetNextWorkRequiredBTC(pindexLast, pblock);
+		return GetNextWorkRequiredBTC(pindexLast, pblock);
     }
-    //else //if (pindexLast->nHeight +1 <= 51000)
-    //{
-      // return DarkGravityWave3(pindexLast, pblock);
-    //}
+    if (pindexLast->nHeight +1 >= 102)
+    {
+		return DarkGravityWave3(pindexLast, pblock);
+	}
     /*else
     {
        return NexxtDG(pindexLast, pblock);
