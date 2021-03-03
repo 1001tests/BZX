@@ -121,14 +121,14 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return bnProofOfWorkLimit.GetCompact();
     }
 
-    else if(pindexLast->nHeight +1 <= 102)
+    else// if(pindexLast->nHeight +1 <= 52000)
     {
        return GetNextWorkRequiredBTC(pindexLast, pblock);
     }
-    else //if (pindexLast->nHeight +1 <= 51000)
-    {
-       return DarkGravityWave3(pindexLast, pblock);
-    }
+    //else //if (pindexLast->nHeight +1 <= 51000)
+    //{
+      // return DarkGravityWave3(pindexLast, pblock);
+    //}
     /*else
     {
        return NexxtDG(pindexLast, pblock);
