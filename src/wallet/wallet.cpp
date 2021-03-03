@@ -4544,7 +4544,7 @@ bool CWallet::CreateZerocoinMintModel(string &stringError, const string& denomAm
     // do not use v2 mint until certain moment when it would be understood by peers
     {
         LOCK(cs_main);
-        if (chainActive.Height() >= Params().GetConsensus().nSpendV15StartBlock)
+        if (true)
             mintVersion = ZEROCOIN_TX_VERSION_2;
     }
 
@@ -5711,7 +5711,7 @@ bool CWallet::CreateZerocoinSpendTransaction(std::string &thirdPartyaddress, int
             // Fill vin
 
             // Set up the Zerocoin Params object
-            bool fModulusV2 = chainActive.Height() >= Params().GetConsensus().nModulusV2StartBlock;
+            bool fModulusV2 = true;
             libzerocoin::Params *zcParams = fModulusV2 ? ZCParamsV2 : ZCParams;
 
             // Select not yet used coin from the wallet with minimal possible id
@@ -5808,7 +5808,7 @@ bool CWallet::CreateZerocoinSpendTransaction(std::string &thirdPartyaddress, int
                     LOCK(cs_main);
                     nHeight = chainActive.Height();
                 }
-                if (nHeight >= Params().GetConsensus().nSpendV15StartBlock)
+                if (true)
                     txVersion = ZEROCOIN_TX_VERSION_1_5;
             }
 
@@ -5974,7 +5974,7 @@ bool CWallet::CreateMultipleZerocoinSpendTransaction(std::string &thirdPartyaddr
             }
 
             // Set up the Zerocoin Params object
-            bool fModulusV2 = chainActive.Height() >= Params().GetConsensus().nModulusV2StartBlock;
+            bool fModulusV2 = true;
             libzerocoin::Params *zcParams = fModulusV2 ? ZCParamsV2 : ZCParams;
             // objects holding spend inputs & storage values while tx is formed
             struct TempStorage {
@@ -6091,7 +6091,7 @@ bool CWallet::CreateMultipleZerocoinSpendTransaction(std::string &thirdPartyaddr
                         LOCK(cs_main);
                         nHeight = chainActive.Height();
                     }
-                    if (nHeight >= Params().GetConsensus().nSpendV15StartBlock){
+                    if (true){
                         txVersion = ZEROCOIN_TX_VERSION_1_5;
                     }
                 }
