@@ -116,23 +116,18 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
 {
-    if (pindexLast->nHeight + 1 <= 47)
+    if (pindexLast->nHeight > 100)
     {
-		return bnProofOfWorkLimit.GetCompact();
+        return DarkGravityWave3(pindexLast, pblock);
     }
-
-    else if (pindexLast->nHeight +1 <= 102)
+    else if (pindexLast->nHeight > 46)
     {
-		return GetNextWorkRequiredBTC(pindexLast, pblock);
+        return GetNextWorkRequiredBTC(pindexLast, pblock);
     }
-    else// if (pindexLast->nHeight +1 <= 102)
+    else
     {
-		return DarkGravityWave3(pindexLast, pblock);
-	}
-    /*else
-    {
-       return NexxtDG(pindexLast, pblock);
-    }*/
+        return bnProofOfWorkLimit.GetCompact();
+    }
 }
 
 unsigned int NexxtDG(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
@@ -180,7 +175,20 @@ unsigned int NexxtDG(const CBlockIndex* pindexLast, const CBlockHeader *pblock)
     return bnNew.GetCompact();
 }
 
-int64_t Nexxt(const CBlockIndex* pindexPrev, const CBlockHeader* pblock)
+unsigned int NexxtD(const CBlockIndex* pindexPrev, const CBlockHeader* pblock)
+{
+    int nHeight = pindexPrev->nHeight + 1;
+    if (nHeight > 52033)
+    {
+        return NexxtDG(pindexPrev, pblock);
+    }
+    else
+    {
+        return GetNextWorkRequired(pindexPrev, pblock);
+    }
+}
+
+int64_t Nexxt(const CBlockIndex* pindexPrev, const CBlockHeader* pblock)//add on the fly check
 {
         if      (pblock->GetBlockTime() > (pindexPrev->GetBlockTime() + (60 * 60) + 0)) {
             return 1; }

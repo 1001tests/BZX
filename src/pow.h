@@ -18,6 +18,7 @@ class uint256;
 
 unsigned int GetNextWorkRequired(const CBlockIndex *pindexLast, const CBlockHeader *pblock);
 int64_t Nexxt(const CBlockIndex* pindexPrev, const CBlockHeader* pblock);
+unsigned int NexxtD(const CBlockIndex* pindexPrev, const CBlockHeader* pblock);
 unsigned int NexxtDG(const CBlockIndex* pindexLast, const CBlockHeader *pblock);
 unsigned int CalculateNextWorkRequired(const CBlockIndex *pindexLast, int64_t nFirstBlockTime);
 
