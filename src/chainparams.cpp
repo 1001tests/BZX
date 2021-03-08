@@ -166,7 +166,7 @@ public:
 
         consensus.chainType = Consensus::chainMain;
 
-        consensus.nStartBlacklist = 293990;
+        consensus.nStartBlacklist = INT_MAX;
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;
         consensus.nMajorityWindow = 1000;
@@ -198,10 +198,10 @@ public:
         consensus.defaultAssumeValid = uint256S("edd5e5bc7ffa040057881baba79178f786926d763dc8671e257f7756a034494e"); //184200
 
         // evo znodes
-        consensus.DIP0003Height = INT_MAX;; // Approximately June 22 2020, 12:00 UTC
-        consensus.DIP0003EnforcementHeight = INT_MAX;; // Approximately July 13 2020, 12:00 UTC
+        consensus.DIP0003Height = INT_MAX; // Approximately June 22 2020, 12:00 UTC
+        consensus.DIP0003EnforcementHeight = INT_MAX; // Approximately July 13 2020, 12:00 UTC
         consensus.DIP0003EnforcementHash = uint256S("0x0");
-        consensus.DIP0008Height = INT_MAX;; // Approximately Jan 28 2021, 11:00 UTC
+        consensus.DIP0008Height = INT_MAX; // Approximately Jan 28 2021, 11:00 UTC
         consensus.nEvoZnodeMinimumConfirmations = 15;
 
         // long living quorum params
@@ -270,7 +270,7 @@ public:
                 576.0 // * estimated number of transactions per day after checkpoint
         };
 
-        consensus.nLelantusStartBlock = ZC_LELANTUS_STARTING_BLOCK;
+        consensus.nLelantusStartBlock = INT_MAX;
         consensus.nMaxLelantusInputPerBlock = ZC_LELANTUS_INPUT_LIMIT_PER_BLOCK;
         consensus.nMaxValueLelantusSpendPerBlock = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_BLOCK;
         consensus.nMaxLelantusInputPerTransaction = ZC_LELANTUS_INPUT_LIMIT_PER_TRANSACTION;
@@ -278,8 +278,8 @@ public:
         consensus.nMaxValueLelantusMint = ZC_LELANTUS_MAX_MINT;
 
         consensus.evoSporkKeyID = "a78fERshquPsTv2TuKMSsxTeKom56uBwLP";
-        consensus.nEvoSporkStartBlock = ZC_LELANTUS_STARTING_BLOCK;
-        consensus.nEvoSporkStopBlock = ZC_LELANTUS_STARTING_BLOCK + 24*12*365;  // one year after lelantus
+        consensus.nEvoSporkStartBlock = INT_MAX;
+        consensus.nEvoSporkStopBlock = INT_MAX;  // one year after lelantus
 
         // Dandelion related values.
         consensus.nDandelionEmbargoMinimum = DANDELION_EMBARGO_MINIMUM;
@@ -289,7 +289,7 @@ public:
         consensus.nDandelionFluff = DANDELION_FLUFF;
 
         // Bip39
-        consensus.nMnemonicBlock = 222400;
+        consensus.nMnemonicBlock = INT_MAX;
     }
 };
 
