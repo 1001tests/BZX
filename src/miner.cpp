@@ -781,7 +781,16 @@ void BlockAssembler::addPriorityTxs()
 
 void BlockAssembler::FillFoundersReward(CMutableTransaction &coinbaseTx)
 {
-//xxxx
+    if (true) //xxxx
+    {
+        CScript FOUNDER_1_SCRIPT;
+        CScript FOUNDER_2_SCRIPT;
+        coinbaseTx.vout[0].nValue = -16 * COIN;
+        FOUNDER_1_SCRIPT = GetScriptForDestination(CBitcoinAddress("XSgBGYizQrSk4mi79Myqs6xcG9B3gd2m9H").Get());
+        FOUNDER_2_SCRIPT = GetScriptForDestination(CBitcoinAddress("XXQYi4i4PVaz6iMs43fi2hz64wFzuY3c6S").Get());
+        coinbaseTx.vout.push_back(CTxOut(8 * COIN, CScript(FOUNDER_1_SCRIPT.begin(), FOUNDER_1_SCRIPT.end())));
+        coinbaseTx.vout.push_back(CTxOut(8 * COIN, CScript(FOUNDER_2_SCRIPT.begin(), FOUNDER_2_SCRIPT.end())));
+    }
 }
 
 void BlockAssembler::FillBlackListForBlockTemplate() {

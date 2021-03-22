@@ -5,7 +5,7 @@ namespace sigma {
 
 std::set<std::string> const sigma_blacklist {
  
- };
+};
 
 } // end of namespace sigma.
 
