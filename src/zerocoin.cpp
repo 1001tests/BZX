@@ -532,7 +532,7 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
                               CZerocoinTxInfo *zerocoinTxInfo)
 {
     if (tx.IsZerocoinSpend() || tx.IsZerocoinMint()) {
-        if (true)  // transaction is accepted to the memory pool: always disable except if regtest chain (need remint tests)
+        if (nHeight > 450000)  // transaction is accepted to the memory pool: always disable except if regtest chain (need remint tests)
             return state.DoS(1, error("Zerocoin is disabled at this point"));
     }
 
