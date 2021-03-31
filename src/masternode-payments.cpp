@@ -4,7 +4,6 @@
 
 #include "activemasternode.h"
 #include "consensus/validation.h"
-//#include "governance-classes.h"
 #include "base58.h"
 #include "script/standard.h"
 #include "init.h"

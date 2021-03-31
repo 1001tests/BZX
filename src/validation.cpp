@@ -2713,13 +2713,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     std::string strError = "";
     if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError) && pindex->nHeight > 47) {
         return state.DoS(0, error("ConnectBlock(EVOZNODES): %s", strError), REJECT_INVALID, "bad-cb-amount");
-    }//yyyy
+    }
 
-    if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy) && pindex->nHeight > 200000) {
+    if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy) && pindex->nHeight > 200000) {//xxxx
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
                                 REJECT_INVALID, "bad-cb-payee");
-    } //yyyy
+    }
 
     if (!ProcessSpecialTxsInBlock(block, pindex, state, fJustCheck, fScriptChecks)) {
         return error("ConnectBlock(): ProcessSpecialTxsInBlock for block %s at height %i failed with %s",
@@ -4290,10 +4290,12 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 {
 	// Check proof of work
 
-    /*if (block.nBits != GetNextWorkRequired(pindexPrev, &block))
-        //return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
-        LogPrintf("DIFFBITS\n");
-        return false;*/ //xxxx
+    if IsSynced()
+    {
+        if (chainActive.Height() > 52033) {
+            if (block.nBits != NexxtD(pindexPrev, &block))
+                return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work"); }
+    } //xxxx
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())

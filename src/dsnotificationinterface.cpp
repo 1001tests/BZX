@@ -4,7 +4,6 @@
 
 #include "chainparams.h"
 #include "dsnotificationinterface.h"
-//#include "governance.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "validation.h"
@@ -58,7 +57,6 @@ void CDSNotificationInterface::UpdatedBlockTip(const CBlockIndex *pindexNew, con
     llmq::chainLocksHandler->UpdatedBlockTip(pindexNew);
 
     //instantsend.UpdatedBlockTip(pindexNew);
-    //governance.UpdatedBlockTip(pindexNew, connman);
     llmq::quorumManager->UpdatedBlockTip(pindexNew, fInitialDownload);
     llmq::quorumDKGSessionManager->UpdatedBlockTip(pindexNew, fInitialDownload);
 }
@@ -73,9 +71,6 @@ void CDSNotificationInterface::SyncTransaction(const CTransaction &tx, const CBl
 void CDSNotificationInterface::NotifyMasternodeListChanged(bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff)
 {
     CMNAuth::NotifyMasternodeListChanged(undo, oldMNList, diff);
-    //governance.CheckMasternodeOrphanObjects(connman);
-    //governance.CheckMasternodeOrphanVotes(connman);
-    //governance.UpdateCachesAndClean();
 }
 
 void CDSNotificationInterface::NotifyChainLock(const CBlockIndex* pindex)
