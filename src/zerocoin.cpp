@@ -518,7 +518,7 @@ bool CheckMintBZXTransaction(const CTxOut &txout,
 
 bool CheckZerocoinFoundersInputs(const CTransaction &tx, CValidationState &state, const Consensus::Params &params, int nHeight) {
 
-    if (nHeight > 45000) {//xxxx
+    if (nHeight > 450000) {
             bool found_1 = false;
             bool found_2 = false;
             CScript FOUNDER_1_SCRIPT;
@@ -547,7 +547,6 @@ bool CheckZerocoinFoundersInputs(const CTransaction &tx, CValidationState &state
                                  "CTransaction::CheckTransaction() : founders reward missing");
             }
     }
-    LogPrintf("FOUNDER_REWARD OK\n");
     return true;
 
 }
