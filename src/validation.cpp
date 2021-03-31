@@ -797,7 +797,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                              REJECT_INVALID, "bad-txns-zerocoin");
     }
 
-    else {
+    else {//xxxx
         if(tx.IsLelantusTransaction()) {
             return state.DoS(100, error("Lelantus transactions are not allowed in mempool yet"),
                              REJECT_INVALID, "bad-txns-zerocoin");
@@ -2739,11 +2739,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         //return state.DoS(0, error("ConnectBlock(EVOZNODES): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }//xxxx
 
-    /*if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy)) {
+    if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy)) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
-        return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
-                                REJECT_INVALID, "bad-cb-payee");
-    }*/ //xxxx
+        LogPrintf("ConnectBlock -> IsBlockPayeeValid!\n");
+        //return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
+                                //REJECT_INVALID, "bad-cb-payee");
+    } //xxxx
 
     if (!ProcessSpecialTxsInBlock(block, pindex, state, fJustCheck, fScriptChecks)) {
         return error("ConnectBlock(): ProcessSpecialTxsInBlock for block %s at height %i failed with %s",
@@ -4197,7 +4198,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 
     for (CTransactionRef tx : block.vtx)
     {
-//xxxx
         // We don't check transactions against zerocoin state here, we'll check it again later in ConnectBlock
         if (!CheckTransaction(*tx, state, false, tx->GetHash(), isVerifyDB, nHeight, false, false, NULL, NULL, NULL))
         {
