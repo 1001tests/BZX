@@ -750,7 +750,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         *pfMissingInputs = false;
 
     const Consensus::Params& consensus = Params().GetConsensus();
-//XXXX
+//yyyy
     if (tx.IsZerocoinMint()) {
         if (chainActive.Height() >= 450000)
             return state.DoS(100, error("Old zerocoin mints no more allowed in mempool"),
@@ -2681,7 +2681,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return state.DoS(0, error("ConnectBlock(EVOZNODES): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }//yyyy
 
-    if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy)) {
+    if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy) && pindex->nHeight > 200000) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
                                 REJECT_INVALID, "bad-cb-payee");
