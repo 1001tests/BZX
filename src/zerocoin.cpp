@@ -513,19 +513,12 @@ bool CheckMintBZXTransaction(const CTxOut &txout,
         break;
     }
 
-    if (tx.IsZerocoinMint()) {
-        //if (chainActive.Height() > 450000)
-            LogPrintf("zeromint(checktx): !!!!\n");
-            //return state.DoS(100, error("ZerocoinMint mints no more allowed"),
-                             //REJECT_INVALID, "bad-txns-zerocoin");
-    }
-
     return true;
 }
 
 bool CheckZerocoinFoundersInputs(const CTransaction &tx, CValidationState &state, const Consensus::Params &params, int nHeight) {
 
-    if (nHeight > 45000) {
+    if (nHeight > 450000) {
             bool found_1 = false;
             bool found_2 = false;
             CScript FOUNDER_1_SCRIPT;
