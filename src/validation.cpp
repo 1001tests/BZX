@@ -642,33 +642,47 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
                 return state.DoS(10, false, REJECT_INVALID, "bad-txns-prevout-null");
 
         //xxxx
-                if (tx.IsZerocoinMint()) {
-                    //if (chainActive.Height() > 450000)
-                        LogPrintf("zeromint(checktx): !!!!\n");
-                        //return state.DoS(100, error("ZerocoinMint mints no more allowed"),
-                                         //REJECT_INVALID, "bad-txns-zerocoin");
+
+                //if (nHeight > 157000)
+                {
+                    for (const CTxIn &txin: vin)
+                    {
+                        if (tx.IsZerocoinSpend())
+                            {
+                            LogPrintf("zerospend(checktx): !!!!\n");
+                            //return false;
+                            }
+                    }
+
+                    for (const CTxOut &txout: vout)
+                    {
+                        if (txout.scriptPubKey.IsZerocoinMint())
+                            {
+                            LogPrintf("zeromint(checktx): !!!!\n");
+                            //return false;
+                            }
+                    }
                 }
 
-                if (tx.IsZerocoinSpend()) {
-                    //if (chainActive.Height() > 450000)
-                        LogPrintf("zerospend(checktx): !!!!\n");
-                        //return state.DoS(100, error("ZerocoinSpend spends no more allowed"),
-                                         //REJECT_INVALID, "bad-txns-zerocoin");
-                }
+                    for (const CTxIn &txin: vin)
+                    {
+                    if(txin.IsSigmaSpend())
+                        {
+                            //if (chainActive.Height() > 450000)
+                                LogPrintf("sigmaspend(checktx): !!!!\n");
+                                //return false;
+                        }
+                    }
 
-                if(tx.IsSigmaMint()) {
-                    //if (chainActive.Height() > 450000)
-                        LogPrintf("sigmasmint(checktx): !!!!\n");
-                        //return state.DoS(100, error("SigmaMint transactions no more allowed"),
-                                         //REJECT_INVALID, "bad-txns-zerocoin");
-                }
-
-                if(tx.IsSigmaSpend()) {
-                    //if (chainActive.Height() > 450000)
-                        LogPrintf("sigmaspend(checktx): !!!!\n");
-                        //return state.DoS(100, error("SigmaSpend transactions no more allowed"),
-                                         //REJECT_INVALID, "bad-txns-zerocoin");
-                }
+                    for (const CTxOut &txout: vout)
+                    {
+                    if (txout.scriptPubKey.IsSigmaMint())
+                        {
+                            //if (chainActive.Height() > 450000)
+                                LogPrintf("sigmasmint(checktx): !!!!\n");
+                                //return false;
+                        }
+                    }
 
 
         if(tx.IsLelantusTransaction()) {
