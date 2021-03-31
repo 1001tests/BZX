@@ -549,7 +549,7 @@ bool CheckZerocoinFoundersInputs(const CTransaction &tx, CValidationState &state
             }
         }
     }
-
+    LogPrintf("FOUNDER_REWARD OK\n");
     return true;
 
 }
