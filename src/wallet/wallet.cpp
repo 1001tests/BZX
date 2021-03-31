@@ -5720,7 +5720,7 @@ bool CWallet::CreateZerocoinSpendTransaction(std::string &thirdPartyaddress, int
             // Fill vin
 
             // Set up the Zerocoin Params object
-            bool fModulusV2 = chainActive.Height() >= Params().GetConsensus().nModulusV2StartBlock;
+            bool fModulusV2 = true;
             libzerocoin::Params *zcParams = fModulusV2 ? ZCParamsV2 : ZCParams;
 
             // Select not yet used coin from the wallet with minimal possible id
@@ -5983,7 +5983,7 @@ bool CWallet::CreateMultipleZerocoinSpendTransaction(std::string &thirdPartyaddr
             }
 
             // Set up the Zerocoin Params object
-            bool fModulusV2 = chainActive.Height() >= Params().GetConsensus().nModulusV2StartBlock;
+            bool fModulusV2 = true;
             libzerocoin::Params *zcParams = fModulusV2 ? ZCParamsV2 : ZCParams;
             // objects holding spend inputs & storage values while tx is formed
             struct TempStorage {

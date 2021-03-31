@@ -4300,6 +4300,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 
 	// Check proof of work
     if (false)
+        //if (masternodeSync.IsBlockchainSynced())
     {
         if (chainActive.Height() > 52033) {
             if (block.nBits != NexxtD(pindexPrev, &block))
