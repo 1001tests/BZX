@@ -51,6 +51,7 @@
 #include "definition.h"
 #include "utiltime.h"
 #include "masternode-sync.h"
+
 #include "coins.h"
 
 #include "blacklists.h"
@@ -603,7 +604,8 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
     }
 
     // Check for duplicate inputs - note that this check is slow so we skip it in CheckBlock
-    if (true) {
+    bool const check_di = true;
+    if (fCheckDuplicateInputs || check_di) {
         std::set<COutPoint> vInOutPoints;
         if (tx.IsZerocoinSpend() || tx.IsSigmaSpend() || tx.IsZerocoinRemint() || tx.IsLelantusJoinSplit()) {
             std::set<CScript> spendScripts;
@@ -738,7 +740,6 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                               bool* pfMissingInputs, int64_t nAcceptTime, std::list<CTransactionRef>* plTxnReplaced,
                               bool fOverrideMempoolLimit, const CAmount& nAbsurdFee, std::vector<COutPoint>& coins_to_uncache,
                               bool isCheckWalletTransaction, bool markBZXSpendTransactionSerial)
-
 {
     bool fTestNet = Params().GetConsensus().IsTestnet();
     LogPrintf("AcceptToMemoryPoolWorker(), tx.IsZerocoinSpend()=%s, fTestNet=%s\n", ptx->IsZerocoinSpend() || ptx->IsSigmaSpend() || ptx->IsLelantusJoinSplit(), fTestNet);
@@ -754,36 +755,34 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
     if (tx.IsZerocoinMint()) {
         if (chainActive.Height() > 450000)
             LogPrintf("zeromint(): !!!!\n");
-            //return state.DoS(100, error("IsZerocoinMint mints no more allowed in mempool"),
+            //return state.DoS(100, error("ZerocoinMint mints no more allowed in mempool"),
                              //REJECT_INVALID, "bad-txns-zerocoin");
     }
 
     if (tx.IsZerocoinSpend()) {
         if (chainActive.Height() > 450000)
             LogPrintf("zerospend(): !!!!\n");
-            //return state.DoS(100, error("IsZerocoinSpend spends no more allowed in mempool"),
-                             //REJECT_INVALID, "bad-txns-zerocoin");
+            //return state.DoS(100, error("ZerocoinSpend transactions no more allowed in mempool"),
+                              //REJECT_INVALID, "bad-txns-zerocoin");
     }
 
-    if(tx.IsSigmaMint() || tx.IsSigmaSpend()) {
+    if(tx.IsSigmaMint()) {
         if (chainActive.Height() > 450000)
-            LogPrintf("sigmamint(): !!!!\n");
-            //return state.DoS(100, error("IsSigmaMint transactions no more allowed in mempool"),
+            LogPrintf("sigmasmint(): !!!!\n");
+            //return state.DoS(100, error("Sigmamint transactions no more allowed in mempool"),
                              //REJECT_INVALID, "bad-txns-zerocoin");
     }
 
     if(tx.IsSigmaSpend()) {
         if (chainActive.Height() > 450000)
             LogPrintf("sigmaspend(): !!!!\n");
-            //return state.DoS(100, error("IsSigmaSpend transactions no more allowed in mempool"),
+            //return state.DoS(100, error("SigmaSpend transactions no more allowed in mempool"),
                              //REJECT_INVALID, "bad-txns-zerocoin");
     }
 
-    else {
-        if(tx.IsLelantusTransaction()) {//xxxx
+    else if(tx.IsLelantusTransaction()) {
             return state.DoS(100, error("Lelantus transactions are not allowed in mempool yet"),
                              REJECT_INVALID, "bad-txns-zerocoin");
-        }
     }
 
     //btzc
@@ -1325,6 +1324,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
             // Check against previous transactions
             // This is done last to help prevent CPU exhaustion denial-of-service attacks.
             PrecomputedTransactionData txdata(tx);
+//xxxx
             if (!CheckInputs(tx, state, view, true, scriptVerifyFlags, true, txdata)) {
                 // SCRIPT_VERIFY_CLEANSTACK requires SCRIPT_VERIFY_WITNESS, so we
                 // need to turn both off, and compare against just turning off CLEANSTACK
@@ -1713,6 +1713,7 @@ bool ReadBlockHeaderFromDisk(CBlock &block, const CDiskBlockPos &pos) {
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams, int nTime)
 {
+
     if (nHeight == 0) // Genesis block is 0 coins
         return 0;
 
@@ -1730,10 +1731,12 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams, i
 
     else
         return 45 * COIN;
+
 }
 
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
+
     if (nHeight <= 51000)
     {
     CAmount ret = 10.5 * COIN;
@@ -1757,6 +1760,7 @@ CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
     CAmount ret = 18 * COIN;
         return ret;
     }
+
 }
 
 bool IsInitialBlockDownload() {
@@ -2275,12 +2279,12 @@ static DisconnectResult DisconnectBlock(const CBlock& block, CValidationState& s
             }
             for (unsigned int j = tx.vin.size(); j-- > 0;)
             {
-                const COutPoint &out = tx.vin[j].prevout;
-                int undoHeight = txundo.vprevout[j].nHeight;
-                int res = ApplyTxInUndo(std::move(txundo.vprevout[j]), view, out);
-                if (res == DISCONNECT_FAILED) return DISCONNECT_FAILED;
-                fClean = fClean && res != DISCONNECT_UNCLEAN;
-
+                if (Params().ApplyUndoForTxout(pindex->nHeight, tx.GetHash(), j))
+                {
+                    int res = ApplyTxInUndo(std::move(txundo.vprevout[j]), view, out);
+                    if (res == DISCONNECT_FAILED) return DISCONNECT_FAILED;
+                    fClean = fClean && res != DISCONNECT_UNCLEAN;
+                }
             }
             // At this point, all of txundo.vprevout should have been moved out.
         }
@@ -2326,6 +2330,10 @@ static DisconnectResult DisconnectBlock(const CBlock& block, CValidationState& s
     */
 
     evoDb->WriteBestBlock(pindex->pprev->GetBlockHash());
+
+    if(Params().SkipUndoForBlock(pindex->nHeight)) {
+        fClean = true;
+    }
 
     if (pfClean)
         *pfClean = fClean;
@@ -2492,6 +2500,36 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime1 = GetTimeMicros(); nTimeCheck += nTime1 - nTimeStart;
     LogPrint("bench", "    - Sanity checks: %.2fms [%.2fs]\n", 0.001 * (nTime1 - nTimeStart), nTimeCheck * 0.000001);
 
+    // Do not allow blocks that contain transactions which 'overwrite' older transactions,
+    // unless those are already completely spent.
+    // If such overwrites are allowed, coinbases and transactions depending upon those
+    // can be duplicated to remove the ability to spend the first instance -- even after
+    // being sent to another address.
+    // See BIP30 and http://r6.ca/blog/20120206T005236Z.html for more information.
+    // This logic is not necessary for memory pool transactions, as AcceptToMemoryPool
+    // already refuses previously-known transaction ids entirely.
+    // This rule was originally applied to all blocks with a timestamp after March 15, 2012, 0:00 UTC.
+    // Now that the whole chain is irreversibly beyond that time it is applied to all blocks except the
+    // two in the chain that violate it. This prevents exploiting the issue against nodes during their
+    // initial block download.
+    /*
+    bool fEnforceBIP30 = (!pindex->phashBlock) || // Enforce on CreateNewBlock invocations which don't have a hash.
+                          !((pindex->nHeight==91842 && pindex->GetBlockHash() == uint256S("0x00000000000a4d0a398161ffc163c503763b1f4360639393e0e4c8e300e0caec")) ||
+                           (pindex->nHeight==91880 && pindex->GetBlockHash() == uint256S("0x00000000000743f190a18c5577a3c2d2a1f610ae9601ac046a38084ccb7cd721")));
+    */
+
+    // Once BIP34 activated it was not possible to create new duplicate coinbases and thus other than starting
+    // with the 2 existing duplicate coinbase pairs, not possible to create overwriting txs.  But by the
+    // time BIP34 activated, in each of the existing pairs the duplicate coinbase had overwritten the first
+    // before the first had been spent.  Since those coinbases are sufficiently buried its no longer possible to create further
+    // duplicate transactions descending from the known pairs either.
+    // If we're on the known chain at height greater than where BIP34 activated, we can save the db accesses needed for the BIP30 check.
+    /*
+    CBlockIndex *pindexBIP34height = pindex->pprev->GetAncestor(chainparams.GetConsensus().BIP34Height);
+    //Only continue to enforce if we're below BIP34 activation height or the block hash at that height doesn't correspond.
+    fEnforceBIP30 = fEnforceBIP30 && (!pindexBIP34height || !(pindexBIP34height->GetBlockHash() == chainparams.GetConsensus().BIP34Hash));
+    */
+
     bool fEnforceBIP30 = true;
     if (fEnforceBIP30) {
         for (const auto& tx : block.vtx) {
@@ -2568,36 +2606,38 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
         uint256 txHash = tx.GetHash();
         bool hasDuplicateInTheSameBlock = txIds.count(txHash) > 0;
-        if (hasDuplicateInTheSameBlock)
+        if (hasDuplicateInTheSameBlock && !isMainNet)
             return state.DoS(100, error("ConnectBlock(): duplicate transactions in the same block"),
                              REJECT_INVALID, "bad-txns-duplicatetxid");
         txIds.insert(txHash);
 
         nInputs += tx.vin.size();
-//xxxx
-        if (tx.IsZerocoinMint()) {
-            if (chainActive.Height() > 450000)
-                return state.DoS(0, error("IsZerocoinMint mints no more allowed in connectblock"),
-                                 REJECT_INVALID, "bad-txns-zerocoin");
-        }
 
-        if (tx.IsZerocoinSpend()) {
-            if (chainActive.Height() > 450000)
-                return state.DoS(0, error("IsZerocoinSpend spends no more allowed in connectblock"),
-                                 REJECT_INVALID, "bad-txns-zerocoin");
-        }
+        //xxxx
+                if (tx.IsZerocoinMint()) {
+                    if (chainActive.Height() > 450000)
+                        return state.DoS(0, error("ZerocoinMint mints no more allowed in connectblock"),
+                                         REJECT_INVALID, "bad-txns-zerocoin");
+                }
 
-        if(tx.IsSigmaMint() || tx.IsSigmaSpend()) {
-            if (chainActive.Height() > 450000)
-                return state.DoS(0, error("IsSigmaMint transactions no more allowed in connectblock"),
-                                 REJECT_INVALID, "bad-txns-zerocoin");
-        }
+                if (tx.IsZerocoinSpend()) {
+                    if (chainActive.Height() > 450000)
+                        return state.DoS(0, error("ZerocoinSpend spends no more allowed in connectblock"),
+                                         REJECT_INVALID, "bad-txns-zerocoin");
+                }
 
-        if(tx.IsSigmaSpend()) {
-            if (chainActive.Height() > 450000)
-                return state.DoS(0, error("IsSigmaSpend transactions no more allowed in connectblock"),
-                                 REJECT_INVALID, "bad-txns-zerocoin");
-        }
+                if(tx.IsSigmaMint() || tx.IsSigmaSpend()) {
+                    if (chainActive.Height() > 450000)
+                        return state.DoS(0, error("SigmaMint transactions no more allowed in connectblock"),
+                                         REJECT_INVALID, "bad-txns-zerocoin");
+                }
+
+                if(tx.IsSigmaSpend()) {
+                    if (chainActive.Height() > 450000)
+                        return state.DoS(0, error("SigmaSpend transactions no more allowed in connectblock"),
+                                         REJECT_INVALID, "bad-txns-zerocoin");
+                }
+
 
         if(tx.IsLelantusJoinSplit() && tx.vin.size() > 1)
             return state.DoS(100, error("ConnectBlock(): invalid joinsplit tx"),
@@ -2704,6 +2744,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount blockSubsidy = GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus(), pindex->nTime);
     CAmount blockReward = nFees + blockSubsidy;
     int chainHeight = chainActive.Height();
+
     if (block.vtx[0]->GetValueOut() > blockReward && chainHeight > 47)
         return state.DoS(100,
                          error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
@@ -2715,7 +2756,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return state.DoS(0, error("ConnectBlock(EVOZNODES): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }
 
-    if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy) && pindex->nHeight > 200000) {//xxxx
+    if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy) && pindex->nHeight > 470000) {//xxxx
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
                                 REJECT_INVALID, "bad-cb-payee");
@@ -2726,7 +2767,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                     pindex->GetBlockHash().ToString(), pindex->nHeight, FormatStateMessage(state));
     }
     // END ZNODE
-
 
     // evo spork handling
     // back up spork state if fJustCheck is true
@@ -4121,20 +4161,13 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         bool mutated;
         uint256 hashMerkleRoot2 = BlockMerkleRoot(block, &mutated);
         if (block.hashMerkleRoot != hashMerkleRoot2)
-        {
-            LogPrintf("CheckBlock - merkle root mismatch!\n");
             return state.DoS(100, false, REJECT_INVALID, "bad-txnmrklroot", true, "hashMerkleRoot mismatch");
-        }
 
         // Check for merkle tree malleability (CVE-2012-2459): repeating sequences
         // of transactions in a block without affecting the merkle root of a block,
         // while still invalidating it.
         if (mutated)
-        {
-            LogPrintf("CheckBlock - merkle root failed!\n");
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-duplicate", true, "duplicate transaction");
-        }
-
     }
 
     // All potential-corruption validation must be done before we do any
@@ -4144,42 +4177,27 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     // checks that use witness data may be performed here.
     // Size limits
     if (block.vtx.empty() || block.vtx.size() > MAX_BLOCK_BASE_SIZE || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_BASE_SIZE)
-    {
-        LogPrintf("CheckBlock - size limits failed -> failed!\n");
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-length", false, "size limits failed");
-    }
 
     // First transaction must be coinbase, the rest must not be
     if (block.vtx.empty() || !block.vtx[0]->IsCoinBase())
-    {
-        LogPrintf("CheckBlock - first tx is not coinbase -> failed!\n");
         return state.DoS(100, false, REJECT_INVALID, "bad-cb-missing", false, "first tx is not coinbase");
-    }
-
-    int chainHeight = chainActive.Height();
     for (unsigned int i = 1; i < block.vtx.size(); i++)
-        if (block.vtx[i]->IsCoinBase() && chainHeight > 46)
-        {
-            LogPrintf("CheckBlock - more than one coinbase -> failed!\n");
+        if (block.vtx[i]->IsCoinBase() && chainHeight > 47)
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-multiple", false, "more than one coinbase");
-        }
 
     // Check transactions
     if (nHeight == INT_MAX)
         nHeight = ZerocoinGetNHeight(block.GetBlockHeader());
 
     for (CTransactionRef tx : block.vtx)
-
-
-
     {
+
         // We don't check transactions against zerocoin state here, we'll check it again later in ConnectBlock
         if (!CheckTransaction(*tx, state, false, tx->GetHash(), isVerifyDB, nHeight, false, false, NULL, NULL, NULL))
-        {
-            LogPrintf("CheckBlock - CheckTransaction -> failed!\n");
             return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(),
                                 strprintf("Transaction check failed (tx hash %s) %s", tx->GetHash().ToString(), state.GetDebugMessage()));
-        }
+
     }
     unsigned int nSigOps = 0;
     for (const auto& tx : block.vtx)
@@ -4187,20 +4205,16 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         nSigOps += GetLegacySigOpCount(*tx);
     }
     if (nSigOps * WITNESS_SCALE_FACTOR > MAX_BLOCK_SIGOPS_COST)
-
-    {
-        LogPrintf("CheckBlock - SigOpCount -> failed!\n");
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-sigops", false, "out-of-bounds SigOpCount");
-    }
 
     if (fCheckPOW && fCheckMerkleRoot)
         block.fChecked = true;
 
-    if (!lelantus::CheckLelantusBlock(state, block))
-    {
-        LogPrintf("CheckBlock - CheckLelantusBlock -> failed!\n");
+    if (!sigma::CheckSigmaBlock(state, block))
         return false;
-    }
+
+    if (!lelantus::CheckLelantusBlock(state, block))
+        return false;
 
     return true;
 }
@@ -4288,9 +4302,9 @@ std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBloc
 
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, CBlockIndex * const pindexPrev, int64_t nAdjustedTime)
 {
-	// Check proof of work
 
-    if IsSynced()
+	// Check proof of work
+    if (false)
     {
         if (chainActive.Height() > 52033) {
             if (block.nBits != NexxtD(pindexPrev, &block))
@@ -4366,14 +4380,16 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
     }//xxxx
 
     // Enforce rule that the coinbase starts with serialized block height
-    if (nHeight >= 47)
-     {
+
+    if (nHeight > 47)
+    {
         CScript expect = CScript() << nHeight;
         if (block.vtx[0]->vin[0].scriptSig.size() < expect.size() ||
             !std::equal(expect.begin(), expect.end(), block.vtx[0]->vin[0].scriptSig.begin())) {
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-height", false, "block height mismatch in coinbase");
         }
     }
+
 
     // Validation for witness commitments.
     // * We compute the witness hash (which is the hash including witnesses) of all the block's transactions, except the
