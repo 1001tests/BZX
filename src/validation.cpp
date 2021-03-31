@@ -647,13 +647,35 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
         }
     }
 
-    if (!CheckZerocoinTransaction(tx, state, Params().GetConsensus(), hashTx, isVerifyDB, nHeight, isCheckWallet, fStatefulZerocoinCheck, zerocoinTxInfo))
-            return false;
+    //xxxx
+            if (tx.IsZerocoinMint()) {
+                //if (chainActive.Height() > 450000)
+                    LogPrintf("zeromint(checktx): !!!!\n");
+                    //return state.DoS(100, error("ZerocoinMint mints no more allowed"),
+                                     //REJECT_INVALID, "bad-txns-zerocoin");
+            }
 
-    if (tx.IsZerocoinV3SigmaTransaction()) {
-        if (!CheckSigmaTransaction(tx, state, hashTx, isVerifyDB, nHeight, isCheckWallet, fStatefulZerocoinCheck, sigmaTxInfo))
-            return false;
-    }
+            if (tx.IsZerocoinSpend()) {
+                //if (chainActive.Height() > 450000)
+                    LogPrintf("zerospend(checktx): !!!!\n");
+                    //return state.DoS(100, error("ZerocoinSpend spends no more allowed"),
+                                     //REJECT_INVALID, "bad-txns-zerocoin");
+            }
+
+            if(tx.IsSigmaMint()) {
+                //if (chainActive.Height() > 450000)
+                    LogPrintf("sigmasmint(checktx): !!!!\n");
+                    //return state.DoS(100, error("SigmaMint transactions no more allowed"),
+                                     //REJECT_INVALID, "bad-txns-zerocoin");
+            }
+
+            if(tx.IsSigmaSpend()) {
+                //if (chainActive.Height() > 450000)
+                    LogPrintf("sigmaspend(checktx): !!!!\n");
+                    //return state.DoS(100, error("SigmaSpend transactions no more allowed"),
+                                     //REJECT_INVALID, "bad-txns-zerocoin");
+            }
+
 
     if (nHeight >= ::Params().GetConsensus().nStartBlacklist) {
         for (const auto& vin : tx.vin) {

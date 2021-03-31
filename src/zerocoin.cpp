@@ -513,13 +513,6 @@ bool CheckMintBZXTransaction(const CTxOut &txout,
         break;
     }
 
-    if (tx.IsZerocoinMint()) {
-        //if (chainActive.Height() > 450000)
-            LogPrintf("zeromint(checktx): !!!!\n");
-            //return state.DoS(100, error("ZerocoinMint mints no more allowed"),
-                             //REJECT_INVALID, "bad-txns-zerocoin");
-    }
-
     return true;
 }
 
@@ -568,18 +561,10 @@ bool CheckZerocoinTransaction(const CTransaction &tx,
                               bool fStatefulZerocoinCheck,
                               CZerocoinTxInfo *zerocoinTxInfo)
 {
-    if (tx.IsZerocoinMint())
-    {   LogPrintf("zeromint(checktx): !!!!\n");
-        //if (nHeight > 450000)
-            //return state.DoS(1, error("Zerocoinmint is disabled at this point"));
+    if (tx.IsZerocoinSpend() || tx.IsZerocoinMint()) {
+        if (nHeight > 450000)  // transaction is accepted to the memory pool: always disable except if regtest chain (need remint tests)
+            return state.DoS(1, error("Zerocoin is disabled at this point"));
     }
-
-    if (tx.IsZerocoinSpend())
-    {   LogPrintf("zerospend(checktx): !!!!\n");
-        //if (nHeight > 450000)
-            //return state.DoS(1, error("Zerocoinspend is disabled at this point"));
-    }
-
 
     bool const isWalletCheck = (isVerifyDB && nHeight == INT_MAX);
 
