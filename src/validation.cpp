@@ -645,17 +645,15 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
 
                 //if (nHeight > 157000)
                 {
-                    for (const CTxIn &txin: vin)
+                    for (const CTxIn &txin: tx.vin)
+                    for (const CTxOut &txout: tx.vout)
                     {
-                        if (tx.IsZerocoinSpend())
+                        if (txin.IsZerocoinSpend())
                             {
                             LogPrintf("zerospend(checktx): !!!!\n");
                             //return false;
                             }
-                    }
 
-                    for (const CTxOut &txout: vout)
-                    {
                         if (txout.scriptPubKey.IsZerocoinMint())
                             {
                             LogPrintf("zeromint(checktx): !!!!\n");
@@ -664,24 +662,23 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
                     }
                 }
 
-                    for (const CTxIn &txin: vin)
-                    {
-                    if(txin.IsSigmaSpend())
-                        {
-                            //if (chainActive.Height() > 450000)
-                                LogPrintf("sigmaspend(checktx): !!!!\n");
-                                //return false;
-                        }
-                    }
 
-                    for (const CTxOut &txout: vout)
+                    for (const CTxIn &txin: tx.vin)
+                    for (const CTxOut &txout: tx.vout)
                     {
-                    if (txout.scriptPubKey.IsSigmaMint())
-                        {
-                            //if (chainActive.Height() > 450000)
-                                LogPrintf("sigmasmint(checktx): !!!!\n");
-                                //return false;
-                        }
+                        if(txin.IsSigmaSpend())
+                            {
+                                //if (chainActive.Height() > 450000)
+                                    LogPrintf("sigmaspend(checktx): !!!!\n");
+                                    //return false;
+                            }
+
+                        if (txout.scriptPubKey.IsSigmaMint())
+                            {
+                                //if (chainActive.Height() > 450000)
+                                    LogPrintf("sigmasmint(checktx): !!!!\n");
+                                    //return false;
+                            }
                     }
 
 
