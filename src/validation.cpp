@@ -808,12 +808,10 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                              REJECT_INVALID, "bad-txns-zerocoin");
     }
 
-    else {//xxxx
-        if(tx.IsLelantusTransaction()) {
+    else if(tx.IsLelantusTransaction() && chainActive.Height() > 450000) {//xxxx
             return state.DoS(100, error("Lelantus transactions are not allowed in mempool yet"),
                              REJECT_INVALID, "bad-txns-zerocoin");
         }
-    }
 
     //btzc
     CZerocoinState *zcState = CZerocoinState::GetZerocoinState();
