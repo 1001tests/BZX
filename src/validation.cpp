@@ -2741,14 +2741,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount blockSubsidy = GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus(), pindex->nTime);
     CAmount blockReward = nFees + blockSubsidy;
     int chainHeight = chainActive.Height();
-    if (block.vtx[0]->GetValueOut() > blockReward && chainHeight > 46)
+    if (block.vtx[0]->GetValueOut() > blockReward && chainHeight > 47)
         return state.DoS(100,
                          error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
                                block.vtx[0]->GetValueOut(), blockReward),
                                REJECT_INVALID, "bad-cb-amount");
 
     std::string strError = "";
-    if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError)) {
+    if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError) && chainHeight > 47) {
         LogPrintf("ConnectBlock -> IsBlockValueValid!\n");
         //return state.DoS(0, error("ConnectBlock(EVOZNODES): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }//xxxx
