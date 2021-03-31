@@ -4391,13 +4391,11 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
     }
 
     if (!CheckZerocoinFoundersInputs(*block.vtx[0], state, consensusParams, nHeight)) {
-        LogPrintf("FOUNDER_REWARD\n");
-        return false;
-        //return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(), "Founders' reward check failed");
-    }//xxxx
+        return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(), "Founders' reward check failed");
+    }
 
     // Enforce rule that the coinbase starts with serialized block height
-    if (nHeight >= 47)
+    if (nHeight > 47)
      {
         CScript expect = CScript() << nHeight;
         if (block.vtx[0]->vin[0].scriptSig.size() < expect.size() ||
