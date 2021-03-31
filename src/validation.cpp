@@ -2652,35 +2652,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                  REJECT_INVALID, "bad-txns-zerocoin");
         }
 
-        //xxxx
-                /*if (tx.IsZerocoinMint()) {
-                    //if (chainActive.Height() > 450000)
-                        LogPrintf("zeromint(con): !!!!\n");
-                        //return state.DoS(0, error("ZerocoinMint mints no more allowed in connectblock"),
-                                         //REJECT_INVALID, "bad-txns-zerocoin");
-                }
-
-                if (tx.IsZerocoinSpend()) {
-                    //if (chainActive.Height() > 450000)
-                        LogPrintf("zerospend(con): !!!!\n");
-                        //return state.DoS(0, error("ZerocoinSpend spends no more allowed in connectblock"),
-                                         //REJECT_INVALID, "bad-txns-zerocoin");
-                }
-
-                if(tx.IsSigmaMint()) {
-                    //if (chainActive.Height() > 450000)
-                        LogPrintf("sigmasmint(con): !!!!\n");
-                        //return state.DoS(0, error("SigmaMint transactions no more allowed in connectblock"),
-                                         //REJECT_INVALID, "bad-txns-zerocoin");
-                }
-
-                if(tx.IsSigmaSpend()) {
-                    //if (chainActive.Height() > 450000)
-                        LogPrintf("sigmaspend(con): !!!!\n");
-                        //return state.DoS(0, error("SigmaSpend transactions no more allowed in connectblock"),
-                                         //REJECT_INVALID, "bad-txns-zerocoin");
-                }*/
-
         if (!fJustCheck)
             dbIndexHelper.ConnectTransaction(tx, pindex->nHeight, i, view);
 
