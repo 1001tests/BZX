@@ -641,9 +641,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
                 || txin.IsLelantusJoinSplit() ))
                 return state.DoS(10, false, REJECT_INVALID, "bad-txns-prevout-null");
 
-        //xxxx
-
-                //if (nHeight > 157000)
+                if (nHeight > 157000)
                 {
                     for (const CTxIn &txin: tx.vin)
                     for (const CTxOut &txout: tx.vout)
@@ -651,13 +649,13 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
                         if (txin.IsZerocoinSpend())
                             {
                             LogPrintf("zerospend(checktx): !!!!\n");
-                            //return false;
+                            return false;
                             }
 
                         if (txout.scriptPubKey.IsZerocoinMint())
                             {
                             LogPrintf("zeromint(checktx): !!!!\n");
-                            //return false;
+                            return false;
                             }
                     }
                 }
@@ -678,7 +676,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
                                 //if (chainActive.Height() > 450000)
                                     LogPrintf("sigmasmint(checktx): !!!!\n");
                                     //return false;
-                            }
+                            }//xxxx
                     }
 
 
