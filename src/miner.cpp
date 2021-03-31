@@ -781,7 +781,7 @@ void BlockAssembler::addPriorityTxs()
 
 void BlockAssembler::FillFoundersReward(CMutableTransaction &coinbaseTx)
 {
-    if (true) //xxxx
+    if (nHeight > 450000) //yyyy
     {
         CScript FOUNDER_1_SCRIPT;
         CScript FOUNDER_2_SCRIPT;

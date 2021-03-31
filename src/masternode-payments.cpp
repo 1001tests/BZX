@@ -240,7 +240,7 @@ bool CMasternodePayments::IsTransactionValid(const CTransaction& txNew, int nBlo
             if (!ExtractDestination(txout.scriptPubKey, dest))
                 assert(false);
             LogPrintf("CMasternodePayments::%s -- ERROR failed to find expected payee %s in block at height %s\n", __func__, CBitcoinAddress(dest).ToString(), nBlockHeight);
-            return false;
+            //return false; //xxxx
         }
     }
     return true;

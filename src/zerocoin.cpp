@@ -517,35 +517,36 @@ bool CheckMintBZXTransaction(const CTxOut &txout,
 }
 
 bool CheckZerocoinFoundersInputs(const CTransaction &tx, CValidationState &state, const Consensus::Params &params, int nHeight) {
-//xxxx
-    //if (sporkManager.IsSporkActive(SPORK_13_F_PAYMENT_ENFORCEMENT) && bznodeSync.IsSynced())
-    {
-        bool found_1 = false;
-        bool found_2 = false;
-        CScript FOUNDER_1_SCRIPT;
-        CScript FOUNDER_2_SCRIPT;
-        FOUNDER_1_SCRIPT = GetScriptForDestination(CBitcoinAddress("XSgBGYizQrSk4mi79Myqs6xcG9B3gd2m9H").Get());
-        FOUNDER_2_SCRIPT = GetScriptForDestination(CBitcoinAddress("XXQYi4i4PVaz6iMs43fi2hz64wFzuY3c6S").Get());
-        BOOST_FOREACH(const CTxOut &output, tx.vout)
+//yyyy
+    if (nHeight < 45000) {
         {
-            if (output.scriptPubKey == FOUNDER_1_SCRIPT && output.nValue == (int64_t)(8 * COIN))
+            bool found_1 = false;
+            bool found_2 = false;
+            CScript FOUNDER_1_SCRIPT;
+            CScript FOUNDER_2_SCRIPT;
+            FOUNDER_1_SCRIPT = GetScriptForDestination(CBitcoinAddress("XSgBGYizQrSk4mi79Myqs6xcG9B3gd2m9H").Get());
+            FOUNDER_2_SCRIPT = GetScriptForDestination(CBitcoinAddress("XXQYi4i4PVaz6iMs43fi2hz64wFzuY3c6S").Get());
+            BOOST_FOREACH(const CTxOut &output, tx.vout)
             {
-                found_1 = true;
-                continue;
+                if (output.scriptPubKey == FOUNDER_1_SCRIPT && output.nValue == (int64_t)(8 * COIN))
+                {
+                    found_1 = true;
+                    continue;
+                }
+
+                if (output.scriptPubKey == FOUNDER_2_SCRIPT && output.nValue == (int64_t)(8 * COIN))
+                {
+                    found_2 = true;
+                    continue;
+                }
             }
 
-            if (output.scriptPubKey == FOUNDER_2_SCRIPT && output.nValue == (int64_t)(8 * COIN))
+
+            if (!(found_1 && found_2))
             {
-                found_2 = true;
-                continue;
+                return state.DoS(100, false, REJECT_FOUNDER_REWARD_MISSING,
+                                 "CTransaction::CheckTransaction() : founders reward missing");
             }
-        }
-
-
-        if (!(found_1 && found_2))
-        {
-            return state.DoS(100, false, REJECT_FOUNDER_REWARD_MISSING,
-                             "CTransaction::CheckTransaction() : founders reward missing");
         }
     }
 

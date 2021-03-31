@@ -2670,22 +2670,22 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount blockSubsidy = GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus(), pindex->nTime);
     CAmount blockReward = nFees + blockSubsidy;
     int chainHeight = chainActive.Height();
-    if (block.vtx[0]->GetValueOut() > blockReward && chainHeight > 46)
+    if (block.vtx[0]->GetValueOut() > blockReward && chainHeight > 47)
         return state.DoS(100,
                          error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
                                block.vtx[0]->GetValueOut(), blockReward),
                                REJECT_INVALID, "bad-cb-amount");
 
     std::string strError = "";
-    if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError)) {
-        //return state.DoS(0, error("ConnectBlock(EVOZNODES): %s", strError), REJECT_INVALID, "bad-cb-amount");
-    }//xxxx
+    if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError) && pindex->nHeight > 47) {
+        return state.DoS(0, error("ConnectBlock(EVOZNODES): %s", strError), REJECT_INVALID, "bad-cb-amount");
+    }//yyyy
 
-    /*if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy)) {
+    if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy)) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
                                 REJECT_INVALID, "bad-cb-payee");
-    }*/ //xxxx
+    } //yyyy
 
     if (!ProcessSpecialTxsInBlock(block, pindex, state, fJustCheck, fScriptChecks)) {
         return error("ConnectBlock(): ProcessSpecialTxsInBlock for block %s at height %i failed with %s",
