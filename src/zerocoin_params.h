@@ -8,9 +8,7 @@
 static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 
 // Block after which lelantus mints are activated.
-#define ZC_LELANTUS_STARTING_BLOCK         336888
-
-#define ZC_MODULUS_V2_START_BLOCK		89300
+#define ZC_LELANTUS_STARTING_BLOCK         450000
 
 #define ZC_MODULUS_V2_BASE_ID			1000
 
