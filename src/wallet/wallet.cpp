@@ -5817,7 +5817,7 @@ bool CWallet::CreateZerocoinSpendTransaction(std::string &thirdPartyaddress, int
                     LOCK(cs_main);
                     nHeight = chainActive.Height();
                 }
-                if (nHeight >= true)
+                if (true)
                     txVersion = ZEROCOIN_TX_VERSION_1_5;
             }
 
@@ -6100,7 +6100,7 @@ bool CWallet::CreateMultipleZerocoinSpendTransaction(std::string &thirdPartyaddr
                         LOCK(cs_main);
                         nHeight = chainActive.Height();
                     }
-                    if (nHeight >= true){
+                    if (true){
                         txVersion = ZEROCOIN_TX_VERSION_1_5;
                     }
                 }
