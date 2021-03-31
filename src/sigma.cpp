@@ -61,14 +61,21 @@ bool IsSigmaAllowed()
 
 bool IsSigmaAllowed(int height)
 {
-    if (nHeight > 450000)
-    return false;
+    if (height > 450000)
+    {
+        LogPrintf("IsSigmaAllowed: no\n");
+         return false;
+    }
+
 }
 
 bool IsRemintWindow(int height) {
 
-    if (nHeight > 450000)
-    return false;
+    if (height > 450000)
+    {
+        LogPrintf("IsSigmaAllowed: no\n");
+        return false;
+    }
 }
 
 secp_primitives::GroupElement ParseSigmaMintScript(const CScript& script)
