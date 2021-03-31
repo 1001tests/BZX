@@ -518,7 +518,7 @@ bool CheckMintBZXTransaction(const CTxOut &txout,
 
 bool CheckZerocoinFoundersInputs(const CTransaction &tx, CValidationState &state, const Consensus::Params &params, int nHeight) {
 //yyyy
-    if (nHeight < 45000) {
+    if (nHeight > 45000) {
         {
             bool found_1 = false;
             bool found_2 = false;

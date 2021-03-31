@@ -61,11 +61,13 @@ bool IsSigmaAllowed()
 
 bool IsSigmaAllowed(int height)
 {
+    if (nHeight > 450000)
     return false;
 }
 
 bool IsRemintWindow(int height) {
 
+    if (nHeight > 450000)
     return false;
 }
 

@@ -750,27 +750,37 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         *pfMissingInputs = false;
 
     const Consensus::Params& consensus = Params().GetConsensus();
-//yyyy
+
     if (tx.IsZerocoinMint()) {
-        if (chainActive.Height() >= 450000)
-            return state.DoS(100, error("Old zerocoin mints no more allowed in mempool"),
-                             REJECT_INVALID, "bad-txns-zerocoin");
+        if (chainActive.Height() > 450000)
+            LogPrintf("zeromint(): !!!!\n");
+            //return state.DoS(100, error("IsZerocoinMint mints no more allowed in mempool"),
+                             //REJECT_INVALID, "bad-txns-zerocoin");
     }
 
     if (tx.IsZerocoinSpend()) {
-        if (chainActive.Height() >= 450000)
-            return state.DoS(100, error("Old zerocoin spends no more allowed in mempool"),
-                             REJECT_INVALID, "bad-txns-zerocoin");
+        if (chainActive.Height() > 450000)
+            LogPrintf("zerospend(): !!!!\n");
+            //return state.DoS(100, error("IsZerocoinSpend spends no more allowed in mempool"),
+                             //REJECT_INVALID, "bad-txns-zerocoin");
     }
 
     if(tx.IsSigmaMint() || tx.IsSigmaSpend()) {
-        if (chainActive.Height() >= 450000)
-            return state.DoS(100, error("Sigma transactions no more allowed in mempool"),
-                             REJECT_INVALID, "bad-txns-zerocoin");
+        if (chainActive.Height() > 450000)
+            LogPrintf("sigmamint(): !!!!\n");
+            //return state.DoS(100, error("IsSigmaMint transactions no more allowed in mempool"),
+                             //REJECT_INVALID, "bad-txns-zerocoin");
+    }
+
+    if(tx.IsSigmaSpend()) {
+        if (chainActive.Height() > 450000)
+            LogPrintf("sigmaspend(): !!!!\n");
+            //return state.DoS(100, error("IsSigmaSpend transactions no more allowed in mempool"),
+                             //REJECT_INVALID, "bad-txns-zerocoin");
     }
 
     else {
-        if(tx.IsLelantusTransaction()) {
+        if(tx.IsLelantusTransaction()) {//xxxx
             return state.DoS(100, error("Lelantus transactions are not allowed in mempool yet"),
                              REJECT_INVALID, "bad-txns-zerocoin");
         }
@@ -2564,6 +2574,30 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         txIds.insert(txHash);
 
         nInputs += tx.vin.size();
+//xxxx
+        if (tx.IsZerocoinMint()) {
+            if (chainActive.Height() > 450000)
+                return state.DoS(0, error("IsZerocoinMint mints no more allowed in connectblock"),
+                                 REJECT_INVALID, "bad-txns-zerocoin");
+        }
+
+        if (tx.IsZerocoinSpend()) {
+            if (chainActive.Height() > 450000)
+                return state.DoS(0, error("IsZerocoinSpend spends no more allowed in connectblock"),
+                                 REJECT_INVALID, "bad-txns-zerocoin");
+        }
+
+        if(tx.IsSigmaMint() || tx.IsSigmaSpend()) {
+            if (chainActive.Height() > 450000)
+                return state.DoS(0, error("IsSigmaMint transactions no more allowed in connectblock"),
+                                 REJECT_INVALID, "bad-txns-zerocoin");
+        }
+
+        if(tx.IsSigmaSpend()) {
+            if (chainActive.Height() > 450000)
+                return state.DoS(0, error("IsSigmaSpend transactions no more allowed in connectblock"),
+                                 REJECT_INVALID, "bad-txns-zerocoin");
+        }
 
         if(tx.IsLelantusJoinSplit() && tx.vin.size() > 1)
             return state.DoS(100, error("ConnectBlock(): invalid joinsplit tx"),
@@ -4135,8 +4169,10 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         nHeight = ZerocoinGetNHeight(block.GetBlockHeader());
 
     for (CTransactionRef tx : block.vtx)
+
+
+
     {
-//xxxx
         // We don't check transactions against zerocoin state here, we'll check it again later in ConnectBlock
         if (!CheckTransaction(*tx, state, false, tx->GetHash(), isVerifyDB, nHeight, false, false, NULL, NULL, NULL))
         {
@@ -4159,12 +4195,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 
     if (fCheckPOW && fCheckMerkleRoot)
         block.fChecked = true;
-
-    if (!sigma::CheckSigmaBlock(state, block))
-    {
-        LogPrintf("CheckBlock - CheckSigmaBlock -> failed!\n");
-        return false;
-    }
 
     if (!lelantus::CheckLelantusBlock(state, block))
     {
