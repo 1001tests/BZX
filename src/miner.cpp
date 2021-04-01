@@ -30,10 +30,8 @@
 #include "crypto/scrypt.h"
 #include "crypto/Lyra2Z/Lyra2Z.h"
 #include "crypto/Lyra2Z/Lyra2.h"
-#include "zerocoin.h"
 #include "sigma.h"
 #include "lelantus.h"
-#include "sigma/remint.h"
 #include "evo/spork.h"
 #include <algorithm>
 #include <boost/thread.hpp>
@@ -419,13 +417,9 @@ bool BlockAssembler::TestForBlock(CTxMemPool::txiter iter)
         return false;
 
     const CTransaction &tx = iter->GetTx();
-    // Prohibit zerocoin
-    // Make exception for regtest network (for remint tests)
-    if (!chainparams.GetConsensus().IsRegtest() && (tx.IsZerocoinSpend() || tx.IsZerocoinMint()))
-        return false;
 
     // Check transaction against sigma limits
-    if (tx.IsSigmaSpend() || tx.IsZerocoinRemint()) {
+    if (tx.IsSigmaSpend()) {
 
             return false;
     }
@@ -452,6 +446,11 @@ bool BlockAssembler::TestForBlock(CTxMemPool::txiter iter)
 void BlockAssembler::AddToBlock(CTxMemPool::txiter iter)
 {
     const CTransaction &tx = iter->GetTx();
+
+    if (tx.IsSigmaSpend()) {
+            return;
+    }
+
     if(tx.IsLelantusJoinSplit()) {
         CAmount spendAmount = lelantus::GetSpendTransparentAmount(tx);
         size_t spendNumber = lelantus::GetSpendInputs(tx);
