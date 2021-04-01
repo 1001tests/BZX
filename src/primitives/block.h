@@ -13,7 +13,7 @@
 #include "serialize.h"
 #include "uint256.h"
 #include "definition.h"
-#include "zerocoin_params.h"
+#include "sigma_params.h"
 
 // Can't include sigma.h
 namespace sigma {
@@ -106,8 +106,6 @@ public:
 
 };
 
-class CZerocoinTxInfo;
-
 class CBlock : public CBlockHeader
 {
 public:
@@ -118,23 +116,18 @@ public:
     mutable CTxOut txoutZnode; // znode payment
     mutable bool fChecked;
 
-    // memory only, zerocoin tx info
-    mutable std::shared_ptr<CZerocoinTxInfo> zerocoinTxInfo;
-
-    // memory only, zerocoin tx info after V3-sigma.
+    // memory only, sigma tx info after V3-sigma.
     mutable std::shared_ptr<sigma::CSigmaTxInfo> sigmaTxInfo;
 
     mutable std::shared_ptr<lelantus::CLelantusTxInfo> lelantusTxInfo;
 
     CBlock()
     {
-        zerocoinTxInfo = NULL;
         SetNull();
     }
 
     CBlock(const CBlockHeader &header)
     {
-        zerocoinTxInfo = NULL;
         SetNull();
         *((CBlockHeader*)this) = header;
     }
