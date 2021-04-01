@@ -1734,7 +1734,7 @@ bool ReadBlockHeaderFromDisk(CBlock &block, const CDiskBlockPos &pos) {
     return true;
 }
 
-CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams, int nTime)
+CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams)
 {
     if (nHeight == 0) // Genesis block is 0 coins
         return 0;
@@ -2698,7 +2698,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime4 - nTime2), nInputs <= 1 ? 0 : 0.001 * (nTime4 - nTime2) / (nInputs-1), nTimeVerify * 0.000001);
 
     //btzc: Add time to check
-    CAmount blockSubsidy = GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus(), pindex->nTime);
+    CAmount blockSubsidy = GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
     CAmount blockReward = nFees + blockSubsidy;
     int chainHeight = chainActive.Height();
     if (block.vtx[0]->GetValueOut() > blockReward && chainHeight > 47)
