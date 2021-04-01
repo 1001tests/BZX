@@ -4144,12 +4144,12 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 
     // Check transactions
     if (nHeight == INT_MAX)
-        nHeight = ZerocoinGetNHeight(block.GetBlockHeader());
+        nHeight = GetNHeight(block.GetBlockHeader());
 
     for (CTransactionRef tx : block.vtx)
     {
-        // We don't check transactions against zerocoin state here, we'll check it again later in ConnectBlock
-        if (!CheckTransaction(*tx, state, false, tx->GetHash(), isVerifyDB, nHeight, false, false, NULL, NULL, NULL))
+        // We don't check transactions against sigma/lelantus state here, we'll check it again later in ConnectBlock
+                if (!CheckTransaction(*tx, state, false, tx->GetHash(), isVerifyDB, nHeight, false, false, NULL, NULL))
         {
             LogPrintf("CheckBlock - CheckTransaction -> failed!\n");
             return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(),
@@ -4947,15 +4947,8 @@ bool static LoadBlockIndexDB(const CChainParams& chainparams)
 
     PruneBlockIndexCandidates();
 
-    // some blocks in index can change as a result of ZerocoinBuildStateFromIndex() call
-    set<CBlockIndex *> changes;
-    ZerocoinBuildStateFromIndex(&chainActive, changes);
     sigma::BuildSigmaStateFromIndex(&chainActive);
     lelantus::BuildLelantusStateFromIndex(&chainActive);
-    if (!changes.empty()) {
-        setDirtyBlockIndex.insert(changes.begin(), changes.end());
-        FlushStateToDisk();
-    }
 
     LogPrintf("%s: hashBestChain=%s height=%d date=%s progress=%f\n", __func__,
         chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(),
