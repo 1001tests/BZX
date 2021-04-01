@@ -86,10 +86,10 @@ UniValue importprivkey(const JSONRPCRequest& request)
 
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 3)
         throw runtime_error(
-            "importprivkey \"firoprivkey\" ( \"label\" ) ( rescan )\n"
+            "importprivkey \"privkey\" ( \"label\" ) ( rescan )\n"
             "\nAdds a private key (as returned by dumpprivkey) to your wallet.\n"
             "\nArguments:\n"
-            "1. \"firoprivkey\"   (string, required) The private key (see dumpprivkey)\n"
+            "1. \"privkey\"   (string, required) The private key (see dumpprivkey)\n"
             "2. \"label\"            (string, optional, default=\"\") An optional label\n"
             "3. rescan               (boolean, optional, default=true) Rescan the wallet for transactions\n"
             "\nNote: This call can take minutes to complete if rescan is true.\n"
@@ -114,7 +114,7 @@ UniValue importprivkey(const JSONRPCRequest& request)
     const CHDChain& chain = pwallet->GetHDChain();
     if(chain.nVersion == chain.VERSION_WITH_BIP39){
         throw JSONRPCError(RPC_WALLET_ERROR, "Importing wallets and private keys is disabled for mnemonic-enabled wallets."
-                                             "To import your dump file, create a non-mnemonic wallet by setting \"usemnemonic=0\" in your firo.conf file, after backing up and removing your existing wallet.");
+                                             "To import your dump file, create a non-mnemonic wallet by setting \"usemnemonic=0\" in your bitcoinzero.conf file, after backing up and removing your existing wallet.");
     }
 
 
@@ -464,7 +464,7 @@ UniValue importwallet(const JSONRPCRequest& request)
     const CHDChain& chain = pwallet->GetHDChain();
     if(chain.nVersion == chain.VERSION_WITH_BIP39){
         throw JSONRPCError(RPC_WALLET_ERROR, "Importing wallets and private keys is disabled for mnemonic-enabled wallets."
-                                             "To import your dump file, create a non-mnemonic wallet by setting \"usemnemonic=0\" in your firo.conf file, after backing up and removing your existing wallet.");
+                                             "To import your dump file, create a non-mnemonic wallet by setting \"usemnemonic=0\" in your bitcoinzero.conf file, after backing up and removing your existing wallet.");
     }
 
 
@@ -627,16 +627,16 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
     return CBitcoinSecret(vchSecret).ToString();
 }
 
-UniValue dumpprivkey_firo(const JSONRPCRequest& request)
+UniValue dumpprivkey(const JSONRPCRequest& request)
 {
 #ifndef UNSAFE_DUMPPRIVKEY
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw runtime_error(
-            "dumpprivkey \"firoaddress\"\n"
-            "\nReveals the private key corresponding to 'firoaddress'.\n"
+            "dumpprivkey \"BZX address\"\n"
+            "\nReveals the private key corresponding to 'BZX address'.\n"
             "Then the importprivkey can be used with this output\n"
             "\nArguments:\n"
-            "1. \"firoaddress\"   (string, required) The BZX address for the private key\n"
+            "1. \"BZX address\"   (string, required) The BZX address for the private key\n"
             "2. \"one-time-auth-code\"   (string, optional) A one time authorization code received from a previous call of dumpprivkey"
             "\nResult:\n"
             "\"key\"                (string) The private key\n"
@@ -804,7 +804,7 @@ UniValue dumpwallet(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue dumpwallet_firo(const JSONRPCRequest& request)
+UniValue dumpwallet(const JSONRPCRequest& request)
 {
 #ifndef UNSAFE_DUMPPRIVKEY
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
@@ -828,11 +828,6 @@ UniValue dumpwallet_firo(const JSONRPCRequest& request)
             "This command exports all your private keys. Anyone with these keys has complete control over your funds. \n"
             "If someone asked you to type in this command, chances are they want to steal your coins. \n"
             "BZX team members will never ask for this command's output and it is not needed for Znode setup or diagnosis!\n"
-            "\n"
-            " Please seek help on one of our public channels. \n"
-            " Telegram: https://t.me/firoproject \n"
-            " Discord: https://discordapp.com/invite/4FjnQ2q\n"
-            " Reddit: https://www.reddit.com/r/firo/\n"
             "\n"
             ;
         throw runtime_error(warning);
