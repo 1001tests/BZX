@@ -133,7 +133,6 @@ public:
     }
 
     ~CBlock() {
-        ZerocoinClean();
     }
 
     ADD_SERIALIZE_METHODS;
@@ -151,7 +150,6 @@ public:
 
     void SetNull()
     {
-        ZerocoinClean();
         CBlockHeader::SetNull();
         vtx.clear();
         txoutZnode = CTxOut();
@@ -173,7 +171,6 @@ public:
 
     std::string ToString() const;
 
-    void ZerocoinClean() const;
 };
 
 /** Describes a place in the block chain to another node such that if the
