@@ -173,6 +173,30 @@ public:
         return randomness.isMember() && serialNumber.isMember();
     }
 
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action) {
+        READWRITE(IsUsed);
+        READWRITE(randomness);
+        READWRITE(serialNumber);
+        READWRITE(value);
+        READWRITE(denomination);
+        READWRITE(nHeight);
+        READWRITE(id);
+        if (ser_action.ForRead()) {
+            if (!is_eof(s)) {
+                int nStoredVersion = 0;
+                READWRITE(nStoredVersion);
+                READWRITE(ecdsaSecretKey);
+            }
+        }
+        else {
+            int streamVersion = s.GetVersion();
+            READWRITE(streamVersion);
+            READWRITE(ecdsaSecretKey);
+        }
+    }
 private:
     template <typename Stream>
     auto is_eof_helper(Stream &s, bool) -> decltype(s.eof()) {
@@ -234,7 +258,16 @@ public:
         denomination = 0;
         id = 0;
     }
+    ADD_SERIALIZE_METHODS;
 
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action) {
+        READWRITE(coinSerial);
+        READWRITE(hashTx);
+        READWRITE(pubCoin);
+        READWRITE(denomination);
+        READWRITE(id);
+    }
 };
 
 class CSigmaSpendEntry
