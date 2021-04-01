@@ -16,7 +16,7 @@
 #include <secp256k1/include/GroupElement.h>
 #include "sigma/coin.h"
 #include "evo/spork.h"
-#include "zerocoin_params.h"
+#include "sigma_params.h"
 #include "util.h"
 #include "chainparams.h"
 #include "coin_containers.h"
@@ -226,11 +226,8 @@ public:
     //! Maps <denomination, id> to <accumulator value (CBigNum), number of such mints in this block>
     map<pair<int,int>, pair<CBigNum,int>> accumulatorChanges;
 
-    //! Same as accumulatorChanges but for alternative modulus
-    map<pair<int,int>, pair<CBigNum,int>> alternativeAccumulatorChanges;
-
     //! Values of coin serials spent in this block
-    set<CBigNum> spentSerials;
+	set<CBigNum> spentSerials;
 
 /////////////////////// Sigma index entries. ////////////////////////////////////////////
 
@@ -270,11 +267,9 @@ public:
         nBits          = 0;
         nNonce         = 0;
 
-        mintedPubCoins.clear();
+
         sigmaMintedPubCoins.clear();
         lelantusMintedPubCoins.clear();
-        accumulatorChanges.clear();
-        spentSerials.clear();
         sigmaSpentSerials.clear();
         lelantusSpentSerials.clear();
         activeDisablingSporks.clear();
@@ -294,6 +289,7 @@ public:
         nTime          = block.nTime;
         nBits          = block.nBits;
         nNonce         = block.nNonce;
+
     }
 
     CDiskBlockPos GetBlockPos() const {
@@ -445,42 +441,10 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
+        //READWRITE(lelantusMintedPubCoins);
+        //READWRITE(lelantusSpentSerials);
 
         const auto &params = Params().GetConsensus();
-
-        if (!(s.GetType() & SER_GETHASH) && nVersion >= 130000) {
-            READWRITE(mintedPubCoins);
-		    READWRITE(accumulatorChanges);
-            READWRITE(spentSerials);
-	    }
-
-        if (!(s.GetType() & SER_GETHASH) && nHeight >= 156111) {
-            READWRITE(sigmaMintedPubCoins);
-            READWRITE(sigmaSpentSerials);
-        }
-
-        if (!(s.GetType() & SER_GETHASH)
-                && nHeight >= params.nLelantusStartBlock
-                && nVersion >= LELANTUS_PROTOCOL_ENABLEMENT_VERSION)
-        {
-            if(nVersion == LELANTUS_PROTOCOL_ENABLEMENT_VERSION)
-            {
-                std::map<int, vector<lelantus::PublicCoin>>  lelantusPubCoins;
-                READWRITE(lelantusPubCoins);
-                for(auto& itr : lelantusPubCoins)
-                {
-                    if(!itr.second.empty())
-                    {
-                        for(auto& coin : itr.second)
-                        lelantusMintedPubCoins[itr.first].push_back(std::make_pair(coin, uint256()));
-                    }
-                }
-            }
-            else
-                READWRITE(lelantusMintedPubCoins);
-            READWRITE(lelantusSpentSerials);
-        }
-
         if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nEvoSporkStartBlock && nHeight < params.nEvoSporkStopBlock)
             READWRITE(activeDisablingSporks);
 
