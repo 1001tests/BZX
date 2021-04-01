@@ -118,20 +118,23 @@ public:
     mutable CTxOut txoutZnode; // znode payment
     mutable bool fChecked;
 
+    // memory only, zerocoin tx info
+    mutable std::shared_ptr<CZerocoinTxInfo> zerocoinTxInfo;
+
     // memory only, zerocoin tx info after V3-sigma.
     mutable std::shared_ptr<sigma::CSigmaTxInfo> sigmaTxInfo;
 
-    //mutable std::shared_ptr<lelantus::CLelantusTxInfo> lelantusTxInfo; //xxxx
+    mutable std::shared_ptr<lelantus::CLelantusTxInfo> lelantusTxInfo;
 
     CBlock()
     {
-        sigmaTxInfo = NULL;
+        zerocoinTxInfo = NULL;
         SetNull();
     }
 
     CBlock(const CBlockHeader &header)
     {
-        sigmaTxInfo = NULL;
+        zerocoinTxInfo = NULL;
         SetNull();
         *((CBlockHeader*)this) = header;
     }
