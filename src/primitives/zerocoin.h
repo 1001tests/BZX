@@ -101,36 +101,6 @@ public:
                 ecdsaSecretKey.size() >= 32;
     }
 
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
-        READWRITE(IsUsed);
-        READWRITE(randomness);
-        READWRITE(serialNumber);
-        READWRITE(value);
-        READWRITE(denomination);
-        READWRITE(nHeight);
-        READWRITE(id);
-        if (ser_action.ForRead()) {
-            IsUsedForRemint = false;
-            if (!is_eof(s)) {
-                int nStoredVersion = 0;
-                READWRITE(nStoredVersion);
-                if (nStoredVersion >= ZC_ADVANCED_WALLETDB_MINT_VERSION) {
-                    READWRITE(ecdsaSecretKey);
-                    if (!is_eof(s))
-                        READWRITE(IsUsedForRemint);
-                }
-            }
-        }
-        else {
-            int streamVersion = s.GetVersion();
-            READWRITE(streamVersion);
-            READWRITE(ecdsaSecretKey);
-            READWRITE(IsUsedForRemint);
-        }
-    }
 
 };
 

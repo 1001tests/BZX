@@ -270,7 +270,7 @@ public:
                 576.0 // * estimated number of transactions per day after checkpoint
         };
 
-        consensus.nLelantusStartBlock = INT_MAX;
+        consensus.nLelantusStartBlock = INT_MAX; //xxxx
         consensus.nMaxLelantusInputPerBlock = ZC_LELANTUS_INPUT_LIMIT_PER_BLOCK;
         consensus.nMaxValueLelantusSpendPerBlock = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_BLOCK;
         consensus.nMaxLelantusInputPerTransaction = ZC_LELANTUS_INPUT_LIMIT_PER_TRANSACTION;
@@ -278,7 +278,7 @@ public:
         consensus.nMaxValueLelantusMint = ZC_LELANTUS_MAX_MINT;
 
         consensus.evoSporkKeyID = "a78fERshquPsTv2TuKMSsxTeKom56uBwLP";
-        consensus.nEvoSporkStartBlock = INT_MAX;
+        consensus.nEvoSporkStartBlock = INT_MAX; //xxxx
         consensus.nEvoSporkStopBlock = INT_MAX;  // one year after lelantus
 
         // Dandelion related values.

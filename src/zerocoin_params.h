@@ -8,7 +8,7 @@
 static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 
 // Block after which lelantus mints are activated.
-#define ZC_LELANTUS_STARTING_BLOCK         450000
+#define ZC_LELANTUS_STARTING_BLOCK         999999//xxxx
 
 #define ZC_MODULUS_V2_BASE_ID			1000
 
@@ -23,14 +23,10 @@ static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 #define ZC_LELANTUS_MAX_MINT_NUM    65000
 #define ZC_LELANTUS_SET_START_SIZE  16000
 
-// Version of index that introduced storing accumulators and coin serials
-#define ZC_ADVANCED_INDEX_VERSION           130500
-// Version of wallet.db entry that introduced storing extra information for mints
-#define ZC_ADVANCED_WALLETDB_MINT_VERSION	130504
 // Version of the block index entry that introduces Lelantus protocol
-#define LELANTUS_PROTOCOL_ENABLEMENT_VERSION	140100
+#define LELANTUS_PROTOCOL_ENABLEMENT_VERSION	999999//xxxx
 // Version of the block index enty that introduces evo sporks
-#define EVOSPORK_MIN_VERSION                140200
+#define EVOSPORK_MIN_VERSION                999999
 
 // number of mint confirmations needed to spend coin
 #define ZC_MINT_CONFIRMATIONS               2

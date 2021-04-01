@@ -42,9 +42,6 @@ public:
     uint32_t nBits;
     uint32_t nNonce;
 
-    // Reserved fields
-    uint256 reserved[2];
-
     static const int CURRENT_VERSION = 2;
 
     CBlockHeader()
@@ -106,6 +103,7 @@ public:
     {
         return (int64_t)nTime;
     }
+
 };
 
 class CZerocoinTxInfo;
@@ -120,23 +118,20 @@ public:
     mutable CTxOut txoutZnode; // znode payment
     mutable bool fChecked;
 
-    // memory only, zerocoin tx info
-    mutable std::shared_ptr<CZerocoinTxInfo> zerocoinTxInfo;
-
     // memory only, zerocoin tx info after V3-sigma.
     mutable std::shared_ptr<sigma::CSigmaTxInfo> sigmaTxInfo;
 
-    mutable std::shared_ptr<lelantus::CLelantusTxInfo> lelantusTxInfo;
+    //mutable std::shared_ptr<lelantus::CLelantusTxInfo> lelantusTxInfo; //xxxx
 
     CBlock()
     {
-        zerocoinTxInfo = NULL;
+        sigmaTxInfo = NULL;
         SetNull();
     }
 
     CBlock(const CBlockHeader &header)
     {
-        zerocoinTxInfo = NULL;
+        sigmaTxInfo = NULL;
         SetNull();
         *((CBlockHeader*)this) = header;
     }
