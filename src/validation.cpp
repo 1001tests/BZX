@@ -2749,8 +2749,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
     }
 
-    if (!ConnectBlockZC(state, chainparams, pindex, &block, fJustCheck) ||
-        !sigma::ConnectBlockSigma(state, chainparams, pindex, &block, fJustCheck) ||
+    if (!sigma::ConnectBlockSigma(state, chainparams, pindex, &block, fJustCheck) ||
         !lelantus::ConnectBlockLelantus(state, chainparams, pindex, &block, fJustCheck))
         return false;
 
@@ -2828,36 +2827,16 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 }
 
 /**
- * Erase all of zerocoin/sigma transactions conflicting with given block from the mempool
+ * Erase all of sigma/lelantus transactions conflicting with given block from the mempool
  */
 void static RemoveConflictingPrivacyTransactionsFromMempool(const CBlock &block) {
     LOCK(mempool.cs);
 
-    // Erase conflicting zerocoin txs from the mempool
-    CZerocoinState *zcState = CZerocoinState::GetZerocoinState();
+    // Erase conflicting sigma/lelantus txs from the mempool
     sigma::CSigmaState *sigmaState = sigma::CSigmaState::GetState();
     lelantus::CLelantusState *lelantusState = lelantus::CLelantusState::GetState();
     BOOST_FOREACH(CTransactionRef tx, block.vtx) {
-        if (tx->IsZerocoinSpend() || tx->IsZerocoinRemint()) {
-            BOOST_FOREACH(const CTxIn &txin, tx->vin)
-            {
-                CBigNum zcSpendSerial = txin.IsZerocoinSpend() ? ZerocoinGetSpendSerialNumber(*tx, txin) : sigma::CoinRemintToV3::GetSerialNumber(*tx);
-                uint256 thisTxHash = tx->GetHash();
-                uint256 conflictingTxHash = zcState->GetMempoolConflictingTxHash(zcSpendSerial);
-                if (!conflictingTxHash.IsNull() && conflictingTxHash != thisTxHash) {
-                    std::list<CTransaction> removed;
-                    auto pTx = mempool.get(conflictingTxHash);
-                    if (pTx)
-                        mempool.removeRecursive(*pTx);
-                    LogPrintf("ConnectBlock: removed conflicting zerocoin spend/remint tx %s from the mempool\n",
-                              conflictingTxHash.ToString());
-                }
-
-                // In any case we need to remove serial from mempool set
-                zcState->RemoveSpendFromMempool(zcSpendSerial);
-            }
-        }
-        else if (tx->IsSigmaSpend()) {
+        if (tx->IsSigmaSpend()) {
             BOOST_FOREACH(const CTxIn &txin, tx->vin)
             {
                 Scalar zcSpendSerial = sigma::GetSigmaSpendSerialNumber(*tx, txin);
@@ -2868,7 +2847,7 @@ void static RemoveConflictingPrivacyTransactionsFromMempool(const CBlock &block)
                     auto pTx = mempool.get(conflictingTxHash);
                     if (pTx)
                         mempool.removeRecursive(*pTx);
-                    LogPrintf("ConnectBlock: removed conflicting zerocoin sigma spend tx %s from the mempool\n",
+                    LogPrintf("ConnectBlock: removed conflicting sigma/lelantus spend tx %s from the mempool\n",
                                 conflictingTxHash.ToString());
                 }
 
@@ -3137,7 +3116,7 @@ bool static DisconnectTip(CValidationState& state, const CChainParams& chainpara
 
     for (CTransactionRef tx : block.vtx) {
         CheckTransaction(*tx, state, false, tx->GetHash(), false, pindexDelete->pprev->nHeight,
-            false, false, nullptr, block.sigmaTxInfo.get(), block.lelantusTxInfo.get());
+            false, false, block.sigmaTxInfo.get(), block.lelantusTxInfo.get());
 
         if(GetBoolArg("-batching", true)) {
             if (tx->IsLelantusJoinSplit()) {
@@ -3209,7 +3188,6 @@ bool static DisconnectTip(CValidationState& state, const CChainParams& chainpara
     }
     LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
 
-	DisconnectTipZC(block, pindexDelete);
 	sigma::DisconnectTipSigma(block, pindexDelete);
     lelantus::DisconnectTipLelantus(block, pindexDelete);
 
@@ -4086,7 +4064,7 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 //btzc: code from vertcoin, add
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW)
 {
-    int nHeight = ZerocoinGetNHeight(block);
+    int nHeight = GetNHeight(block);
     // set nHeight to INT_MAX if block is not found in index and it's not genesis block
     if (nHeight == 0 && !block.hashPrevBlock.IsNull())
         nHeight = INT_MAX;
@@ -4096,9 +4074,7 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const 
 }
 
 bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckMerkleRoot, int nHeight, bool isVerifyDB) {
-    // CheckBlock not only checks the block, but also fills up zerocoinTxInfo and sigmaTxInfo.
-    if (!block.zerocoinTxInfo)
-        block.zerocoinTxInfo = std::make_shared<CZerocoinTxInfo>();
+    // CheckBlock not only checks the block, but also fills up lelantusTxInfo and sigmaTxInfo.
     if (!block.sigmaTxInfo)
         block.sigmaTxInfo = std::make_shared<sigma::CSigmaTxInfo>();
     if (!block.lelantusTxInfo)
