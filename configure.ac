@@ -292,13 +292,13 @@ AC_ARG_WITH([utils],
   [AS_HELP_STRING([--with-utils],
   [build bitcoinzero-cli.c-cli bitcoinzero-cli.c-tx (default=yes)])],
   [build_bitcoin_utils=$withval],
-  [build_bitcoin_utils=yes])
+  [build_bitcoin_utils=no])
 
 AC_ARG_WITH([libs],
   [AS_HELP_STRING([--with-libs],
   [build libraries (default=yes)])],
   [build_bitcoin_libs=$withval],
-  [build_bitcoin_libs=yes])
+  [build_bitcoin_libs=no])
 
 AC_ARG_WITH([daemon],
   [AS_HELP_STRING([--with-daemon],

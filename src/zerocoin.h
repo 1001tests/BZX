@@ -49,15 +49,6 @@ CBigNum ParseZerocoinMintScript(const CScript& script);
 std::pair<std::unique_ptr<libzerocoin::CoinSpend>, uint32_t> ParseZerocoinSpend(const CTxIn& in);
 
 bool CheckZerocoinFoundersInputs(const CTransaction &tx, CValidationState &state, const Consensus::Params &params, int nHeight);
-bool CheckZerocoinTransaction(const CTransaction &tx,
-	CValidationState &state,
-    const Consensus::Params &params,
-	uint256 hashTx,
-	bool isVerifyDB,
-	int nHeight,
-    bool isCheckWallet,
-    bool fZerocoinStateCheck,
-    CZerocoinTxInfo *zerocoinTxInfo);
 
 void DisconnectTipZC(CBlock &block, CBlockIndex *pindexDelete);
 bool ConnectBlockZC(CValidationState &state, const CChainParams &chainparams, CBlockIndex *pindexNew, const CBlock *pblock, bool fJustCheck=false);

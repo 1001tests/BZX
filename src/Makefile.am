@@ -222,7 +222,7 @@ BITCOIN_CORE_H = \
   policy/fees.h \
   policy/policy.h \
   policy/rbf.h \
-  primitives/zerocoin.h \
+  primitives/mint_spend.h \
   fixed.h \
   pow.h \
   hdmint/hdmint.h \
@@ -285,12 +285,11 @@ BITCOIN_CORE_H = \
   hdmint/mintpool.h \
   hdmint/tracker.h \
   hdmint/wallet.h \
-  zerocoin.h \
   sigma.h \
   lelantus.h \
   blacklists.h \
   coin_containers.h \
-  zerocoin_params.h \
+  sigma_params.h \
   addresstype.h \
   messagesigner.h \
   masternode-payments.h \
@@ -424,7 +423,7 @@ libbitcoin_server_a_SOURCES = \
   noui.cpp \
   policy/fees.cpp \
   policy/policy.cpp \
-  primitives/zerocoin.cpp \
+  primitives/mint_spend.cpp \
   pow.cpp \
   rest.cpp \
   rpc/blockchain.cpp \
@@ -447,7 +446,6 @@ libbitcoin_server_a_SOURCES = \
   validation.cpp \
   validationinterface.cpp \
   versionbits.cpp \
-  zerocoin.cpp \
   sigma.cpp \
   lelantus.cpp \
   coin_containers.cpp \
@@ -490,7 +488,6 @@ libbitcoin_wallet_a_SOURCES = \
   wallet/authhelper.cpp \
   hdmint/tracker.cpp \
   policy/rbf.cpp \
-  primitives/zerocoin.cpp \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library
@@ -620,28 +617,7 @@ libbitcoin_util_a_SOURCES = \
   libzerocoin/bitcoin_bignum/bignum.h \
   libzerocoin/bitcoin_bignum/compat.h \
   libzerocoin/bitcoin_bignum/netbase.h \
-  libzerocoin/Accumulator.h \
-  libzerocoin/Accumulator.cpp \
-  libzerocoin/AccumulatorProofOfKnowledge.h \
-  libzerocoin/AccumulatorProofOfKnowledge.cpp \
-  libzerocoin/Coin.h \
-  libzerocoin/Coin.cpp \
-  libzerocoin/CoinSpend.h \
-  libzerocoin/CoinSpend.cpp \
-  libzerocoin/Commitment.h \
-  libzerocoin/Commitment.cpp \
-  libzerocoin/ParallelTasks.h \
-  libzerocoin/ParallelTasks.cpp \
-  libzerocoin/ParamGeneration.h \
-  libzerocoin/ParamGeneration.cpp \
-  libzerocoin/Params.h \
-  libzerocoin/Params.cpp \
-  libzerocoin/SerialNumberSignatureOfKnowledge.h \
-  libzerocoin/SerialNumberSignatureOfKnowledge.cpp \
-  libzerocoin/AccumulatorProofOfKnowledge.cpp \
-  libzerocoin/SpendMetaData.h \
-  libzerocoin/SpendMetaData.cpp \
-  libzerocoin/Zerocoin.h \
+  libzerocoin/bitcoin_bignum/serialize.h \
   $(BITCOIN_CORE_H)
 
 liblelantus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
