@@ -9,8 +9,6 @@
 #include "config/bitcoin-config.h"
 #endif
 
-#include "zerocoin.h"
-
 #include "arith_uint256.h"
 #include "chainparams.h"
 #include "checkpoints.h"
@@ -52,11 +50,8 @@
 #include "utiltime.h"
 #include "masternode-sync.h"
 #include "coins.h"
-
 #include "blacklists.h"
-
 #include "sigma/coinspend.h"
-#include "sigma/remint.h"
 #include "warnings.h"
 
 #ifdef ENABLE_ELYSIUM
@@ -211,6 +206,17 @@ int GetHeight()
 {
     LOCK(cs_main);
     return chainActive.Height();
+}
+
+int GetNHeight(const CBlockHeader &block) {
+    CBlockIndex *pindexPrev = NULL;
+    int nHeight = 0;
+    BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
+    if (mi != mapBlockIndex.end()) {
+        pindexPrev = (*mi).second;
+        nHeight = pindexPrev->nHeight + 1;
+    }
+    return nHeight;
 }
 
 /* Use this class to start tracking transactions that are removed from the
@@ -569,7 +575,7 @@ int GetUTXOConfirmations(const COutPoint& outpoint)
     return (nPrevoutHeight > -1 && chainActive.Tip()) ? chainActive.Height() - nPrevoutHeight + 1 : -1;
 }
 
-bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fCheckDuplicateInputs, uint256 hashTx,  bool isVerifyDB, int nHeight, bool isCheckWallet, bool fStatefulZerocoinCheck, CZerocoinTxInfo *zerocoinTxInfo, sigma::CSigmaTxInfo *sigmaTxInfo, lelantus::CLelantusTxInfo* lelantusTxInfo)
+bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fCheckDuplicateInputs, uint256 hashTx,  bool isVerifyDB, int nHeight, bool isCheckWallet, bool fStatefulZerocoinCheck, sigma::CSigmaTxInfo *sigmaTxInfo, lelantus::CLelantusTxInfo* lelantusTxInfo)
 {
     LogPrintf("CheckTransaction nHeight=%s, isVerifyDB=%s, isCheckWallet=%s, txHash=%s\n", nHeight, isVerifyDB, isCheckWallet, tx.GetHash().ToString());
 
@@ -605,7 +611,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
     // Check for duplicate inputs - note that this check is slow so we skip it in CheckBlock
     if (true) {
         std::set<COutPoint> vInOutPoints;
-        if (tx.IsZerocoinSpend() || tx.IsSigmaSpend() || tx.IsZerocoinRemint() || tx.IsLelantusJoinSplit()) {
+        if (tx.IsSigmaSpend() || tx.IsLelantusJoinSplit()) {
             std::set<CScript> spendScripts;
             for (const auto& txin: tx.vin)
             {
