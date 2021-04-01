@@ -13,7 +13,6 @@
 #include "automintnotification.h"
 #include "amount.h"
 #include "masternodelist.h"
-#include "sigmadialog.h"
 #include "lelantusdialog.h"
 
 #ifdef ENABLE_ELYSIUM
@@ -40,8 +39,6 @@ class TransactionView;
 class TXHistoryDialog;
 class WalletModel;
 class AddressBookPage;
-class ZerocoinPage;
-class Zc2SigmaPage;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -86,7 +83,6 @@ private:
 #ifdef ENABLE_ELYSIUM
     void setupToolboxPage();
 #endif
-    void setupSigmaPage();
     void setupLelantusPage();
 
 private:
@@ -112,14 +108,8 @@ private:
     TradeHistoryDialog *tradeHistoryTab;
     MetaDExDialog *metaDExTab;
     MetaDExCancelDialog *cancelTab;
-    ZerocoinPage *zerocoinPage;
-    SigmaDialog *sigmaView;
-    BlankSigmaDialog *blankSigmaView;
     LelantusDialog *lelantusView;
-    BlankSigmaDialog *blankLelantusView;
     QWidget *lelantusPage;
-    QWidget *sigmaPage;
-    Zc2SigmaPage *zc2SigmaPage;
     TransactionView *BZXTransactionList;
     QWidget *BZXTransactionsView;
     MasternodeList *masternodeListPage;
@@ -154,12 +144,6 @@ public Q_SLOTS:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-    /** Switch to zerocoin page */
-    void gotoZerocoinPage();
-    /** Switch to sigma page */
-    void gotoSigmaPage();
-    /** Switch to ZC to Sigma page */
-    void gotoZc2SigmaPage();
     /** Switch to lelantus page */
     void gotoLelantusPage();
 

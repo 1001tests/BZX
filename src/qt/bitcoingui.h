@@ -119,9 +119,7 @@ private:
     QAction *openRPCConsoleAction;
     QAction *openAction;
     QAction *showHelpMessageAction;
-    QAction *sigmaAction;
     QAction *lelantusAction;
-    QAction *zc2SigmaAction;
     QAction *masternodeAction;
 
     QSystemTrayIcon *trayIcon;
@@ -156,12 +154,8 @@ private:
     /** Disconnect core signals from GUI client */
     void unsubscribeFromCoreSignals();
 
-    /** Updates Zc2SigmaPage visibility */
-    void checkZc2SigmaVisibility(int numBlocks);
-    /** Updates Znode visibility */
+   /** Updates Znode visibility */
     void checkZnodeVisibility(int numBlocks);
-    /** Updates Sigma visibility */
-    void checkSigmaVisibility(int numBlocks);
     /** Updates Lelantus visibility */
     void checkLelantusVisibility(int numBlocks);
     /** Update UI with latest network info from model. */
@@ -235,10 +229,6 @@ private Q_SLOTS:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-    /** Switch to sigma page */
-    void gotoSigmaPage();
-    /** Switch to ZC->sigma page */
-    void gotoZc2SigmaPage();
     /** Switch to lelantus page */
     void gotoLelantusPage();
 
