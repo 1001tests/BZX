@@ -3148,7 +3148,8 @@ bool ProcessMessages(CNode* pfrom, CConnman& connman, const std::atomic<bool>& i
             PrintExceptionContinue(std::current_exception(), "ProcessMessages()");
         }
 
-        //if (!fRet) {
+        //if (!fRet)
+        {
             //LogPrintf("%s(%s, %u bytes) FAILED peer=%d\n", __func__, SanitizeString(strCommand), nMessageSize, pfrom->id);
         }
 
