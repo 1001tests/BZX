@@ -686,7 +686,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
                     }
 
 
-        if(tx.IsLelantusTransaction()) {
+        if (tx.IsLelantusTransaction()) {
             if (!CheckLelantusTransaction(tx, state, hashTx, isVerifyDB, nHeight, isCheckWallet, fStatefulZerocoinCheck, sigmaTxInfo, lelantusTxInfo))
                 return false;
         }
@@ -694,7 +694,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
 
     if (nHeight >= ::Params().GetConsensus().nStartBlacklist) {
         for (const auto& vin : tx.vin) {
-            if(txid_blacklist.count(vin.prevout.hash.GetHex()) > 0) {
+            if (txid_blacklist.count(vin.prevout.hash.GetHex()) > 0) {
                     return state.DoS(100, error("Spending this tx is temporarily disabled"),
                                  REJECT_INVALID, "bad-txns-zerocoin");
             }
@@ -778,7 +778,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
 
 {
     bool fTestNet = Params().GetConsensus().IsTestnet();
-    LogPrintf("AcceptToMemoryPoolWorker(), tx.IsZerocoinSpend()=%s, fTestNet=%s\n", ptx->IsZerocoinSpend() || ptx->IsSigmaSpend() || ptx->IsLelantusJoinSplit(), fTestNet);
+    LogPrintf("AcceptToMemoryPoolWorker(), tx.IsSpend()=%s, fTestNet=%s\n", ptx->IsSigmaSpend() || ptx->IsLelantusJoinSplit(), fTestNet);
 
     const CTransaction& tx = *ptx;
     const uint256 hash = tx.GetHash();
@@ -800,6 +800,11 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                              REJECT_INVALID, "bad-txns-zerocoin");
     }
 
+    if (tx.IsZerocoinRemint()) {
+            return state.DoS(100, error("Zerocoin spends no more allowed in mempool"),
+                             REJECT_INVALID, "bad-txns-zerocoin");
+    }
+
     if(tx.IsSigmaMint()) {
         if (chainActive.Height() > 450000)
             return state.DoS(100, error("Sigmamints transactions no more allowed in mempool"),
@@ -817,11 +822,6 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                              REJECT_INVALID, "bad-txns-zerocoin");
         }
 
-    //btzc
-    CZerocoinState *zcState = CZerocoinState::GetZerocoinState();
-    vector<CBigNum> zcSpendSerials;
-    CBigNum zcSpendSerial;
-
     // V3 sigma spends.
     sigma::CSigmaState *sigmaState = sigma::CSigmaState::GetState();
     vector<Scalar> zcSpendSerialsV3;
@@ -834,33 +834,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
     vector<uint64_t> lelantusAmounts;
     {
         LOCK(pool.cs);
-        if (tx.IsZerocoinSpend()) {
-            BOOST_FOREACH(const CTxIn &txin, tx.vin)
-            {
-                zcSpendSerial = ZerocoinGetSpendSerialNumber(tx, txin);
-                if (!zcSpendSerial)
-                    return state.Invalid(false, REJECT_INVALID, "txn-invalid-zerocoin-spend");
-                if (!zcState->CanAddSpendToMempool(zcSpendSerial)) {
-                    LogPrintf("AcceptToMemoryPool(): serial number %s has been used\n", zcSpendSerial.ToString());
-                    return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
-                }
-                zcSpendSerials.push_back(zcSpendSerial);
-            }
-        }
-        else if (tx.IsZerocoinRemint()) {
-            zcSpendSerial = sigma::CoinRemintToV3::GetSerialNumber(tx);
-
-            if (!zcSpendSerial)
-                return state.Invalid(false, REJECT_INVALID, "txn-invalid-zerocoin-spend");
-
-            if (!zcState->CanAddSpendToMempool(zcSpendSerial)) {
-                LogPrintf("AcceptToMemoryPool(): serial number %s has been used\n", zcSpendSerial.ToString());
-                return state.Invalid(false, REJECT_CONFLICT, "txn-mempool-conflict");
-            }
-
-            zcSpendSerials.push_back(zcSpendSerial);
-        }
-        else if (tx.IsSigmaSpend()) {
+        if (tx.IsSigmaSpend()) {
 
             BOOST_FOREACH(const CTxIn &txin, tx.vin)
             {
@@ -978,7 +952,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
     std::set<uint256> setConflicts;
     {
     LOCK(pool.cs); // protect pool.mapNextTx
-    if (!tx.IsZerocoinSpend() && !tx.IsZerocoinRemint() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit()) {
+    if (!tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit()) {
         BOOST_FOREACH(const CTxIn &txin, tx.vin)
         {
             auto itConflicting = pool.mapNextTx.find(txin.prevout);
@@ -1044,7 +1018,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
             }
         }
 
-        if (!tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit()) {
+        if (!tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit()) {
             // do all inputs exist?
             BOOST_FOREACH(const CTxIn txin, tx.vin) {
                 if (!pcoinsTip->HaveCoinInCache(txin.prevout)) {
@@ -1080,7 +1054,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         view.SetBackend(dummy);
         } // LOCK
 
-        if (!tx.IsZerocoinSpend() && !tx.IsZerocoinRemint()) {
+        {
 
             // Check for non-standard pay-to-script-hash in inputs
             if (fRequireStandard && !AreInputsStandard(tx, view))
@@ -1094,8 +1068,8 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
 
             CAmount nValueOut = tx.GetValueOut();
             CAmount nFees;
-            if(!tx.IsLelantusJoinSplit()) {
-                nFees = nValueIn-nValueOut;
+            if( !tx.IsLelantusJoinSplit()) {
+                nFees = nValueIn - nValueOut;
             } else {
                 try {
                     nFees = lelantus::ParseLelantusJoinSplit(tx.vin[0])->getFee();
@@ -1420,10 +1394,6 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                 pool.addSpentIndex(entry, view);
             }
 
-            if (tx.IsZerocoinSpend()) {
-                pool.countZCSpend++;
-            }
-
             // trim mempool and check if tx was trimmed
             if (!fOverrideMempoolLimit) {
                 LimitMempoolSize(pool, GetArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE) * 1000000, GetArg("-mempoolexpiry", DEFAULT_MEMPOOL_EXPIRY) * 60 * 60);
@@ -1431,24 +1401,8 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
                     return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "mempool full");
             }
         }
-        else {
-            LockPoints lp;
-            double fSpendsCoinbase = false;
-            CAmount inChainInputValue = 0;
-            CAmount nFees = 0;
-            int64_t nSigOpsCost = GetLegacySigOpCount(tx);
-            CTxMemPool::setEntries setAncestors;
-            CTxMemPoolEntry entry(ptx, nFees, GetTime(), chainActive.Height(),
-                                inChainInputValue, fSpendsCoinbase, nSigOpsCost, lp);
-            pool.addUnchecked(hash, entry, setAncestors, !IsInitialBlockDownload());
-            if (tx.IsZerocoinSpend()) {
-                pool.countZCSpend++;
-            }
-        }
     }
 
-    if ((tx.IsZerocoinSpend() || tx.IsZerocoinRemint()) && markBZXSpendTransactionSerial)
-        zcState->AddSpendToMempool(zcSpendSerials, hash);
     if (tx.IsSigmaSpend()) {
         if(markBZXSpendTransactionSerial)
             sigmaState->AddSpendToMempool(zcSpendSerialsV3, hash);
