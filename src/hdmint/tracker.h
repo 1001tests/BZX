@@ -5,7 +5,7 @@
 #ifndef BZX_HDMINTTRACKER_H
 #define BZX_HDMINTTRACKER_H
 
-#include "primitives/zerocoin.h"
+#include "primitives/mint_spend.h"
 #include "hdmint/mintpool.h"
 #include "wallet/walletdb.h"
 #include <list>

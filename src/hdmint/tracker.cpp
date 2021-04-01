@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <hdmint/hdmint.h>
-#include <primitives/zerocoin.h>
+#include <primitives/mint_spend.h>
 #include "hdmint/tracker.h"
 #include "util.h"
 #include "sync.h"

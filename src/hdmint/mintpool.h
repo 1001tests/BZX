@@ -8,7 +8,7 @@
 #include <map>
 #include <list>
 
-#include "primitives/zerocoin.h"
+#include "primitives/mint_spend.h"
 #include "libzerocoin/bitcoin_bignum/bignum.h"
 #include "uint256.h"
 

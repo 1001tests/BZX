@@ -5,7 +5,7 @@
 #ifndef BZX_HDMINT_H
 #define BZX_HDMINT_H
 
-#include "primitives/zerocoin.h"
+#include "primitives/mint_spend.h"
 #include "sigma.h"
 
 /**

@@ -9,7 +9,7 @@
 #include "libzerocoin/Zerocoin.h"
 #include "hdmint/mintpool.h"
 #include "uint256.h"
-#include "primitives/zerocoin.h"
+#include "primitives/mint_spend.h"
 #include "wallet/wallet.h"
 #include "tracker.h"
 

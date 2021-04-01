@@ -28,7 +28,7 @@
 #include "hdmint/tracker.h"
 #include "hdmint/wallet.h"
 
-#include "primitives/zerocoin.h"
+#include "primitives/mint_spend.h"
 
 
 #include <algorithm>
