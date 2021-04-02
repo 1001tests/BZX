@@ -3127,7 +3127,7 @@ bool ProcessMessages(CNode* pfrom, CConnman& connman, const std::atomic<bool>& i
             if (strstr(e.what(), "end of data"))
             {
                 // Allow exceptions from under-length message on vRecv
-                //LogPrintf("%s(%s, %u bytes): Exception '%s' caught, normally caused by a message being shorter than its stated length\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
+                LogPrintf("%s(%s, %u bytes): Exception '%s' caught, normally caused by a message being shorter than its stated length\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
             }
             if (strstr(e.what(), "size too large"))
             {
