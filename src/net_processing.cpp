@@ -3124,22 +3124,22 @@ bool ProcessMessages(CNode* pfrom, CConnman& connman, const std::atomic<bool>& i
         catch (const std::ios_base::failure& e)
         {
             connman.PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_MALFORMED, std::string("error parsing message")));
-            //if (strstr(e.what(), "end of data"))
+            if (strstr(e.what(), "end of data"))
             {
                 // Allow exceptions from under-length message on vRecv
                 //LogPrintf("%s(%s, %u bytes): Exception '%s' caught, normally caused by a message being shorter than its stated length\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
             }
-            //if (strstr(e.what(), "size too large"))
+            if (strstr(e.what(), "size too large"))
             {
                 // Allow exceptions from over-long size
-                //LogPrintf("%s(%s, %u bytes): Exception '%s' caught\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
+                LogPrintf("%s(%s, %u bytes): Exception '%s' caught\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
             }
-            //if (strstr(e.what(), "non-canonical ReadCompactSize()"))
+            if (strstr(e.what(), "non-canonical ReadCompactSize()"))
             {
                 // Allow exceptions from non-canonical encoding
-                //LogPrintf("%s(%s, %u bytes): Exception '%s' caught\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
+                LogPrintf("%s(%s, %u bytes): Exception '%s' caught\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
             }
-            //else
+            else
             {
                 PrintExceptionContinue(std::current_exception(), "ProcessMessages()");
             }
@@ -3148,9 +3148,9 @@ bool ProcessMessages(CNode* pfrom, CConnman& connman, const std::atomic<bool>& i
             PrintExceptionContinue(std::current_exception(), "ProcessMessages()");
         }
 
-        //if (!fRet)
+        if (!fRet)
         {
-            //LogPrintf("%s(%s, %u bytes) FAILED peer=%d\n", __func__, SanitizeString(strCommand), nMessageSize, pfrom->id);
+            LogPrintf("%s(%s, %u bytes) FAILED peer=%d\n", __func__, SanitizeString(strCommand), nMessageSize, pfrom->id);
         }
 
         LOCK(cs_main);
