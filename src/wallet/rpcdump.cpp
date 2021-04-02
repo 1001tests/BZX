@@ -804,7 +804,7 @@ UniValue dumpwallet(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
-UniValue dumpwallet(const JSONRPCRequest& request)
+UniValue dumpwallet_bzx(const JSONRPCRequest& request)
 {
 #ifndef UNSAFE_DUMPPRIVKEY
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
