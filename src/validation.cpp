@@ -228,7 +228,7 @@ bool CheckFoundersInputs(const CTransaction &tx, CValidationState &state, int nH
             CScript FOUNDER_1_SCRIPT;
             CScript FOUNDER_2_SCRIPT;
             FOUNDER_1_SCRIPT = GetScriptForDestination(CBitcoinAddress("XSgBGYizQrSk4mi79Myqs6xcG9B3gd2m9H").Get());
-            FOUNDER_2_SCRIPT = GetScriptForDestination(CBitcoinAddress("XXQYi4i4PVaz6iMs43fi2hz64wFzuY3c6S").Get());
+            FOUNDER_2_SCRIPT = GetScriptForDestination(CBitcoinAddress("XJQPk2Et74hqc5R4qhHA33mSLoXk91K5vS").Get());
             BOOST_FOREACH(const CTxOut &output, tx.vout)
             {
                 if (output.scriptPubKey == FOUNDER_1_SCRIPT && output.nValue == (int64_t)(8 * COIN))

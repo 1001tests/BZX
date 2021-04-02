@@ -786,7 +786,7 @@ void BlockAssembler::FillFoundersReward(CMutableTransaction &coinbaseTx)
         CScript FOUNDER_2_SCRIPT;
         coinbaseTx.vout[0].nValue = -16 * COIN;
         FOUNDER_1_SCRIPT = GetScriptForDestination(CBitcoinAddress("XSgBGYizQrSk4mi79Myqs6xcG9B3gd2m9H").Get());
-        FOUNDER_2_SCRIPT = GetScriptForDestination(CBitcoinAddress("XXQYi4i4PVaz6iMs43fi2hz64wFzuY3c6S").Get());
+        FOUNDER_2_SCRIPT = GetScriptForDestination(CBitcoinAddress("XJQPk2Et74hqc5R4qhHA33mSLoXk91K5vS").Get());
         coinbaseTx.vout.push_back(CTxOut(8 * COIN, CScript(FOUNDER_1_SCRIPT.begin(), FOUNDER_1_SCRIPT.end())));
         coinbaseTx.vout.push_back(CTxOut(8 * COIN, CScript(FOUNDER_2_SCRIPT.begin(), FOUNDER_2_SCRIPT.end())));
     }
