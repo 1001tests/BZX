@@ -238,7 +238,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     nLastBlockWeight = nBlockWeight;
 
     //CAmount nBlockSubsidy = GetBlockSubsidy(nHeight, chainparams.GetConsensus());
-    CAmount nBlockSubsidy = 45 * COIN);  //XXXX
+    CAmount nBlockSubsidy = 45 * COIN;  //XXXX
 
     // Create coinbase transaction.
     CMutableTransaction coinbaseTx;
