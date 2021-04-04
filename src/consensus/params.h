@@ -167,7 +167,7 @@ struct Params {
     /** block number to disable zerocoin on consensus level */
     int nDisableZerocoinStartBlock;
 	
-    int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing); }
+    int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
 
     bool IsMain() const { return chainType == chainMain; }
