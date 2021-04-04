@@ -50,7 +50,7 @@ uint256 CBlockHeader::GetHash() const {
     return SerializeHash(*this);
 }
 
-uint256 CBlockHeader::GetPoWHash(int nHeight) const {
+uint256 CBlockHeader::GetPoWHash(int nHeight) const
     {
         uint256 powHash;
         if (nHeight >= 1)
