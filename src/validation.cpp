@@ -4113,6 +4113,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-duplicate", true, "duplicate transaction");
         }
 
+        if (nHeight == 66876)
+            LogPrintf("Skip block 66876 mrklroot!\n");
+
     }
 
     // All potential-corruption validation must be done before we do any
