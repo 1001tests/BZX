@@ -248,8 +248,7 @@ BITCOIN_CORE_H = \
   sigma.h \
   coin_containers.h \
   zerocoin_params.h \
-  addresstype.h \
-  mtpstate.h
+  addresstype.h
 
 obj/build.h: FORCE
 	@$(MKDIR_P) $(builddir)/obj
@@ -302,7 +301,6 @@ libbitcoin_server_a_SOURCES = \
   zerocoin.cpp \
   sigma.cpp \
   coin_containers.cpp \
-  mtpstate.cpp \
   $(BITCOIN_CORE_H)
 
 if ENABLE_ZMQ
@@ -418,7 +416,6 @@ libbitcoin_consensus_a_SOURCES = \
   crypto/Lyra2Z/sph_types.h \
   crypto/Lyra2Z/Sponge.c \
   crypto/Lyra2Z/Sponge.h \
-  crypto/MerkleTreeProof/mtp.h \
   crypto/MerkleTreeProof/argon2.h \
   crypto/MerkleTreeProof/thread.h \
   crypto/MerkleTreeProof/merkle-tree.hpp \
@@ -505,7 +502,6 @@ libbitcoin_util_a_SOURCES = \
   libzerocoin/SpendMetaData.h \
   libzerocoin/SpendMetaData.cpp \
   libzerocoin/Zerocoin.h \
-  crypto/MerkleTreeProof/mtp.cpp \
   crypto/MerkleTreeProof/merkle-tree.cpp \
   $(BITCOIN_CORE_H)
 
@@ -703,13 +699,3 @@ if ENABLE_QT
 include Makefile.qt.include
 endif
 
-if ENABLE_TESTS
-include Makefile.test.include
-else
-check-local:
-	$(error Please rerun configure with tests enabling flag)
-endif
-
-if ENABLE_EXODUS
-include Makefile.exodus.include
-endif

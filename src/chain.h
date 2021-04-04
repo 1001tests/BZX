@@ -257,9 +257,6 @@ public:
         nBits          = 0;
         nNonce         = 0;
 
-        nVersionMTP = 0;
-        mtpHashValue = reserved[0] = reserved[1] = uint256();
-
         mintedPubCoins.clear();
         sigmaMintedPubCoins.clear();
         accumulatorChanges.clear();

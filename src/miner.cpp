@@ -28,7 +28,6 @@
 #include "wallet/wallet.h"
 #include "definition.h"
 #include "crypto/scrypt.h"
-#include "crypto/MerkleTreeProof/mtp.h"
 #include "crypto/Lyra2Z/Lyra2Z.h"
 #include "crypto/Lyra2Z/Lyra2.h"
 #include "znode-payments.h"
@@ -143,15 +142,13 @@ CBlockTemplate* BlockAssembler::CreateNewBlock(
 
     const Consensus::Params &params = Params().GetConsensus();
     uint32_t nBlockTime;
-    bool fMTP;
     {
         LOCK2(cs_main, mempool.cs);
         nBlockTime = GetAdjustedTime();
     }
 
-    fMTP = nBlockTime >= params.nMTPSwitchTime;
-    int nFeeReductionFactor = fMTP ? params.nMTPRewardReduction : 1;
-    CAmount coin = COIN / nFeeReductionFactor;
+
+    CAmount coin = COIN;
 
     resetBlock();
     auto_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
@@ -283,8 +280,6 @@ CBlockTemplate* BlockAssembler::CreateNewBlock(
         const int64_t nMedianTimePast = pindexPrev->GetMedianTimePast();
 
         pblock->nVersion = ComputeBlockVersion(pindexPrev, chainparams.GetConsensus());
-        if (fMTP)
-            pblock->nVersion |= 0x1000;
 
         // -regtest only: allow overriding block.nVersion with
         // -blockversion=N to test forking scenarios
@@ -530,7 +525,7 @@ CBlockTemplate* BlockAssembler::CreateNewBlock(
         // get some info back to pass to getblocktemplate
         if (nHeight >= chainparams.GetConsensus().nZnodePaymentsStartBlock) {
             const Consensus::Params &params = chainparams.GetConsensus();
-            CAmount znodePayment = GetZnodePayment(chainparams.GetConsensus(), nHeight > 0 && nBlockTime >= params.nMTPSwitchTime);
+            CAmount znodePayment = GetZnodePayment(chainparams.GetConsensus());
             coinbaseTx.vout[0].nValue -= znodePayment;
             FillBlockPayments(coinbaseTx, nHeight, znodePayment, pblock->txoutZnode, pblock->voutSuperblock);
         }
@@ -551,9 +546,6 @@ CBlockTemplate* BlockAssembler::CreateNewBlock(
         pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus());
         pblock->nNonce         = 0;
 
-        // Zcoin - MTP
-        if (pblock->IsMTP())
-            pblock->mtpHashData = make_shared<CMTPHashData>();
 
         pblocktemplate->vTxSigOpsCost[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
@@ -1184,12 +1176,7 @@ void static ZcoinMiner(const CChainParams &chainparams) {
                 uint256 thash;
 
                 while (true) {
-                    if (pblock->IsMTP()) {
-                        //sleep(60);
-                        LogPrintf("BEFORE: mtp_hash\n");
-                        thash = mtp::hash(*pblock, Params().GetConsensus().powLimit);
-                        pblock->mtpHashValue = thash;
-                    } else if (!fTestNet && pindexPrev->nHeight + 1 >= HF_LYRA2Z_HEIGHT) {
+                    if (!fTestNet && pindexPrev->nHeight + 1 >= HF_LYRA2Z_HEIGHT) {
                         lyra2z_hash(BEGIN(pblock->nVersion), BEGIN(thash));
                     } else if (!fTestNet && pindexPrev->nHeight + 1 >= HF_LYRA2_HEIGHT) {
                         LYRA2(BEGIN(thash), 32, BEGIN(pblock->nVersion), 80, BEGIN(pblock->nVersion), 80, 2, 8192, 256);
