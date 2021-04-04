@@ -222,10 +222,6 @@ public:
     //! Maps <denomination,id> to vector of public coins
     map<pair<int,int>, vector<CBigNum>> mintedPubCoins;
 
-    //! Accumulator updates. Contains only changes made by mints in this block
-    //! Maps <denomination, id> to <accumulator value (CBigNum), number of such mints in this block>
-    map<pair<int,int>, pair<CBigNum,int>> accumulatorChanges;
-
     //! Values of coin serials spent in this block
 	set<CBigNum> spentSerials;
 
@@ -442,7 +438,7 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
         //READWRITE(lelantusMintedPubCoins);
-        //READWRITE(lelantusSpentSerials);
+        //READWRITE(lelantusSpentSerials); //xxxx
 
         const auto &params = Params().GetConsensus();
         if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nEvoSporkStartBlock && nHeight < params.nEvoSporkStopBlock)
