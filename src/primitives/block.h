@@ -104,18 +104,7 @@ public:
         return (nBits == 0);
     }
 
-    bool IsComputed() const
-    {
-        return (isComputed <= 0);
-    }
-
-    void SetPoWHash(uint256 hash) const
-    {
-//        isComputed = 1;
-//        powHash = hash;
-    }
-
-    uint256 GetPoWHash(int nHeight, bool forceCalc = false) const;
+    uint256 GetPoWHash(int nHeight) const;
 
     uint256 GetHash() const;
 
@@ -123,7 +112,6 @@ public:
     {
         return (int64_t)nTime;
     }
-    void InvalidateCachedPoWHash(int nHeight) const;
 
 };
 

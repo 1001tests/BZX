@@ -2627,10 +2627,6 @@ bool DisconnectBlock(const CBlock &block, CValidationState &state, const CBlockI
         dbIndexHelper.DisconnectTransactionInputs(tx, pindex->nHeight, i, view);
     }
 
-    // move best block pointer to prevout block
-    view.SetBestBlock(pindex->pprev->GetBlockHash());
-    block.InvalidateCachedPoWHash(pindex->nHeight);
-
     //The pfClean flag is specified only when called from CVerifyDB::VerifyDB.
     //When called from there, no real disconnect happens.
     if(!pfClean) {
