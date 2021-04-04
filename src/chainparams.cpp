@@ -23,16 +23,14 @@
 
 static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesisOutputScript, uint32_t nTime, uint32_t nNonce,
         uint32_t nBits, int32_t nVersion, const CAmount &genesisReward,
-        std::vector<unsigned char> extraNonce) {
+        std::vector<unsigned char> extraNonce)
+{
+
     CMutableTransaction txNew;
     txNew.nVersion = 1;
     txNew.vin.resize(1);
     txNew.vout.resize(1);
-    //    CScriptNum csn = CScriptNum(4);
-    //    std::cout << "CScriptNum(4):" << csn.GetHex();
-    //    CBigNum cbn = CBigNum(4);
-    //    std::cout << "CBigNum(4):" << cbn.GetHex();
-    txNew.vin[0].scriptSig = CScript() << 504365040 << CBigNum(4).getvch() << std::vector < unsigned char >
+    txNew.vin[0].scriptSig = CScript() << 0x1f0fffff << CBigNum(4).getvch() << std::vector < unsigned char >
     ((const unsigned char *) pszTimestamp, (const unsigned char *) pszTimestamp + strlen(pszTimestamp)) << extraNonce;
     txNew.vout[0].nValue = genesisReward;
     txNew.vout[0].scriptPubKey = genesisOutputScript;
@@ -42,7 +40,7 @@ static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesi
     genesis.nBits = nBits;
     genesis.nNonce = nNonce;
     genesis.nVersion = nVersion;
-    genesis.vtx.push_back(txNew);
+    genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
     genesis.hashPrevBlock.SetNull();
     genesis.hashMerkleRoot = BlockMerkleRoot(genesis);
     return genesis;
@@ -128,7 +126,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MTP].nTimeout = SWITCH_TO_MTP_BLOCK_HEADER + consensus.nMinerConfirmationWindow*2 * 5*60;
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000708f98bf623f02e");
+        consensus.nMinimumChainWork = uint256S("0x0");
 
         consensus.nCheckBugFixedAtBlock = ZC_CHECK_BUG_FIXED_AT_BLOCK;
         consensus.nZnodePaymentsBugFixedAtBlock = ZC_ZNODE_PAYMENT_BUG_FIXED_AT_BLOCK;
@@ -176,11 +174,11 @@ public:
        `  * a large 32-bit integer with any alignment.
          */
         //btzc: update zcoin pchMessage
-        pchMessageStart[0] = 0xe3;
-        pchMessageStart[1] = 0xd9;
-        pchMessageStart[2] = 0xfe;
-        pchMessageStart[3] = 0xf1;
-        nDefaultPort = 8168;
+        pchMessageStart[0] = { 'b' };
+        pchMessageStart[1] = { 'z' };
+        pchMessageStart[2] = { 'x' };
+        pchMessageStart[3] = { '0' };
+        nDefaultPort = 29301;
         nPruneAfterHeight = 100000;
         /**
          * btzc: zcoin init genesis block
@@ -197,23 +195,17 @@ public:
         extraNonce[2] = 0x00;
         extraNonce[3] = 0x00;
         genesis = CreateGenesisBlock(ZC_GENESIS_BLOCK_TIME, 142392, 0x1e0ffff0, 2, 0 * COIN, extraNonce);
-        const std::string s = genesis.GetHash().ToString();
-        // std::cout << "zcoin new hashMerkleRoot hash: " << genesis.hashMerkleRoot.ToString() << std::endl;
+        genesis = CreateGenesisBlock(1485785935, 2610, 0x1f0fffff, 2, 0 * COIN, extraNonce);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"));
-        assert(genesis.hashMerkleRoot == uint256S("0x365d2aa75d061370c9aefdabac3985716b1e3b4bb7c4af4ed54f25e5aaa42783"));
-        vSeeds.push_back(CDNSSeedData("amsterdam.zcoin.io", "amsterdam.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("australia.zcoin.io", "australia.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("chicago.zcoin.io", "chicago.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("london.zcoin.io", "london.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("frankfurt.zcoin.io", "frankfurt.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("newjersey.zcoin.io", "newjersey.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("sanfrancisco.zcoin.io", "sanfrancisco.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("tokyo.zcoin.io", "tokyo.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("singapore.zcoin.io", "singapore.zcoin.io", false));
+        assert(consensus.hashGenesisBlock == uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f"));
+        assert(genesis.hashMerkleRoot == uint256S("0x31f49b23f8a1185f85a6a6972446e72a86d50ca0e3b3ffe217d0c2fea30473db"));
+        vSeeds.push_back(CDNSSeedData("51.77.145.35", "51.77.145.35", false));
+        vSeeds.push_back(CDNSSeedData("51.91.156.249", "51.91.156.249", false));
+        vSeeds.push_back(CDNSSeedData("51.91.156.251", "51.91.156.251", false));
+        vSeeds.push_back(CDNSSeedData("51.91.156.252", "51.91.156.252", false));
         // Note that of those with the service bits flag, most only support a subset of possible options
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 82);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 7);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 75);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 34);
         base58Prefixes[SECRET_KEY] = std::vector < unsigned char > (1, 210);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container < std::vector < unsigned char > > ();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container < std::vector < unsigned char > > ();
@@ -228,18 +220,11 @@ public:
 
         checkpointData = (CCheckpointData) {
                 boost::assign::map_list_of
-                    (0, uint256S("0xf11046292ff76af48b66de6f1a210c09825d2ab4f56975ec507766ebf9c9f443"))
-                    (14000, uint256S("0xeab9b7e451284cb75ada7609e0220bee2b4f289fed9d9cf2a9e3aa548b2d38eb"))
-                    (14001, uint256S("0x98641539b9b8ff4e6a8053ec904a14a99f95cf7655c71625104419b22016c9a0"))
-                    (14002, uint256S("0x8c8c67106b0b612b08edd13e846c97c24ad0b59066efdb3ad6666e20f90d4bfa"))
-                    (14003, uint256S("0xaccfa7c7bb153135def08bb54dadb1835744d9521afb36661a91aa2f70df9abd"))
-                    (14271, uint256S("0xf15088099a30f98e85a09789880f74cadca42f725c0cc1666484865539d2f335"))
-                        (20580, uint256S("0x591b00ac1ba7d30b9f440efc467072400805a900e92f04f272e6f70cb55ab026"))
-			(121378, uint256S("0xa7d9a56dd2986442b5c10ad036eb4e6555eaa8d9f6645c7b9620597792a153ac")),
-                1545712287, // * UNIX timestamp of last checkpoint block
-                933513,    // * total number of transactions between genesis and last checkpoint
+                    (0, uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f")),,
+                1485785935, // * UNIX timestamp of last checkpoint block
+                1,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
-                1200.0     // * estimated number of transactions per day after checkpoint
+                576     // * estimated number of transactions per day after checkpoint
         };
         consensus.nSpendV15StartBlock = ZC_V1_5_STARTING_BLOCK;
         consensus.nSpendV2ID_1 = ZC_V2_SWITCH_ID_1;
