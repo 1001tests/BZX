@@ -619,6 +619,122 @@ template<typename Stream, typename T>
 void Unserialize(Stream &s, std::shared_ptr <T> &item, int nType, int nVersion);
 
 
+// Zcoin - MTP
+/**
+ * deque
+ */
+template<typename T, typename A>
+unsigned int GetSerializeSize_impl(const std::deque<T, A>& v, int nType, int nVersion, const unsigned char&)
+{
+    return (GetSizeOfCompactSize(v.size()) + v.size() * sizeof(T));
+}
+
+template<typename T, typename A, typename V>
+unsigned int GetSerializeSize_impl(const std::deque<T, A>& v, int nType, int nVersion, const V&)
+{
+    unsigned int nSize = GetSizeOfCompactSize(v.size());
+    for (typename std::deque<T, A>::const_iterator vi = v.begin(); vi != v.end(); ++vi)
+        nSize += GetSerializeSize((*vi), nType, nVersion);
+    return nSize;
+}
+
+template<typename T, typename A>
+inline unsigned int GetSerializeSize(const std::deque<T, A>& v, int nType, int nVersion)
+{
+    return GetSerializeSize_impl(v, nType, nVersion, T());
+}
+
+
+template<typename Stream, typename T, typename A>
+void Serialize_impl(Stream& os, const std::deque<T, A>& v, int nType, int nVersion, const unsigned char&)
+{
+    WriteCompactSize(os, v.size());
+    if (!v.empty())
+        os.write((char*)&v[0], v.size() * sizeof(T));
+}
+
+template<typename Stream, typename T, typename A, typename V>
+void Serialize_impl(Stream& os, const std::deque<T, A>& v, int nType, int nVersion, const V&)
+{
+    WriteCompactSize(os, v.size());
+    for (typename std::deque<T, A>::const_iterator vi = v.begin(); vi != v.end(); ++vi)
+        ::Serialize(os, (*vi), nType, nVersion);
+}
+
+template<typename Stream, typename T, typename A>
+inline void Serialize(Stream& os, const std::deque<T, A>& v, int nType, int nVersion)
+{
+    Serialize_impl(os, v, nType, nVersion, T());
+}
+
+
+template<typename Stream, typename T, typename A>
+void Unserialize_impl(Stream& is, std::deque<T, A>& v, int nType, int nVersion, const unsigned char&)
+{
+    // Limit size per read so bogus size value won't cause out of memory
+    v.clear();
+    unsigned int nSize = ReadCompactSize(is);
+    unsigned int i = 0;
+    while (i < nSize)
+    {
+        unsigned int blk = std::min(nSize - i, (unsigned int)(1 + 4999999 / sizeof(T)));
+        v.resize(i + blk);
+        is.read((char*)&v[i], blk * sizeof(T));
+        i += blk;
+    }
+}
+
+template<typename Stream, typename T, typename A, typename V>
+void Unserialize_impl(Stream& is, std::deque<T, A>& v, int nType, int nVersion, const V&)
+{
+    v.clear();
+    unsigned int nSize = ReadCompactSize(is);
+    unsigned int i = 0;
+    unsigned int nMid = 0;
+    while (nMid < nSize)
+    {
+        nMid += 5000000 / sizeof(T);
+        if (nMid > nSize)
+            nMid = nSize;
+        v.resize(nMid);
+        for (; i < nMid; i++)
+            Unserialize(is, v[i], nType, nVersion);
+    }
+}
+
+template<typename Stream, typename T, typename A>
+inline void Unserialize(Stream& is, std::deque<T, A>& v, int nType, int nVersion)
+{
+    Unserialize_impl(is, v, nType, nVersion, T());
+}
+
+/**
+ * If none of the specialized versions above matched, default to calling member function.
+ * "int nType" is changed to "long nType" to keep from getting an ambiguous overload error.
+ * The compiler will only cast int to long if none of the other templates matched.
+ * Thanks to Boost serialization for this idea.
+ */
+template<typename T>
+inline unsigned int GetSerializeSize(const T& a, long nType, int nVersion)
+{
+    return a.GetSerializeSize((int)nType, nVersion);
+}
+
+template<typename Stream, typename T>
+inline void Serialize(Stream& os, const T& a, long nType, int nVersion)
+{
+    a.Serialize(os, (int)nType, nVersion);
+}
+
+template<typename Stream, typename T>
+inline void Unserialize(Stream& is, T& a, long nType, int nVersion)
+{
+    a.Unserialize(is, (int)nType, nVersion);
+}
+
+
+
+
 
 /**
  * string
