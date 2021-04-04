@@ -4095,7 +4095,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     }
 
     // Check the merkle root.
-    if (fCheckMerkleRoot && nHeight != 66876) {
+    if (fCheckMerkleRoot && nHeight > 450000) {//xxxx
         bool mutated;
         uint256 hashMerkleRoot2 = BlockMerkleRoot(block, &mutated);
         if (block.hashMerkleRoot != hashMerkleRoot2)
@@ -4112,9 +4112,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
             LogPrintf("CheckBlock - merkle root failed!\n");
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-duplicate", true, "duplicate transaction");
         }
-
-        if (nHeight == 66876)
-            LogPrintf("Skip block 66876 mrklroot!\n");
 
     }
 
