@@ -40,7 +40,7 @@ static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesi
     genesis.nBits = nBits;
     genesis.nNonce = nNonce;
     genesis.nVersion = nVersion;
-    genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
+    genesis.vtx.push_back(txNew);
     genesis.hashPrevBlock.SetNull();
     genesis.hashMerkleRoot = BlockMerkleRoot(genesis);
     return genesis;
@@ -207,7 +207,7 @@ public:
 
         checkpointData = (CCheckpointData) {
                 boost::assign::map_list_of
-                    (0, uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f")),,
+                (0, uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f")),
                 1485785935, // * UNIX timestamp of last checkpoint block
                 1,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
