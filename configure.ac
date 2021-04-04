@@ -1191,11 +1191,11 @@ fi
 AC_SUBST(LIBZSTD)
 
 if test x$openssl_prefix != x; then
-  ac_configure_args="$ac_configure_args --with-openssl-dir=$openssl_prefix"
+  ac_configure_args="$ac_configure_args --with-openssl-dir=$openssl_prefix" --disable-gcc-hardening
 fi
 
 AX_SUBDIRS_CONFIGURE([src/secp256k1], [[--disable-shared], [--with-pic], [--with-bignum=no], [--enable-module-recovery], [--enable-experimental], [--enable-module-ecdh]])
-AX_SUBDIRS_CONFIGURE([src/tor], [[--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--disable-libscrypt]])
+AX_SUBDIRS_CONFIGURE([src/tor], [[--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-gcc-hardening], [--disable-asciidoc], [--disable-libscrypt]])
 
 
 AC_OUTPUT
