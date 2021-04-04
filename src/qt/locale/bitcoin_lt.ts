@@ -72,7 +72,7 @@
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
         <translation>Pasirašyti ži&amp;nutę...</translation>
@@ -154,8 +154,8 @@
         <translation>Blokai iš naujo indeksuojami...</translation>
     </message>
     <message>
-        <source>Send coins to a BZX address</source>
-        <translation>Siųsti monetas BZX adresui</translation>
+        <source>Send coins to a Zcoin address</source>
+        <translation>Siųsti monetas Zcoin adresui</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -178,8 +178,8 @@
         <translation>&amp;Tikrinti žinutę...</translation>
     </message>
     <message>
-        <source>BZX</source>
-        <translation>BZX</translation>
+        <source>Zcoin</source>
+        <translation>Zcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -261,7 +261,7 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>Piniginė &lt;b&gt;užšifruota&lt;/b&gt; ir šiuo metu &lt;b&gt;užrakinta&lt;/b&gt;</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -279,6 +279,10 @@
     <message>
         <source>Amount:</source>
         <translation>Suma:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>Pirmumas:</translation>
     </message>
     <message>
         <source>Fee:</source>
@@ -319,6 +323,10 @@
     <message>
         <source>Confirmed</source>
         <translation>Patvirtintas</translation>
+    </message>
+    <message>
+        <source>Priority</source>
+        <translation>Pirmumas</translation>
     </message>
     </context>
 <context>
@@ -374,17 +382,6 @@
     </message>
     </context>
 <context>
-    <name>ModalOverlay</name>
-    <message>
-        <source>Form</source>
-        <translation>Forma</translation>
-    </message>
-    <message>
-        <source>Last block time</source>
-        <translation>Paskutinio bloko laikas</translation>
-    </message>
-    </context>
-<context>
     <name>OpenURIDialog</name>
     </context>
 <context>
@@ -418,8 +415,8 @@
         <translation>Piniginė</translation>
     </message>
     <message>
-        <source>Automatically open the BZX client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Automatiškai atidaryti BZX kliento prievadą maršrutizatoriuje. Tai veikia tik tada, kai jūsų maršrutizatorius palaiko UPnP ir ji įjungta.</translation>
+        <source>Automatically open the Zcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Automatiškai atidaryti Zcoin kliento prievadą maršrutizatoriuje. Tai veikia tik tada, kai jūsų maršrutizatorius palaiko UPnP ir ji įjungta.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -569,9 +566,6 @@
         <source>N/A</source>
         <translation>nėra</translation>
     </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
     </context>
 <context>
     <name>QRImageWidget</name>
@@ -743,6 +737,10 @@
         <translation>Suma:</translation>
     </message>
     <message>
+        <source>Priority:</source>
+        <translation>Pirmumas:</translation>
+    </message>
+    <message>
         <source>Fee:</source>
         <translation>Mokestis:</translation>
     </message>
@@ -847,7 +845,7 @@
         <translation>Įveskite pranešimą, kurį norite pasirašyti čia</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this BZX address</source>
+        <source>Sign the message to prove you own this Zcoin address</source>
         <translation>Registruotis žinute įrodymuii, kad turite šį adresą</translation>
     </message>
     <message>
@@ -863,8 +861,8 @@
         <translation>&amp;Patikrinti žinutę</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified BZX address</source>
-        <translation>Patikrinkite žinutę, jog įsitikintumėte, kad ją pasirašė nurodytas BZX adresas</translation>
+        <source>Verify the message to ensure it was signed with the specified Zcoin address</source>
+        <translation>Patikrinkite žinutę, jog įsitikintumėte, kad ją pasirašė nurodytas Zcoin adresas</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>
@@ -914,7 +912,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Options:</source>
         <translation>Parinktys:</translation>
@@ -936,8 +934,12 @@
         <translation>Dirbti fone kaip šešėlyje ir priimti komandas</translation>
     </message>
     <message>
-        <source>BZX Core</source>
-        <translation>BZX branduolys</translation>
+        <source>Zcoin Core</source>
+        <translation>Zcoin branduolys</translation>
+    </message>
+    <message>
+        <source>Connect only to the specified node(s)</source>
+        <translation>Prisijungti tik prie nurodyto mazgo</translation>
     </message>
     <message>
         <source>Error opening block database</source>

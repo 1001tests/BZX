@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Bitcoin Core developers
+// Copyright (c) 2011-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -109,20 +109,20 @@ ReceiveRequestDialog::~ReceiveRequestDialog()
     delete ui;
 }
 
-void ReceiveRequestDialog::setModel(OptionsModel *_model)
+void ReceiveRequestDialog::setModel(OptionsModel *model)
 {
-    this->model = _model;
+    this->model = model;
 
-    if (_model)
-        connect(_model, SIGNAL(displayUnitChanged(int)), this, SLOT(update()));
+    if (model)
+        connect(model, SIGNAL(displayUnitChanged(int)), this, SLOT(update()));
 
     // update the display unit if necessary
     update();
 }
 
-void ReceiveRequestDialog::setInfo(const SendCoinsRecipient &_info)
+void ReceiveRequestDialog::setInfo(const SendCoinsRecipient &info)
 {
-    this->info = _info;
+    this->info = info;
     update();
 }
 

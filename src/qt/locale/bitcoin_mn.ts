@@ -60,7 +60,7 @@
     <name>BanTableModel</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
         <translation>&amp;Зурвас хавсаргах...</translation>
@@ -126,7 +126,7 @@
         <translation>Оношилгоо ба засварын консолыг онгойлго</translation>
     </message>
     <message>
-        <source>BZX</source>
+        <source>Zcoin</source>
         <translation>Биткойн</translation>
     </message>
     <message>
@@ -177,7 +177,7 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>Түрүйвч &lt;b&gt;цоожтой&lt;/b&gt; ба одоогоор цоож &lt;b&gt;хаалттай&lt;/b&gt; байна</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -238,13 +238,6 @@
     </message>
     </context>
 <context>
-    <name>ModalOverlay</name>
-    <message>
-        <source>Last block time</source>
-        <translation>Сүүлийн блокийн хугацаа</translation>
-    </message>
-    </context>
-<context>
     <name>OpenURIDialog</name>
     </context>
 <context>
@@ -301,9 +294,6 @@
         <source>N/A</source>
         <translation>Алга Байна</translation>
     </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
     </context>
 <context>
     <name>QRImageWidget</name>
@@ -546,7 +536,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Options:</source>
         <translation>Сонголтууд:</translation>

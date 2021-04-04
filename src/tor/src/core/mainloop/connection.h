@@ -195,9 +195,8 @@ int retry_all_listeners(smartlist_t *new_conns,
 void connection_mark_all_noncontrol_listeners(void);
 void connection_mark_all_noncontrol_connections(void);
 
-ssize_t connection_bucket_write_limit(struct connection_t *conn, time_t now);
-bool connection_dir_is_global_write_low(const struct connection_t *conn,
-                                        size_t attempt);
+ssize_t connection_bucket_write_limit(connection_t *conn, time_t now);
+int global_write_bucket_low(connection_t *conn, size_t attempt, int priority);
 void connection_bucket_init(void);
 void connection_bucket_adjust(const or_options_t *options);
 void connection_bucket_refill_all(time_t now,

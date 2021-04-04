@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Bitcoin Core developers
+// Copyright (c) 2011-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,14 +9,12 @@
 #include "../config/bitcoin-config.h"
 #endif
 
-#include "automintdialog.h"
-#include "automintnotification.h"
 #include "amount.h"
-#include "masternodelist.h"
-#include "lelantusdialog.h"
+#include "znodelist.h"
+#include "sigmadialog.h"
 
-#ifdef ENABLE_ELYSIUM
-#include "elyassetsdialog.h"
+#ifdef ENABLE_EXODUS
+#include "exoassetsdialog.h"
 #endif
 
 #include <QStackedWidget>
@@ -39,6 +37,8 @@ class TransactionView;
 class TXHistoryDialog;
 class WalletModel;
 class AddressBookPage;
+class ZerocoinPage;
+class Zc2SigmaPage;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -75,27 +75,25 @@ public:
 
     void showOutOfSyncWarning(bool fShow);
 
-    bool eventFilter(QObject *watched, QEvent *event);
-
 private:
     void setupTransactionPage();
     void setupSendCoinPage();
-#ifdef ENABLE_ELYSIUM
+#ifdef ENABLE_EXODUS
     void setupToolboxPage();
 #endif
-    void setupLelantusPage();
+    void setupSigmaPage();
 
 private:
     ClientModel *clientModel;
     WalletModel *walletModel;
 
     OverviewPage *overviewPage;
-#ifdef ENABLE_ELYSIUM
-    ElyAssetsDialog *elyAssetsPage;
+#ifdef ENABLE_EXODUS
+    ExoAssetsDialog *exoAssetsPage;
     QWidget *toolboxPage;
-    TXHistoryDialog *elysiumTransactionsView;
+    TXHistoryDialog *exodusTransactionsView;
     QTabWidget *transactionTabs;
-    SendMPDialog *sendElysiumView;
+    SendMPDialog *sendExodusView;
     QTabWidget *sendCoinsTabs;
 #endif
     QWidget *transactionsPage;
@@ -104,33 +102,34 @@ private:
     AddressBookPage *usedSendingAddressesPage;
     AddressBookPage *usedReceivingAddressesPage;
     QWidget *sendCoinsPage;
-    SendCoinsDialog *sendBZXView;
+    SendCoinsDialog *sendZcoinView;
     TradeHistoryDialog *tradeHistoryTab;
     MetaDExDialog *metaDExTab;
     MetaDExCancelDialog *cancelTab;
-    LelantusDialog *lelantusView;
-    QWidget *lelantusPage;
-    TransactionView *BZXTransactionList;
-    QWidget *BZXTransactionsView;
-    MasternodeList *masternodeListPage;
+    ZerocoinPage *zerocoinPage;
+    SigmaDialog *sigmaView;
+    BlankSigmaDialog *blankSigmaView;
+    QWidget *sigmaPage;
+    Zc2SigmaPage *zc2SigmaPage;
+    TransactionView *zcoinTransactionList;
+    QWidget *zcoinTransactionsView;
+    ZnodeList *znodeListPage;
 
     QProgressDialog *progressDialog;
     const PlatformStyle *platformStyle;
 
-    AutomintNotification *automintNotification;
-
 public Q_SLOTS:
     /** Switch to overview (home) page */
     void gotoOverviewPage();
-#ifdef ENABLE_ELYSIUM
+#ifdef ENABLE_EXODUS
     /** Switch to ExoAssets page */
-    void gotoElyAssetsPage();
+    void gotoExoAssetsPage();
     /** Switch to utility page */
     void gotoToolboxPage();
-    /** Switch specifically to elysium tx history tab */
-    void gotoElysiumHistoryTab();
-    /** Switch to elysium tx history tab and focus on specific transaction */
-    void focusElysiumTransaction(const uint256& txid);
+    /** Switch specifically to exodus tx history tab */
+    void gotoExodusHistoryTab();
+    /** Switch to exodus tx history tab and focus on specific transaction */
+    void focusExodusTransaction(const uint256& txid);
 #endif
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
@@ -138,14 +137,18 @@ public Q_SLOTS:
     void gotoBitcoinHistoryTab();
     /** Switch to bitcoin tx history tab and focus on specific transaction */
     void focusBitcoinHistoryTab(const QModelIndex &idx);
-    /** Switch to masternode page */
-    void gotoMasternodePage();
+    /** Switch to znode page */
+    void gotoZnodePage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-    /** Switch to lelantus page */
-    void gotoLelantusPage();
+    /** Switch to zerocoin page */
+    void gotoZerocoinPage();
+    /** Switch to sigma page */
+    void gotoSigmaPage();
+    /** Switch to ZC to Sigma page */
+    void gotoZc2SigmaPage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
@@ -177,25 +180,6 @@ public Q_SLOTS:
     /** Show progress dialog e.g. for rescan */
     void showProgress(const QString &title, int nProgress);
 
-    /** User has requested more information about the out of sync state */
-    void requestedSyncWarningInfo();
-
-    /** Show automint notification */
-    void showAutomintNotification();
-
-    /** Re-position automint notification */
-    void repositionAutomintNotification();
-
-    /** Check mintable amount to close automint notification */
-    void checkMintableAmount(
-        CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount anonymizableBalance);
-
-    /** Close automint notification */
-    void closeAutomintNotification();
-
-    /** Ask user to do auto mint */
-    void askMintAll(AutoMintMode mode);
-
 Q_SIGNALS:
     /** Signal that we want to show the main window */
     void showNormalIfMinimized();
@@ -203,12 +187,8 @@ Q_SIGNALS:
     void message(const QString &title, const QString &message, unsigned int style);
     /** Encryption status of wallet changed */
     void encryptionStatusChanged(int status);
-    /** HD-Enabled status of wallet changed (only possible during startup) */
-    void hdEnabledStatusChanged(int hdEnabled);
     /** Notify that a new transaction appeared */
     void incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address, const QString& label);
-    /** Notify that the out of sync warning icon has been pressed */
-    void outOfSyncWarningClicked();
 };
 
 #endif // BITCOIN_QT_WALLETVIEW_H

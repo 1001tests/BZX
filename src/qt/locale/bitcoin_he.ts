@@ -62,11 +62,11 @@
         <translation>מקבל כתובות</translation>
     </message>
     <message>
-        <source>These are your BZX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <source>These are your Zcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation>אלה הם כתובות הביטקוין שלך לשליחת תשלומים. חשוב לבדוק את הכמות של הכתובות המקבלות לפני שליחת מטבעות</translation>
     </message>
     <message>
-        <source>These are your BZX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <source>These are your Zcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
         <translation>אלה הן כתובות הביטקוין שלך לקבלת תשלומים. מומלץ להשתמש בכתובת חדשה לכל העברה.</translation>
     </message>
     <message>
@@ -132,7 +132,7 @@
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
         <translation>&amp;חתימה על הודעה…</translation>
@@ -218,7 +218,7 @@
         <translation>המקטעים נוספים למפתח בכונן…</translation>
     </message>
     <message>
-        <source>Send coins to a BZX address</source>
+        <source>Send coins to a Zcoin address</source>
         <translation>שליחת מטבעות לכתובת ביטקוין</translation>
     </message>
     <message>
@@ -242,7 +242,7 @@
         <translation>&amp;אימות הודעה…</translation>
     </message>
     <message>
-        <source>BZX</source>
+        <source>Zcoin</source>
         <translation>ביטקוין</translation>
     </message>
     <message>
@@ -270,11 +270,11 @@
         <translation>הצפנת המפתחות הפרטיים ששייכים לארנק שלך</translation>
     </message>
     <message>
-        <source>Sign messages with your BZX addresses to prove you own them</source>
+        <source>Sign messages with your Zcoin addresses to prove you own them</source>
         <translation>חתום על הודעות עם כתובות הביטקוין שלך כדי להוכיח שהן בבעלותך</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified BZX addresses</source>
+        <source>Verify messages to ensure they were signed with specified Zcoin addresses</source>
         <translation>אמת הודעות כדי להבטיח שהן נחתמו עם כתובת ביטקוין מסוימות</translation>
     </message>
     <message>
@@ -294,8 +294,8 @@
         <translation>סרגל כלים לשוניות</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and BZX: URIs)</source>
-        <translation>בקשת תשלומים (יצירה של קודים מסוג QR וסכימות כתובות משאב של :BZX)</translation>
+        <source>Request payments (generates QR codes and zcoin: URIs)</source>
+        <translation>בקשת תשלומים (יצירה של קודים מסוג QR וסכימות כתובות משאב של :zcoin)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -306,7 +306,7 @@
         <translation>הצגת רשימת הכתובות והתוויות הנמצאות בשימוש</translation>
     </message>
     <message>
-        <source>Open a BZX: URI or payment request</source>
+        <source>Open a zcoin: URI or payment request</source>
         <translation>פתיחת ביטקוין: כתובת משאב או בקשת תשלום</translation>
     </message>
     <message>
@@ -316,6 +316,14 @@
     <message>
         <source>Processing blocks on disk...</source>
         <translation>מעבד בלוקים על הדיסק...</translation>
+    </message>
+    <message>
+        <source>No block source available...</source>
+        <translation>אין מקור מקטעים זמין…</translation>
+    </message>
+    <message>
+        <source>%1 and %2</source>
+        <translation>%1 ו%2</translation>
     </message>
     <message>
         <source>%1 behind</source>
@@ -365,7 +373,7 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>הארנק &lt;b&gt;מוצפן&lt;/b&gt; ו&lt;b&gt;נעול&lt;/b&gt; כרגע</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -383,6 +391,10 @@
     <message>
         <source>Amount:</source>
         <translation>סכום:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>עדיפות:</translation>
     </message>
     <message>
         <source>Fee:</source>
@@ -435,6 +447,10 @@
     <message>
         <source>Confirmed</source>
         <translation>מאושר</translation>
+    </message>
+    <message>
+        <source>Priority</source>
+        <translation>עדיפות</translation>
     </message>
     <message>
         <source>(no label)</source>
@@ -518,10 +534,6 @@
         <translation>התחל ממוזער</translation>
     </message>
     <message>
-        <source>Show splash screen on startup (default: %u)</source>
-        <translation>הצג מסך פתיחה בעת הפעלה (ברירת מחדל: %u)</translation>
-    </message>
-    <message>
         <source>Reset all settings changed in the GUI</source>
         <translation>איפוס כל שינויי הגדרות התצוגה</translation>
     </message>
@@ -551,21 +563,6 @@
     <message>
         <source>Error</source>
         <translation>שגיאה</translation>
-    </message>
-    </context>
-<context>
-    <name>ModalOverlay</name>
-    <message>
-        <source>Form</source>
-        <translation>טופס</translation>
-    </message>
-    <message>
-        <source>Last block time</source>
-        <translation>זמן המקטע האחרון</translation>
-    </message>
-    <message>
-        <source>Hide</source>
-        <translation>הסתר</translation>
     </message>
     </context>
 <context>
@@ -670,7 +667,7 @@
         <translation>עודף &amp;בלתי מאושר מההשקעה</translation>
     </message>
     <message>
-        <source>Automatically open the BZX client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <source>Automatically open the Zcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
         <translation>פתיחת הפתחה של ביטקוין בנתב באופן אוטומטי. עובד רק אם UPnP מופעל ונתמך בנתב.</translation>
     </message>
     <message>
@@ -777,7 +774,7 @@
         <translation>טופס</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the BZX network after a connection is established, but this process has not completed yet.</source>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Zcoin network after a connection is established, but this process has not completed yet.</source>
         <translation>המידע המוצג עשוי להיות מיושן. הארנק שלך מסתנכרן באופן אוטומטי עם רשת הביטקוין לאחר יצירת החיבור, אך התהליך טרם הסתיים.</translation>
     </message>
     <message>
@@ -854,7 +851,11 @@
         <source>User Agent</source>
         <translation>סוכן משתמש</translation>
     </message>
-    </context>
+    <message>
+        <source>Ping Time</source>
+        <translation>זמן המענה</translation>
+    </message>
+</context>
 <context>
     <name>QObject</name>
     <message>
@@ -862,7 +863,7 @@
         <translation>כמות</translation>
     </message>
     <message>
-        <source>Enter a BZX address (e.g. %1)</source>
+        <source>Enter a Zcoin address (e.g. %1)</source>
         <translation>נא להזין כתובת ביטקוין (למשל: %1)</translation>
     </message>
     <message>
@@ -893,14 +894,7 @@
         <source>%1 ms</source>
         <translation>%1 מילישניות</translation>
     </message>
-    <message>
-        <source>%1 and %2</source>
-        <translation>%1 ו%2</translation>
-    </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
-    </context>
+</context>
 <context>
     <name>QRImageWidget</name>
     </context>
@@ -1091,8 +1085,8 @@
         <translation>ניקוי מסוף הבקרה</translation>
     </message>
     <message>
-        <source>1 &amp;hour</source>
-        <translation>1 שעה</translation>
+        <source>Ban Node for</source>
+        <translation>חסום משתמש ל</translation>
     </message>
     <message>
         <source>1 &amp;day</source>
@@ -1182,7 +1176,7 @@
         <translation>ש&amp;ימוש &amp;חוזר בכתובת קבלה קיימת (לא מומלץ)</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the BZX network.</source>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Zcoin network.</source>
         <translation>הודעת רשות לצירוף לבקשת התשלום שתוצג בעת פתיחת הבקשה. לתשומת לבך: ההודעה לא תישלח עם התשלום ברשת ביטקוין.</translation>
     </message>
     <message>
@@ -1303,6 +1297,10 @@
         <translation>סכום:</translation>
     </message>
     <message>
+        <source>Priority:</source>
+        <translation>עדיפות:</translation>
+    </message>
+    <message>
         <source>Fee:</source>
         <translation>עמלה:</translation>
     </message>
@@ -1349,6 +1347,10 @@
     <message>
         <source>Custom:</source>
         <translation>מותאם אישית:</translation>
+    </message>
+    <message>
+        <source>Confirmation time:</source>
+        <translation>זמן האישור:</translation>
     </message>
     <message>
         <source>normal</source>
@@ -1418,7 +1420,7 @@
         <translation>זהו תשלום רגיל.</translation>
     </message>
     <message>
-        <source>The BZX address to send the payment to</source>
+        <source>The Zcoin address to send the payment to</source>
         <translation>כתובת הביטקוין של המוטב</translation>
     </message>
     <message>
@@ -1450,7 +1452,7 @@
         <translation>יש להזין תווית עבור כתובת זו כדי להוסיף אותה לרשימת הכתובות בשימוש</translation>
     </message>
     <message>
-        <source>A message that was attached to the BZX: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the BZX network.</source>
+        <source>A message that was attached to the zcoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Zcoin network.</source>
         <translation>הודעה שצורפה לביטקוין: כתובת שתאוחסן בהעברה לצורך מעקב מצדך. לתשומת לבך: הודעה זו לא תישלח ברשת הביטקוין.</translation>
     </message>
     <message>
@@ -1483,7 +1485,7 @@
         <translation>חתימה על הו&amp;דעה</translation>
     </message>
     <message>
-        <source>The BZX address to sign the message with</source>
+        <source>The Zcoin address to sign the message with</source>
         <translation>כתובת הביטקוין אתה לחתום אתה את ההודעה</translation>
     </message>
     <message>
@@ -1515,7 +1517,7 @@
         <translation>העתקת החתימה הנוכחית ללוח הגזירים</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this BZX address</source>
+        <source>Sign the message to prove you own this Zcoin address</source>
         <translation>ניתן לחתום על ההודעה כדי להוכיח שכתובת הביטקוין הזו בבעלותך.</translation>
     </message>
     <message>
@@ -1535,11 +1537,11 @@
         <translation>&amp;אימות הודעה</translation>
     </message>
     <message>
-        <source>The BZX address the message was signed with</source>
+        <source>The Zcoin address the message was signed with</source>
         <translation>כתובת הביטקוין שאתה נחתמה ההודעה</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified BZX address</source>
+        <source>Verify the message to ensure it was signed with the specified Zcoin address</source>
         <translation>ניתן לאמת את ההודעה כדי להבטיח שהיא נחתמה עם כתובת הביטקוין הנתונה</translation>
     </message>
     <message>
@@ -1618,7 +1620,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Options:</source>
         <translation>אפשרויות:</translation>
@@ -1648,7 +1650,11 @@
         <translation>ריצה כסוכן ברקע וקבלת פקודות</translation>
     </message>
     <message>
-        <source>BZX Core</source>
+        <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
+        <translation>קבלת חיבורים מבחוץ (בררת מחדל: 1 ללא ‎-proxy או ‎-connect)</translation>
+    </message>
+    <message>
+        <source>Zcoin Core</source>
         <translation>ליבת ביטקוין</translation>
     </message>
     <message>
@@ -1668,6 +1674,18 @@
         <translation>ביצוע פקודה כאשר העברה בארנק משתנה (%s ב־cmd יוחלף ב־TxID)</translation>
     </message>
     <message>
+        <source>This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</source>
+        <translation>זוהי בניית ניסיון טרום-שחרור - השימוש בה על אחריותך - אין להשתמש לצורך כריה או יישומי מסחר</translation>
+    </message>
+    <message>
+        <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
+        <translation>אזהרה: נראה שלא כל הרשת מסכימה! נראה שישנם כורים שנתקלים בבעיות.</translation>
+    </message>
+    <message>
+        <source>Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.</source>
+        <translation>אזהרה: נראה שישנה אי־הסכמה בינינו לבין שאר העמיתים שלנו! יתכן שעדיף לשדרג או שכל שאר העמיתים צריכים לשדרג.</translation>
+    </message>
+    <message>
         <source>&lt;category&gt; can be:</source>
         <translation>&lt;קטגוריה&gt; יכולה להיות:</translation>
     </message>
@@ -1678,6 +1696,10 @@
     <message>
         <source>Change index out of range</source>
         <translation>אינדקס העודף מחוץ לתחום</translation>
+    </message>
+    <message>
+        <source>Connect only to the specified node(s)</source>
+        <translation>התחבר רק לצמתים המצוינים</translation>
     </message>
     <message>
         <source>Connection options:</source>
@@ -1850,6 +1872,10 @@
     <message>
         <source>Transaction amount too small</source>
         <translation>סכום ההעברה קטן מדי</translation>
+    </message>
+    <message>
+        <source>Transaction amounts must be positive</source>
+        <translation>סכומי ההעברות חייבים להיות חיוביים</translation>
     </message>
     <message>
         <source>Transaction too large for fee policy</source>

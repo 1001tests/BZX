@@ -68,7 +68,7 @@
     <name>BanTableModel</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
         <translation>Firmar &amp;mensaje...</translation>
@@ -114,8 +114,8 @@
         <translation>Reindexando bloques en el disco...</translation>
     </message>
     <message>
-        <source>Send coins to a BZX address</source>
-        <translation>Enviar monedas a una dirección BZX</translation>
+        <source>Send coins to a Zcoin address</source>
+        <translation>Enviar monedas a una dirección Zcoin</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -130,8 +130,8 @@
         <translation>Abre la consola de depuración y diágnostico</translation>
     </message>
     <message>
-        <source>BZX</source>
-        <translation>BZX</translation>
+        <source>Zcoin</source>
+        <translation>Zcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -158,12 +158,12 @@
         <translation>Encriptar las llaves privadas que pertenecen a tu billetera</translation>
     </message>
     <message>
-        <source>Sign messages with your BZX addresses to prove you own them</source>
-        <translation>Firma mensajes con tus direcciones BZX para probar que eres dueño de ellas</translation>
+        <source>Sign messages with your Zcoin addresses to prove you own them</source>
+        <translation>Firma mensajes con tus direcciones Zcoin para probar que eres dueño de ellas</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified BZX addresses</source>
-        <translation>Verificar mensajes para asegurar que estaban firmados con direcciones BZX especificas</translation>
+        <source>Verify messages to ensure they were signed with specified Zcoin addresses</source>
+        <translation>Verificar mensajes para asegurar que estaban firmados con direcciones Zcoin especificas</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -176,6 +176,10 @@
     <message>
         <source>&amp;Command-line options</source>
         <translation>Opciones de línea de comandos</translation>
+    </message>
+    <message>
+        <source>%1 and %2</source>
+        <translation>%1 y %2</translation>
     </message>
     <message>
         <source>%1 behind</source>
@@ -225,7 +229,7 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>La billetera está encriptada y bloqueada recientemente</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -243,6 +247,10 @@
     <message>
         <source>Amount:</source>
         <translation>Monto:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>Prioridad:</translation>
     </message>
     <message>
         <source>Fee:</source>
@@ -291,6 +299,10 @@
     <message>
         <source>Confirmed</source>
         <translation>Confirmado</translation>
+    </message>
+    <message>
+        <source>Priority</source>
+        <translation>Prioridad</translation>
     </message>
     </context>
 <context>
@@ -382,9 +394,6 @@
     </message>
     </context>
 <context>
-    <name>ModalOverlay</name>
-    </context>
-<context>
     <name>OpenURIDialog</name>
     <message>
         <source>Open URI</source>
@@ -453,13 +462,6 @@
         <source>Amount</source>
         <translation>Monto</translation>
     </message>
-    <message>
-        <source>%1 and %2</source>
-        <translation>%1 y %2</translation>
-    </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
     </context>
 <context>
     <name>QRImageWidget</name>
@@ -517,6 +519,10 @@
     <message>
         <source>Amount:</source>
         <translation>Monto:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>Prioridad:</translation>
     </message>
     <message>
         <source>Fee:</source>
@@ -582,7 +588,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Options:</source>
         <translation>Opciones:</translation>
@@ -608,8 +614,8 @@
         <translation>Correr en segundo plano como daemon y aceptar comandos</translation>
     </message>
     <message>
-        <source>BZX Core</source>
-        <translation>BZX Core</translation>
+        <source>Zcoin Core</source>
+        <translation>Zcoin Core</translation>
     </message>
     <message>
         <source>Bind to given address and always listen on it. Use [host]:port notation for IPv6</source>
@@ -620,12 +626,28 @@
         <translation>Borrar todas las transacciones de la billetera y solo recuperar aquellas partes de la cadena de bloques a través de -rescan en el inicio del sistema.</translation>
     </message>
     <message>
+        <source>Distributed under the MIT software license, see the accompanying file COPYING or &lt;http://www.opensource.org/licenses/mit-license.php&gt;.</source>
+        <translation>Distribuido bajo la licensia de software MIT, ver el archivo adjunto COPYING o &lt;http://www.opensource.org/licenses/mit-license.php&gt;.</translation>
+    </message>
+    <message>
         <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
         <translation>Ejecutar comando cuando una transacción de la billetera cambia (%s en cmd es reemplazado por TxID)</translation>
     </message>
     <message>
         <source>Set the number of script verification threads (%u to %d, 0 = auto, &lt;0 = leave that many cores free, default: %d)</source>
         <translation>Fija el número de verificación de hilos de script (%u a %d, 0 = auto, &lt;0 = leave that many cores free, default: %d)</translation>
+    </message>
+    <message>
+        <source>This is a pre-release test build - use at your own risk - do not use for mining or merchant applications</source>
+        <translation>Esta es una compilación de prueba pre-lanzamiento - use bajo su propio riesgo - no utilizar para aplicaciones de minería o mercantes</translation>
+    </message>
+    <message>
+        <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
+        <translation>Aviso: ¡La red no parece estar totalmente de acuerdo! Algunos mineros parecen estar teniendo inconvenientes.</translation>
+    </message>
+    <message>
+        <source>Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.</source>
+        <translation>Aviso: ¡No parecen estar totalmente de acuerdo con nuestros compañeros! Puede que tengas que actualizar, u otros nodos tengan que actualizarce.</translation>
     </message>
     <message>
         <source>Information</source>

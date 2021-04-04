@@ -12,7 +12,7 @@
     <name>BanTableModel</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Error</source>
         <translation>错误</translation>
@@ -46,9 +46,6 @@
     </message>
     </context>
 <context>
-    <name>ModalOverlay</name>
-    </context>
-<context>
     <name>OpenURIDialog</name>
     </context>
 <context>
@@ -67,9 +64,6 @@
     <name>QObject</name>
     </context>
 <context>
-    <name>QObject::QObject</name>
-    </context>
-<context>
     <name>QRImageWidget</name>
     </context>
 <context>
@@ -83,10 +77,6 @@
     </context>
 <context>
     <name>RecentRequestsTableModel</name>
-    <message>
-        <source>Date</source>
-        <translation>日期</translation>
-    </message>
     </context>
 <context>
     <name>SendCoinsDialog</name>
@@ -97,18 +87,6 @@
     <message>
         <source>Choose...</source>
         <translation>选择...</translation>
-    </message>
-    <message>
-        <source>The recipient address is not valid. Please recheck.</source>
-        <translation>收款人地址无效，请再次确认。</translation>
-    </message>
-    <message>
-        <source>Pay only the required fee of %1</source>
-        <translation>仅支付全额的%1</translation>
-    </message>
-    <message>
-        <source>Warning: Invalid BZX address</source>
-        <translation>警告：比特币地址无效</translation>
     </message>
     </context>
 <context>
@@ -131,27 +109,15 @@
     </context>
 <context>
     <name>TransactionDesc</name>
-    <message>
-        <source>Date</source>
-        <translation>日期</translation>
-    </message>
     </context>
 <context>
     <name>TransactionDescDialog</name>
     </context>
 <context>
     <name>TransactionTableModel</name>
-    <message>
-        <source>Date</source>
-        <translation>日期</translation>
-    </message>
     </context>
 <context>
     <name>TransactionView</name>
-    <message>
-        <source>Date</source>
-        <translation>日期</translation>
-    </message>
     </context>
 <context>
     <name>UnitDisplayStatusBarControl</name>
@@ -166,7 +132,11 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
+    <message>
+        <source>Transaction amounts must be positive</source>
+        <translation>转账额度须为正数</translation>
+    </message>
     <message>
         <source>Transaction too large for fee policy</source>
         <translation>根据费率标准，本次转账超额</translation>

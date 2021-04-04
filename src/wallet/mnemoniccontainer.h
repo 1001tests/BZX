@@ -1,5 +1,5 @@
-#ifndef BZX_HDCHAIN_H
-#define BZX_HDCHAIN_H
+#ifndef ZCOIN_HDCHAIN_H
+#define ZCOIN_HDCHAIN_H
 
 #include "support/allocators/secure.h"
 #include "uint256.h"
@@ -17,7 +17,7 @@ public:
 
     ADD_SERIALIZE_METHODS;
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
             READWRITE(mnemonic);
             READWRITE(seed);
@@ -46,4 +46,4 @@ public:
     void Set12Words(bool Use12Words = false);
 };
 
-#endif //BZX_HDCHAIN_H
+#endif //ZCOIN_HDCHAIN_H

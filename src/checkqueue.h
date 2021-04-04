@@ -16,7 +16,7 @@
 template <typename T>
 class CCheckQueueControl;
 
-/**
+/** 
  * Queue for verifications that have to be performed.
   * The verifications are represented by a type T, which must provide an
   * operator(), returning a bool.
@@ -127,9 +127,6 @@ private:
     }
 
 public:
-    //! Mutex to ensure only one concurrent CCheckQueueControl
-    boost::mutex ControlMutex;
-
     //! Create a new check queue
     CCheckQueue(unsigned int nBatchSizeIn) : nIdle(0), nTotal(0), fAllOk(true), nTodo(0), fQuit(false), nBatchSize(nBatchSizeIn) {}
 
@@ -164,9 +161,15 @@ public:
     {
     }
 
+    bool IsIdle()
+    {
+        boost::unique_lock<boost::mutex> lock(mutex);
+        return (nTotal == nIdle && nTodo == 0 && fAllOk == true);
+    }
+
 };
 
-/**
+/** 
  * RAII-style controller object for a CCheckQueue that guarantees the passed
  * queue is finished before continuing.
  */
@@ -174,18 +177,16 @@ template <typename T>
 class CCheckQueueControl
 {
 private:
-    CCheckQueue<T> * const pqueue;
+    CCheckQueue<T>* pqueue;
     bool fDone;
 
 public:
-    CCheckQueueControl() = delete;
-    CCheckQueueControl(const CCheckQueueControl&) = delete;
-    CCheckQueueControl& operator=(const CCheckQueueControl&) = delete;
-    explicit CCheckQueueControl(CCheckQueue<T> * const pqueueIn) : pqueue(pqueueIn), fDone(false)
+    CCheckQueueControl(CCheckQueue<T>* pqueueIn) : pqueue(pqueueIn), fDone(false)
     {
         // passed queue is supposed to be unused, or NULL
         if (pqueue != NULL) {
-            ENTER_CRITICAL_SECTION(pqueue->ControlMutex);
+            bool isIdle = pqueue->IsIdle();
+            assert(isIdle);
         }
     }
 
@@ -208,9 +209,6 @@ public:
     {
         if (!fDone)
             Wait();
-        if (pqueue != NULL) {
-            LEAVE_CRITICAL_SECTION(pqueue->ControlMutex);
-        }
     }
 };
 

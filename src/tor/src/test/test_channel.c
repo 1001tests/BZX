@@ -598,6 +598,7 @@ test_channel_outbound_cell(void *arg)
   circuit_set_n_circid_chan(TO_CIRCUIT(circ), 42, chan);
   tt_int_op(channel_num_circuits(chan), OP_EQ, 1);
   /* Test the cmux state. */
+  tt_ptr_op(TO_CIRCUIT(circ)->n_mux, OP_EQ, chan->cmux);
   tt_int_op(circuitmux_is_circuit_attached(chan->cmux, TO_CIRCUIT(circ)),
             OP_EQ, 1);
 
@@ -1540,10 +1541,6 @@ test_channel_listener(void *arg)
   channel_listener_dump_statistics(chan, LOG_INFO);
 
  done:
-  if (chan) {
-    channel_listener_unregister(chan);
-    tor_free(chan);
-  }
   channel_free_all();
 }
 
@@ -1570,3 +1567,4 @@ struct testcase_t channel_tests[] = {
     NULL, NULL },
   END_OF_TESTCASES
 };
+

@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2009-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -129,7 +129,7 @@ const char* GetOpName(opcodetype opcode)
     case OP_CHECKMULTISIG          : return "OP_CHECKMULTISIG";
     case OP_CHECKMULTISIGVERIFY    : return "OP_CHECKMULTISIGVERIFY";
 
-    // expansion
+    // expanson
     case OP_NOP1                   : return "OP_NOP1";
     case OP_CHECKLOCKTIMEVERIFY    : return "OP_CHECKLOCKTIMEVERIFY";
     case OP_CHECKSEQUENCEVERIFY    : return "OP_CHECKSEQUENCEVERIFY";
@@ -149,10 +149,7 @@ const char* GetOpName(opcodetype opcode)
     case OP_SIGMAMINT         : return "OP_SIGMAMINT";
     case OP_SIGMASPEND        : return "OP_SIGMASPEND";
     case OP_ZEROCOINTOSIGMAREMINT  : return "OP_ZEROCOINTOSIGMAREMINT";
-    // lelantus
-    case OP_LELANTUSMINT       : return "OP_LELANTUSMINT";
-    case OP_LELANTUSJMINT      : return "OP_LELANTUSJMINT";
-    case OP_LELANTUSJOINSPLIT  : return "OP_LELANTUSJOINSPLIT";
+
 
     // Note:
     //  The template matching params OP_SMALLINTEGER/etc are defined in opcodetype enum
@@ -310,25 +307,6 @@ bool CScript::IsSigmaSpend() const {
 bool CScript::IsZerocoinRemint() const {
     return (this->size() > 0 &&
             (*this)[0] == OP_ZEROCOINTOSIGMAREMINT);
-}
-
-bool CScript::IsLelantusMint() const {
-    return (this->size() > 0 &&
-            (*this)[0] == OP_LELANTUSMINT);
-}
-
-bool CScript::IsLelantusJMint() const {
-    return (this->size() > 0 &&
-            (*this)[0] == OP_LELANTUSJMINT);
-}
-
-bool CScript::IsLelantusJoinSplit() const {
-    return (this->size() > 0 &&
-            (*this)[0] == OP_LELANTUSJOINSPLIT);
-}
-
-bool CScript::IsMint() const {
-    return IsZerocoinMint() || IsSigmaMint() || IsZerocoinRemint() || IsLelantusMint() || IsLelantusJMint();
 }
 
 bool CScript::HasCanonicalPushes() const

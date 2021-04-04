@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2009-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,35 +9,25 @@
 #include "consensus/consensus.h"
 #include "utilstrencodings.h"
 
+using namespace std;
+
 CMerkleBlock::CMerkleBlock(const CBlock& block, CBloomFilter& filter)
 {
     header = block.GetBlockHeader();
 
-    std::vector<bool> vMatch;
-    std::vector<uint256> vHashes;
+    vector<bool> vMatch;
+    vector<uint256> vHashes;
 
     vMatch.reserve(block.vtx.size());
     vHashes.reserve(block.vtx.size());
 
-    const static std::set<int> allowedTxTypes = {
-            TRANSACTION_NORMAL,
-            TRANSACTION_PROVIDER_REGISTER,
-            TRANSACTION_PROVIDER_UPDATE_SERVICE,
-            TRANSACTION_PROVIDER_UPDATE_REGISTRAR,
-            TRANSACTION_PROVIDER_UPDATE_REVOKE,
-            TRANSACTION_COINBASE,
-    };
-
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
-        const auto& tx = *block.vtx[i];
-        const uint256& hash = tx.GetHash();
-        bool isAllowedType = tx.nVersion != 3 || allowedTxTypes.count(tx.nType) != 0;
-
-        if (isAllowedType && filter.IsRelevantAndUpdate(tx))
+        const uint256& hash = block.vtx[i].GetHash();
+        if (filter.IsRelevantAndUpdate(block.vtx[i]))
         {
             vMatch.push_back(true);
-            vMatchedTxn.push_back(std::make_pair(i, hash));
+            vMatchedTxn.push_back(make_pair(i, hash));
         }
         else
             vMatch.push_back(false);
@@ -51,15 +41,15 @@ CMerkleBlock::CMerkleBlock(const CBlock& block, const std::set<uint256>& txids)
 {
     header = block.GetBlockHeader();
 
-    std::vector<bool> vMatch;
-    std::vector<uint256> vHashes;
+    vector<bool> vMatch;
+    vector<uint256> vHashes;
 
     vMatch.reserve(block.vtx.size());
     vHashes.reserve(block.vtx.size());
 
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
-        const uint256& hash = block.vtx[i]->GetHash();
+        const uint256& hash = block.vtx[i].GetHash();
         if (txids.count(hash))
             vMatch.push_back(true);
         else
@@ -77,7 +67,7 @@ uint256 CPartialMerkleTree::CalcHash(int height, unsigned int pos, const std::ve
     } else {
         // calculate left hash
         uint256 left = CalcHash(height-1, pos*2, vTxid), right;
-        // calculate right hash if not beyond the end of the array - copy left hash otherwise
+        // calculate right hash if not beyond the end of the array - copy left hash otherwise1
         if (pos*2+1 < CalcTreeWidth(height-1))
             right = CalcHash(height-1, pos*2+1, vTxid);
         else

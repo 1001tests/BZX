@@ -1,14 +1,14 @@
-// Copyright (c) 2019 The BZX Core Developers
+// Copyright (c) 2019 The Zcoin Core Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BZX_MINTPOOL_H
-#define BZX_MINTPOOL_H
+#ifndef ZCOIN_MINTPOOL_H
+#define ZCOIN_MINTPOOL_H
 
 #include <map>
 #include <list>
 
-#include "primitives/mint_spend.h"
+#include "primitives/zerocoin.h"
 #include "libzerocoin/bitcoin_bignum/bignum.h"
 #include "uint256.h"
 
@@ -33,4 +33,4 @@ public:
     bool Get(int32_t nCount, uint160 hashSeedMaster, pair<uint256, MintPoolEntry>& result);
 };
 
-#endif // BZX_MINTPOOL_H
+#endif // ZCOIN_MINTPOOL_H

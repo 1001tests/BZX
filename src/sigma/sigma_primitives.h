@@ -1,5 +1,5 @@
-#ifndef BZX_SIGMA_SIGMA_PRIMITIVES_H
-#define BZX_SIGMA_SIGMA_PRIMITIVES_H
+#ifndef ZCOIN_SIGMA_SIGMA_PRIMITIVES_H
+#define ZCOIN_SIGMA_SIGMA_PRIMITIVES_H
 
 #include "../secp256k1/include/MultiExponent.h"
 #include "../secp256k1/include/GroupElement.h"
@@ -9,19 +9,6 @@
 #include <vector>
 
 namespace sigma {
-
-template<class Exponent>
-struct NthPower {
-    Exponent num;
-    Exponent pow;
-
-    NthPower(const Exponent& num_) : num(num_), pow(uint64_t(1)) {}
-    NthPower(const Exponent& num_, const Exponent& pow_) : num(num_), pow(pow_) {}
-
-    void go_next() {
-        pow *= num;
-    }
-};
 
 template<class Exponent, class GroupElement>
 class SigmaPrimitives {
@@ -39,7 +26,7 @@ public:
 
     static std::vector<uint64_t> convert_to_nal(uint64_t num, uint64_t n, uint64_t m);
 
-    static void generate_challenge(const std::vector<GroupElement>& group_elements,
+    static void generate_challenge(const std::vector<GroupElement>& group_elements, 
                                    Exponent& result_out);
 
     /** \brief Adds a factor of (x*x + a) to the given polynomial in coefficients.
@@ -53,4 +40,4 @@ public:
 
 #include "sigma_primitives.hpp"
 
-#endif // BZX_SIGMA_SIGMA_PRIMITIVES_H
+#endif // ZCOIN_SIGMA_SIGMA_PRIMITIVES_H

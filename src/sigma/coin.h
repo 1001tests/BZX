@@ -1,16 +1,11 @@
-#ifndef BZX_SIGMA_COIN_H
-#define BZX_SIGMA_COIN_H
+#ifndef ZCOIN_SIGMA_COIN_H
+#define ZCOIN_SIGMA_COIN_H
 
 #include "params.h"
 #include "sigma_primitives.h"
 
 #include "../consensus/validation.h"
-#include "../sigma_params.h"
-#include "../uint256.h"
-
-#include <secp256k1.h>
-#include <secp256k1_recovery.h>
-#include <secp256k1_ecdh.h>
+#include "../libzerocoin/Zerocoin.h"
 
 #include <cinttypes>
 
@@ -57,8 +52,8 @@ public:
     size_t GetSerializeSize(int nType, int nVersion) const;
 
     template<typename Stream>
-    inline void Serialize(Stream& s) const {
-        constexpr int size = GroupElement::memoryRequired();
+    inline void Serialize(Stream& s, int nType, int nVersion) const {
+        int size = value.memoryRequired();
         unsigned char buffer[size + sizeof(int32_t)];
         value.serialize(buffer);
         std::memcpy(buffer + size, &denomination, sizeof(denomination));
@@ -67,8 +62,8 @@ public:
     }
 
     template<typename Stream>
-    inline void Unserialize(Stream& s) {
-        constexpr int size = GroupElement::memoryRequired();
+    inline void Unserialize(Stream& s, int nType, int nVersion) {
+        int size = value.memoryRequired();
         unsigned char buffer[size + sizeof(int32_t)];
         char* b = (char*)buffer;
         s.read(b, size + sizeof(int32_t));
@@ -126,17 +121,22 @@ private:
 
 // Serialization support for CoinDenomination
 
-template<typename Stream>
-void Serialize(Stream& os, CoinDenomination d)
+inline unsigned int GetSerializeSize(CoinDenomination d, int nType, int nVersion)
 {
-    Serialize(os, static_cast<std::uint8_t>(d));
+    return sizeof(d);
 }
 
 template<typename Stream>
-void Unserialize(Stream& is, CoinDenomination& d)
+void Serialize(Stream& os, CoinDenomination d, int nType, int nVersion)
+{
+    Serialize(os, static_cast<std::uint8_t>(d), nType, nVersion);
+}
+
+template<typename Stream>
+void Unserialize(Stream& is, CoinDenomination& d, int nType, int nVersion)
 {
     std::uint8_t v;
-    Unserialize(is, v);
+    Unserialize(is, v, nType, nVersion);
     d = static_cast<CoinDenomination>(v);
 }
 
@@ -154,4 +154,4 @@ template<> struct hash<sigma::CoinDenomination> {
 
 }// namespace std
 
-#endif // BZX_SIGMA_COIN_H
+#endif // ZCOIN_SIGMA_COIN_H

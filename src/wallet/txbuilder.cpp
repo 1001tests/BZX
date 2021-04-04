@@ -1,7 +1,7 @@
 #include "txbuilder.h"
 
 #include "../amount.h"
-#include "../validation.h"
+#include "../main.h"
 #include "../policy/policy.h"
 #include "../random.h"
 #include "../script/script.h"
@@ -39,7 +39,7 @@ TxBuilder::~TxBuilder()
 {
 }
 
-CWalletTx TxBuilder::Build(const std::vector<CRecipient>& recipients, CAmount& fee,  bool& fChangeAddedToFee, CWalletDB& walletdb)
+CWalletTx TxBuilder::Build(const std::vector<CRecipient>& recipients, CAmount& fee,  bool& fChangeAddedToFee)
 {
     if (recipients.empty()) {
         throw std::invalid_argument(_("No recipients"));
@@ -104,18 +104,19 @@ CWalletTx TxBuilder::Build(const std::vector<CRecipient>& recipients, CAmount& f
 
     // Start with no fee and loop until there is enough fee;
     uint32_t nCountNextUse;
-    if (pwalletMain->zwallet) {
-        nCountNextUse = pwalletMain->zwallet->GetCount();
+    if (zwalletMain) {
+        nCountNextUse = zwalletMain->GetCount();
     }
     for (fee = payTxFee.GetFeePerK();;) {
         // In case of not enough fee, reset mint seed counter
-        if (pwalletMain->zwallet) {
-            pwalletMain->zwallet->SetCount(nCountNextUse);
+        if (zwalletMain) {
+            zwalletMain->SetCount(nCountNextUse);
         }
         CAmount required = spend;
 
         tx.vin.clear();
         tx.vout.clear();
+        tx.wit.SetNull();
 
         result.fFromMe = true;
         result.changes.clear();
@@ -172,7 +173,7 @@ CWalletTx TxBuilder::Build(const std::vector<CRecipient>& recipients, CAmount& f
         if (change > 0) {
             // get changes outputs
             std::vector<CTxOut> changes;
-            CAmount addToFee = GetChanges(changes, change, walletdb);
+            CAmount addToFee = GetChanges(changes, change);
             if(addToFee > 0)
                 fChangeAddedToFee = true;
             fee += addToFee;
@@ -221,14 +222,14 @@ CWalletTx TxBuilder::Build(const std::vector<CRecipient>& recipients, CAmount& f
         }
 
         // check fee
-        result.SetTx(MakeTransactionRef(tx));
+        static_cast<CTransaction&>(result) = CTransaction(tx);
 
-        if (GetTransactionWeight(tx) >= MAX_STANDARD_TX_WEIGHT) {
+        if (GetTransactionWeight(result) >= MAX_STANDARD_TX_WEIGHT) {
             throw std::runtime_error(_("Transaction too large"));
         }
 
         // check fee
-        unsigned size = GetVirtualTransactionSize(tx);
+        unsigned size = GetVirtualTransactionSize(result);
         CAmount feeNeeded = CWallet::GetMinimumFee(size, nTxConfirmTarget, mempool);
         feeNeeded = AdjustFee(feeNeeded, size);
 
@@ -248,7 +249,7 @@ CWalletTx TxBuilder::Build(const std::vector<CRecipient>& recipients, CAmount& f
     if (GetBoolArg("-walletrejectlongchains", DEFAULT_WALLET_REJECT_LONG_CHAINS)) {
         // Lastly, ensure this tx will pass the mempool's chain limits
         LockPoints lp;
-        CTxMemPoolEntry entry(MakeTransactionRef(tx), 0, 0, 0, 0, false, 0, lp);
+        CTxMemPoolEntry entry(tx, 0, 0, 0, 0, false, 0, false, 0, lp);
         CTxMemPool::setEntries setAncestors;
         size_t nLimitAncestors = GetArg("-limitancestorcount", DEFAULT_ANCESTOR_LIMIT);
         size_t nLimitAncestorSize = GetArg("-limitancestorsize", DEFAULT_ANCESTOR_SIZE_LIMIT) * 1000;

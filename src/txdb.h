@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2009-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -22,14 +22,8 @@ class CBlockIndex;
 class CCoinsViewDBCursor;
 class uint256;
 
-//! Compensate for extra memory peak (x1.5-x1.9) at flush time.
-static constexpr int DB_PEAK_USAGE_FACTOR = 2;
-//! Factor to estimate actual memory usage.
-static constexpr int EVO_DB_USAGE_FACTOR = 30;
-//! No need to periodic flush if at least this much space still available.
-static constexpr int MAX_BLOCK_COINSDB_USAGE = 10 * DB_PEAK_USAGE_FACTOR;
 //! -dbcache default (MiB)
-static const int64_t nDefaultDbCache = 450;
+static const int64_t nDefaultDbCache = 300;
 //! max. -dbcache (MiB)
 static const int64_t nMaxDbCache = sizeof(void*) > 4 ? 16384 : 1024;
 //! min. -dbcache (MiB)
@@ -50,7 +44,7 @@ struct CDiskTxPos : public CDiskBlockPos
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(*(CDiskBlockPos*)this);
         READWRITE(VARINT(nTxOffset));
     }
@@ -76,15 +70,11 @@ protected:
 public:
     CCoinsViewDB(size_t nCacheSize, bool fMemory = false, bool fWipe = false);
 
-    bool GetCoin(const COutPoint &outpoint, Coin &coin) const override;
-    bool HaveCoin(const COutPoint &outpoint) const override;
-    uint256 GetBestBlock() const override;
-    bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock) override;
-    CCoinsViewCursor *Cursor() const override;
-
-    //! Attempt to update from an older database format. Returns whether an error occurred.
-    bool Upgrade();
-    size_t EstimateSize() const override;
+    bool GetCoins(const uint256 &txid, CCoins &coins) const;
+    bool HaveCoins(const uint256 &txid) const;
+    uint256 GetBestBlock() const;
+    bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock);
+    CCoinsViewCursor *Cursor() const;
 };
 
 /** Specialization of CCoinsViewCursor to iterate over a CCoinsViewDB */
@@ -93,8 +83,8 @@ class CCoinsViewDBCursor: public CCoinsViewCursor
 public:
     ~CCoinsViewDBCursor() {}
 
-    bool GetKey(COutPoint &key) const;
-    bool GetValue(Coin &coin) const;
+    bool GetKey(uint256 &key) const;
+    bool GetValue(CCoins &coins) const;
     unsigned int GetValueSize() const;
 
     bool Valid() const;
@@ -103,8 +93,8 @@ public:
 private:
     CCoinsViewDBCursor(CDBIterator* pcursorIn, const uint256 &hashBlockIn):
         CCoinsViewCursor(hashBlockIn), pcursor(pcursorIn) {}
-    std::unique_ptr<CDBIterator> pcursor;
-    std::pair<char, COutPoint> keyTmp;
+    boost::scoped_ptr<CDBIterator> pcursor;
+    std::pair<char, uint256> keyTmp;
 
     friend class CCoinsViewDB;
 };

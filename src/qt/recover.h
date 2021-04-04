@@ -1,5 +1,5 @@
-#ifndef BZX_RECOVER_H
-#define BZX_RECOVER_H
+#ifndef ZCOIN_RECOVER_H
+#define ZCOIN_RECOVER_H
 
 #include <QDialog>
 #include <QThread>
@@ -34,4 +34,4 @@ private:
     QThread *thread;
 };
 
-#endif //BZX_RECOVER_H
+#endif //ZCOIN_RECOVER_H

@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 The Bitcoin Core developers
+// Copyright (c) 2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -29,7 +29,7 @@ static bool fSanitizeResponse = true;
 static const char* WWW_AUTH_HEADER_DATA = "Basic realm=\"jsonrpc\"";
 
 /** Simple one-shot callback timer to be used by the RPC mechanism to e.g.
- * re-lock the wallet.
+ * re-lock the wellet.
  */
 class HTTPRPCTimer : public RPCTimerBase
 {
@@ -49,7 +49,7 @@ private:
 class HTTPRPCTimerInterface : public RPCTimerInterface
 {
 public:
-    HTTPRPCTimerInterface(struct event_base* _base) : base(_base)
+    HTTPRPCTimerInterface(struct event_base* base) : base(base)
     {
     }
     const char* Name()
@@ -99,7 +99,7 @@ static bool multiUserAuthorized(std::string strUserPass)
 
     if (mapMultiArgs.count("-rpcauth") > 0) {
         //Search for multi-user login/pass "rpcauth" from config
-        BOOST_FOREACH(std::string strRPCAuth, mapMultiArgs.at("-rpcauth"))
+        BOOST_FOREACH(std::string strRPCAuth, mapMultiArgs["-rpcauth"])
         {
             std::vector<std::string> vFields;
             boost::split(vFields, strRPCAuth, boost::is_any_of(":$"));
@@ -131,7 +131,7 @@ static bool multiUserAuthorized(std::string strUserPass)
     return false;
 }
 
-static bool RPCAuthorized(const std::string& strAuth, std::string& strAuthUsernameOut)
+static bool RPCAuthorized(const std::string& strAuth)
 {
     if (strRPCUserColonPass.empty()) // Belt-and-suspenders measure if InitRPCAuthentication was not called
         return false;
@@ -140,9 +140,6 @@ static bool RPCAuthorized(const std::string& strAuth, std::string& strAuthUserna
     std::string strUserPass64 = strAuth.substr(6);
     boost::trim(strUserPass64);
     std::string strUserPass = DecodeBase64(strUserPass64);
-
-    if (strUserPass.find(":") != std::string::npos)
-        strAuthUsernameOut = strUserPass.substr(0, strUserPass.find(":"));
 
     //Check if authorized under single-user field
     if (TimingResistantEqual(strUserPass, strRPCUserColonPass)) {
@@ -166,8 +163,7 @@ static bool HTTPReq_JSONRPC(HTTPRequest* req, const std::string &)
         return false;
     }
 
-    JSONRPCRequest jreq;
-    if (!RPCAuthorized(authHeader.second, jreq.authUser)) {
+    if (!RPCAuthorized(authHeader.second)) {
         LogPrintf("ThreadRPCServer incorrect password attempt from %s\n", req->GetPeer().ToString());
 
         /* Deter brute-forcing
@@ -180,21 +176,19 @@ static bool HTTPReq_JSONRPC(HTTPRequest* req, const std::string &)
         return false;
     }
 
+    JSONRequest jreq;
     try {
         // Parse request
         UniValue valRequest;
         if (!valRequest.read(req->ReadBody()))
             throw JSONRPCError(RPC_PARSE_ERROR, "Parse error");
 
-        // Set the URI
-        jreq.URI = req->GetURI();
-
         std::string strReply;
         // singleton request
         if (valRequest.isObject()) {
             jreq.parse(valRequest);
 
-            UniValue result = tableRPC.execute(jreq);
+            UniValue result = tableRPC.execute(jreq.strMethod, jreq.params);
 
             // Send reply
             strReply = JSONRPCReply(result, NullUniValue, jreq.id);
@@ -222,7 +216,7 @@ static bool HTTPReq_JSONRPC(HTTPRequest* req, const std::string &)
 
 static bool InitRPCAuthentication()
 {
-    if (GetArg("-rpcpassword", "") == "")
+    if (mapArgs["-rpcpassword"] == "")
     {
         LogPrintf("No rpcpassword set - using random cookie authentication\n");
         if (!GenerateAuthCookie(&strRPCUserColonPass)) {
@@ -233,7 +227,7 @@ static bool InitRPCAuthentication()
         }
     } else {
         LogPrintf("Config options rpcuser and rpcpassword will soon be deprecated. Locally-run instances may remove rpcuser to use cookie-based auth, or may be replaced with rpcauth. Please see share/rpcuser for rpcauth auth generation.\n");
-        strRPCUserColonPass = GetArg("-rpcuser", "") + ":" + GetArg("-rpcpassword", "");
+        strRPCUserColonPass = mapArgs["-rpcuser"] + ":" + mapArgs["-rpcpassword"];
     }
     return true;
 }

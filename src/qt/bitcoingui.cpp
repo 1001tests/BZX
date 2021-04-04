@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Bitcoin Core developers
+// Copyright (c) 2011-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,7 +12,6 @@
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
-#include "modaloverlay.h"
 #include "networkstyle.h"
 #include "notificator.h"
 #include "openuridialog.h"
@@ -31,20 +30,17 @@
 #include "macdockiconhandler.h"
 #endif
 
-#include "chainparams.h"
 #include "init.h"
-#include "lelantus.h"
-#include "sigma.h"
 #include "ui_interface.h"
 #include "util.h"
 
-#include "evo/deterministicmns.h"
-#include "masternode-sync.h"
-#include "masternodelist.h"
-#include "elysium_qtutils.h"
+#include "znode-sync.h"
+#include "znodelist.h"
+#include "exodus_qtutils.h"
+#include "zc2sigmapage.h"
 
-#ifdef ENABLE_ELYSIUM
-#include "../elysium/elysium.h"
+#ifdef ENABLE_EXODUS
+#include "../exodus/exodus.h"
 #endif
 
 #include <iostream>
@@ -61,6 +57,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QProgressBar>
 #include <QProgressDialog>
 #include <QSettings>
 #include <QShortcut>
@@ -88,29 +85,25 @@ const std::string BitcoinGUI::DEFAULT_UIPLATFORM =
 #endif
         ;
 
-/** Display name for default wallet name. Uses tilde to avoid name
- * collisions in the future with additional wallets */
 const QString BitcoinGUI::DEFAULT_WALLET = "~Default";
 
-BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *networkStyle, QWidget *parent) :
+BitcoinGUI::BitcoinGUI(const PlatformStyle *platformStyle, const NetworkStyle *networkStyle, QWidget *parent) :
     QMainWindow(parent),
-    enableWallet(false),
     clientModel(0),
     walletFrame(0),
     unitDisplayControl(0),
-    labelWalletEncryptionIcon(0),
-    labelWalletHDStatusIcon(0),
-    connectionsControl(0),
+    labelEncryptionIcon(0),
+    labelConnectionsIcon(0),
     labelBlocksIcon(0),
-    labelElysiumPendingIcon(0),
-    labelElysiumPendingText(0),
+    labelExodusPendingIcon(0),
+    labelExodusPendingText(0),
     progressBarLabel(0),
     progressBar(0),
     progressDialog(0),
     appMenuBar(0),
     overviewAction(0),
-#ifdef ENABLE_ELYSIUM
-    elyAssetsAction(0),
+#ifdef ENABLE_EXODUS
+    exoAssetsAction(0),
     toolboxAction(0),
 #endif
     historyAction(0),
@@ -133,23 +126,25 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     openRPCConsoleAction(0),
     openAction(0),
     showHelpMessageAction(0),
-    lelantusAction(0),
-    masternodeAction(0),
+    zc2SigmaAction(0),
+    znodeAction(0),
     trayIcon(0),
     trayIconMenu(0),
     notificator(0),
     rpcConsole(0),
     helpMessageDialog(0),
-    modalOverlay(0),
     prevBlocks(0),
     spinnerFrame(0),
-    platformStyle(_platformStyle)
+    platformStyle(platformStyle)
 {
     GUIUtil::restoreWindowGeometry("nWindow", QSize(850, 550), this);
 
     QString windowTitle = tr(PACKAGE_NAME) + " - ";
 #ifdef ENABLE_WALLET
-    enableWallet = WalletModel::isWalletEnabled();
+    /* if compiled with wallet support, -disablewallet can still disable the wallet */
+    enableWallet = !GetBoolArg("-disablewallet", false);
+#else
+    enableWallet = false;
 #endif // ENABLE_WALLET
     if(enableWallet)
     {
@@ -172,13 +167,13 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     setUnifiedTitleAndToolBarOnMac(true);
 #endif
 
-    rpcConsole = new RPCConsole(_platformStyle, 0);
+    rpcConsole = new RPCConsole(platformStyle, 0);
     helpMessageDialog = new HelpMessageDialog(this, false);
 #ifdef ENABLE_WALLET
     if(enableWallet)
     {
         /** Create wallet frame and make it the central widget */
-        walletFrame = new WalletFrame(_platformStyle, this);
+        walletFrame = new WalletFrame(platformStyle, this);
         setCentralWidget(walletFrame);
     } else
 #endif // ENABLE_WALLET
@@ -219,20 +214,18 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     frameBlocksLayout->setContentsMargins(3,0,3,0);
     frameBlocksLayout->setSpacing(3);
     unitDisplayControl = new UnitDisplayStatusBarControl(platformStyle);
-    labelWalletEncryptionIcon = new QLabel();
-    labelWalletHDStatusIcon = new QLabel();
-    connectionsControl = new GUIUtil::ClickableLabel();
-    labelBlocksIcon = new GUIUtil::ClickableLabel();
+    labelEncryptionIcon = new QLabel();
+    labelConnectionsIcon = new QLabel();
+    labelBlocksIcon = new QLabel();
     if(enableWallet)
     {
         frameBlocksLayout->addStretch();
         frameBlocksLayout->addWidget(unitDisplayControl);
         frameBlocksLayout->addStretch();
-        frameBlocksLayout->addWidget(labelWalletEncryptionIcon);
-        frameBlocksLayout->addWidget(labelWalletHDStatusIcon);
+        frameBlocksLayout->addWidget(labelEncryptionIcon);
     }
     frameBlocksLayout->addStretch();
-    frameBlocksLayout->addWidget(connectionsControl);
+    frameBlocksLayout->addWidget(labelConnectionsIcon);
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelBlocksIcon);
     frameBlocksLayout->addStretch();
@@ -245,13 +238,13 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     framePendingLayout->setContentsMargins(3,0,3,0);
     framePendingLayout->setSpacing(3);
     framePendingLayout->addStretch();
-    labelElysiumPendingIcon = new QLabel();
-    labelElysiumPendingText = new QLabel("You have Elysium transactions awaiting confirmation.");
-    framePendingLayout->addWidget(labelElysiumPendingIcon);
-    framePendingLayout->addWidget(labelElysiumPendingText);
+    labelExodusPendingIcon = new QLabel();
+    labelExodusPendingText = new QLabel("You have Exodus transactions awaiting confirmation.");
+    framePendingLayout->addWidget(labelExodusPendingIcon);
+    framePendingLayout->addWidget(labelExodusPendingText);
     framePendingLayout->addStretch();
-    labelElysiumPendingIcon->hide();
-    labelElysiumPendingText->hide();
+    labelExodusPendingIcon->hide();
+    labelExodusPendingText->hide();
 
     // Progress bar and label for blocks download
     progressBarLabel = new QLabel();
@@ -282,17 +275,6 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
 
     // Subscribe to notifications from core
     subscribeToCoreSignals();
-
-    connect(connectionsControl, SIGNAL(clicked(QPoint)), this, SLOT(toggleNetworkActive()));
-
-    modalOverlay = new ModalOverlay(this->centralWidget());
-#ifdef ENABLE_WALLET
-    if(enableWallet) {
-        connect(walletFrame, SIGNAL(requestedSyncWarningInfo()), this, SLOT(showModalOverlay()));
-        connect(labelBlocksIcon, SIGNAL(clicked(QPoint)), this, SLOT(showModalOverlay()));
-        connect(progressBar, SIGNAL(clicked(QPoint)), this, SLOT(showModalOverlay()));
-    }
-#endif
 }
 
 BitcoinGUI::~BitcoinGUI()
@@ -324,7 +306,7 @@ void BitcoinGUI::createActions()
 	tabGroup->addAction(overviewAction);
 
 	sendCoinsAction = new QAction(platformStyle->SingleColorIcon(":/icons/send"), tr("&Send"), this);
-	sendCoinsAction->setStatusTip(tr("Send coins to a BZX address"));
+	sendCoinsAction->setStatusTip(tr("Send coins to a Zcoin address"));
 	sendCoinsAction->setToolTip(sendCoinsAction->statusTip());
 	sendCoinsAction->setCheckable(true);
 	sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + key++));
@@ -335,7 +317,7 @@ void BitcoinGUI::createActions()
 	sendCoinsMenuAction->setToolTip(sendCoinsMenuAction->statusTip());
 
 	receiveCoinsAction = new QAction(platformStyle->SingleColorIcon(":/icons/receiving_addresses"), tr("&Receive"), this);
-	receiveCoinsAction->setStatusTip(tr("Request payments (generates QR codes and BZX: URIs)"));
+	receiveCoinsAction->setStatusTip(tr("Request payments (generates QR codes and zcoin: URIs)"));
 	receiveCoinsAction->setToolTip(receiveCoinsAction->statusTip());
 	receiveCoinsAction->setCheckable(true);
 	receiveCoinsAction->setShortcut(QKeySequence(Qt::ALT + key++));
@@ -352,42 +334,50 @@ void BitcoinGUI::createActions()
 	historyAction->setShortcut(QKeySequence(Qt::ALT + key++));
 	tabGroup->addAction(historyAction);
 
-#ifdef ENABLE_WALLET
-    lelantusAction = new QAction(platformStyle->SingleColorIcon(":/icons/lelantus"), tr("&Lelantus"), this);
-    lelantusAction->setStatusTip(tr("Anonymize your coins"));
-    lelantusAction->setToolTip(lelantusAction->statusTip());
-    lelantusAction->setCheckable(true);
-    lelantusAction->setShortcut(QKeySequence(Qt::ALT + key++));
-    tabGroup->addAction(lelantusAction);
-    lelantusAction->setVisible(true);
+    sigmaAction = new QAction(platformStyle->SingleColorIcon(":/icons/sigma"), tr("Si&gma"), this);
+    sigmaAction->setStatusTip(tr("Anonymize your coins and perform private transfers using Sigma"));
+    sigmaAction->setToolTip(sigmaAction->statusTip());
+    sigmaAction->setCheckable(true);
+    sigmaAction->setShortcut(QKeySequence(Qt::ALT +  key++));
+    tabGroup->addAction(sigmaAction);
+    sigmaAction->setVisible(true);
 
+    zc2SigmaAction = new QAction(platformStyle->SingleColorIcon(":/icons/zerocoin"), tr("&Remint"), this);
+    zc2SigmaAction->setStatusTip(tr("Show the list of public Zerocoins that could be reminted in Sigma"));
+    zc2SigmaAction->setToolTip(zc2SigmaAction->statusTip());
+    zc2SigmaAction->setCheckable(true);
+    zc2SigmaAction->setShortcut(QKeySequence(Qt::ALT +  key++));
+    tabGroup->addAction(zc2SigmaAction);
+    zc2SigmaAction->setVisible(false);
+
+#ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
-    masternodeAction = new QAction(platformStyle->SingleColorIcon(":/icons/znodes"), tr("&Masternodes"), this);
-    masternodeAction->setStatusTip(tr("Browse masternodes"));
-    masternodeAction->setToolTip(masternodeAction->statusTip());
-    masternodeAction->setCheckable(true);
+    znodeAction = new QAction(platformStyle->SingleColorIcon(":/icons/znodes"), tr("&Znodes"), this);
+    znodeAction->setStatusTip(tr("Browse znodes"));
+    znodeAction->setToolTip(znodeAction->statusTip());
+    znodeAction->setCheckable(true);
 #ifdef Q_OS_MAC
-    masternodeAction->setShortcut(QKeySequence(Qt::CTRL + key++));
+    znodeAction->setShortcut(QKeySequence(Qt::CTRL + key++));
 #else
-    masternodeAction->setShortcut(QKeySequence(Qt::ALT +  key++));
+    znodeAction->setShortcut(QKeySequence(Qt::ALT +  key++));
 #endif
-    tabGroup->addAction(masternodeAction);
+    tabGroup->addAction(znodeAction);
 #endif
 
-#ifdef ENABLE_ELYSIUM
-    bool elysiumEnabled = isElysiumEnabled();
+#ifdef ENABLE_EXODUS
+    bool exodusEnabled = isExodusEnabled();
 
-    if (elysiumEnabled) {
-        elyAssetsAction = new QAction(platformStyle->SingleColorIcon(":/icons/balances"), tr("E&lyAssets"), this);
-        elyAssetsAction->setStatusTip(tr("Show Elysium balances"));
-        elyAssetsAction->setToolTip(elyAssetsAction->statusTip());
-        elyAssetsAction->setCheckable(true);
-        elyAssetsAction->setShortcut(QKeySequence(Qt::ALT + key++));
-        tabGroup->addAction(elyAssetsAction);
+    if (exodusEnabled) {
+        exoAssetsAction = new QAction(platformStyle->SingleColorIcon(":/icons/balances"), tr("E&xoAssets"), this);
+        exoAssetsAction->setStatusTip(tr("Show Exodus balances"));
+        exoAssetsAction->setToolTip(exoAssetsAction->statusTip());
+        exoAssetsAction->setCheckable(true);
+        exoAssetsAction->setShortcut(QKeySequence(Qt::ALT + key++));
+        tabGroup->addAction(exoAssetsAction);
 
         toolboxAction = new QAction(platformStyle->SingleColorIcon(":/icons/tools"), tr("&Toolbox"), this);
-        toolboxAction->setStatusTip(tr("Tools to obtain varions Elysium information and transaction information"));
+        toolboxAction->setStatusTip(tr("Tools to obtain varions Exodus information and transaction information"));
         toolboxAction->setToolTip(toolboxAction->statusTip());
         toolboxAction->setCheckable(true);
         toolboxAction->setShortcut(QKeySequence(Qt::ALT + key++));
@@ -396,8 +386,8 @@ void BitcoinGUI::createActions()
 #endif
 
 #ifdef ENABLE_WALLET
-    connect(masternodeAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(masternodeAction, SIGNAL(triggered()), this, SLOT(gotoMasternodePage()));
+    connect(znodeAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(znodeAction, SIGNAL(triggered()), this, SLOT(gotoZnodePage()));
 	connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
 	connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
 	connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -410,12 +400,13 @@ void BitcoinGUI::createActions()
 	connect(receiveCoinsMenuAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
 	connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
 	connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
-	connect(lelantusAction, SIGNAL(triggered()), this, SLOT(gotoLelantusPage()));
+	connect(sigmaAction, SIGNAL(triggered()), this, SLOT(gotoSigmaPage()));
+        connect(zc2SigmaAction, SIGNAL(triggered()), this, SLOT(gotoZc2SigmaPage()));
 
-#ifdef ENABLE_ELYSIUM
-    if (elysiumEnabled) {
-        connect(elyAssetsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-        connect(elyAssetsAction, SIGNAL(triggered()), this, SLOT(gotoElyAssetsPage()));
+#ifdef ENABLE_EXODUS
+    if (exodusEnabled) {
+        connect(exoAssetsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+        connect(exoAssetsAction, SIGNAL(triggered()), this, SLOT(gotoExoAssetsPage()));
         connect(toolboxAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
         connect(toolboxAction, SIGNAL(triggered()), this, SLOT(gotoToolboxPage()));
     }
@@ -448,9 +439,9 @@ void BitcoinGUI::createActions()
     changePassphraseAction = new QAction(platformStyle->TextColorIcon(":/icons/key"), tr("&Change Passphrase..."), this);
     changePassphraseAction->setStatusTip(tr("Change the passphrase used for wallet encryption"));
     signMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/edit"), tr("Sign &message..."), this);
-    signMessageAction->setStatusTip(tr("Sign messages with your BZX addresses to prove you own them"));
+    signMessageAction->setStatusTip(tr("Sign messages with your Zcoin addresses to prove you own them"));
     verifyMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/verify"), tr("&Verify message..."), this);
-    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified BZX addresses"));
+    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified Zcoin addresses"));
 
     openRPCConsoleAction = new QAction(platformStyle->TextColorIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging and diagnostic console"));
@@ -463,11 +454,11 @@ void BitcoinGUI::createActions()
     usedReceivingAddressesAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
 
     openAction = new QAction(platformStyle->TextColorIcon(":/icons/open"), tr("Open &URI..."), this);
-    openAction->setStatusTip(tr("Open a BZX: URI or payment request"));
+    openAction->setStatusTip(tr("Open a zcoin: URI or payment request"));
 
     showHelpMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/info"), tr("&Command-line options"), this);
     showHelpMessageAction->setMenuRole(QAction::NoRole);
-    showHelpMessageAction->setStatusTip(tr("Show the %1 help message to get a list with possible BZX command-line options").arg(tr(PACKAGE_NAME)));
+    showHelpMessageAction->setStatusTip(tr("Show the %1 help message to get a list with possible Zcoin command-line options").arg(tr(PACKAGE_NAME)));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
@@ -547,18 +538,20 @@ void BitcoinGUI::createToolBars()
     if(walletFrame)
     {
         QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
+
         toolbar->setMovable(false);
         toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
         toolbar->addAction(overviewAction);
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
-        toolbar->addAction(lelantusAction);
-        toolbar->addAction(masternodeAction);
+        toolbar->addAction(sigmaAction);
+        toolbar->addAction(zc2SigmaAction);
+        toolbar->addAction(znodeAction);
 
-#ifdef ENABLE_ELYSIUM
-        if (isElysiumEnabled()) {
-            toolbar->addAction(elyAssetsAction);
+#ifdef ENABLE_EXODUS
+        if (isExodusEnabled()) {
+            toolbar->addAction(exoAssetsAction);
             toolbar->addAction(toolboxAction);
         }
 #endif
@@ -567,64 +560,52 @@ void BitcoinGUI::createToolBars()
     }
 }
 
-void BitcoinGUI::setClientModel(ClientModel *_clientModel)
+void BitcoinGUI::setClientModel(ClientModel *clientModel)
 {
-    this->clientModel = _clientModel;
-    if(_clientModel)
+    this->clientModel = clientModel;
+    if(clientModel)
     {
         // Create system tray menu (or setup the dock menu) that late to prevent users from calling actions,
         // while the client has not yet fully loaded
         createTrayIconMenu();
 
         // Keep up to date with client
-        updateNetworkState();
-        connect(_clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-        connect(_clientModel, SIGNAL(networkActiveChanged(bool)), this, SLOT(setNetworkActive(bool)));
+        setNumConnections(clientModel->getNumConnections());
+        connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
 
-        modalOverlay->setKnownBestHeight(_clientModel->getHeaderTipHeight(), QDateTime::fromTime_t(_clientModel->getHeaderTipTime()));
-        setNumBlocks(_clientModel->getNumBlocks(), _clientModel->getLastBlockDate(), _clientModel->getVerificationProgress(NULL), false);
-        connect(_clientModel, SIGNAL(numBlocksChanged(int,QDateTime,double,bool)), this, SLOT(setNumBlocks(int,QDateTime,double,bool)));
+        setNumBlocks(clientModel->getNumBlocks(), clientModel->getLastBlockDate(), clientModel->getVerificationProgress(NULL), false);
+        connect(clientModel, SIGNAL(numBlocksChanged(int,QDateTime,double,bool)), this, SLOT(setNumBlocks(int,QDateTime,double,bool)));
 
-        connect(clientModel, SIGNAL(additionalDataSyncProgressChanged(double)), this, SLOT(setAdditionalDataSyncProgress(double)));
+        connect(clientModel, SIGNAL(additionalDataSyncProgressChanged(int, double)), this, SLOT(setAdditionalDataSyncProgress(int, double)));
 
         // Receive and report messages from client model
-        connect(_clientModel, SIGNAL(message(QString,QString,unsigned int)), this, SLOT(message(QString,QString,unsigned int)));
+        connect(clientModel, SIGNAL(message(QString,QString,unsigned int)), this, SLOT(message(QString,QString,unsigned int)));
 
         // Show progress dialog
-        connect(_clientModel, SIGNAL(showProgress(QString,int)), this, SLOT(showProgress(QString,int)));
+        connect(clientModel, SIGNAL(showProgress(QString,int)), this, SLOT(showProgress(QString,int)));
 
-        // Update Elysium pending status
-        connect(_clientModel, SIGNAL(refreshElysiumPending(bool)), this, SLOT(setElysiumPendingStatus(bool)));
+        // Update Exodus pending status
+        connect(clientModel, SIGNAL(refreshExodusPending(bool)), this, SLOT(setExodusPendingStatus(bool)));
 
-        rpcConsole->setClientModel(_clientModel);
+        rpcConsole->setClientModel(clientModel);
 #ifdef ENABLE_WALLET
         if(walletFrame)
         {
-            walletFrame->setClientModel(_clientModel);
+            walletFrame->setClientModel(clientModel);
         }
 #endif // ENABLE_WALLET
-        unitDisplayControl->setOptionsModel(_clientModel->getOptionsModel());
+        unitDisplayControl->setOptionsModel(clientModel->getOptionsModel());
 
-        OptionsModel* optionsModel = _clientModel->getOptionsModel();
+        OptionsModel* optionsModel = clientModel->getOptionsModel();
         if(optionsModel)
         {
             // be aware of the tray icon disable state change reported by the OptionsModel object.
             connect(optionsModel,SIGNAL(hideTrayIconChanged(bool)),this,SLOT(setTrayIconVisible(bool)));
 
-            // update lelantus page if option is changed.
-            connect(optionsModel,SIGNAL(lelantusPageChanged(bool)),this,SLOT(updateLelantusPage()));
-
             // initialize the disable state of the tray icon with the current value in the model.
             setTrayIconVisible(optionsModel->getHideTrayIcon());
         }
-        {
-            auto blocks = clientModel->getNumBlocks();
-            checkZnodeVisibility(blocks);
-
-#ifdef ENABLE_WALLET
-            checkLelantusVisibility(blocks);
-#endif // ENABLE_WALLET
-        }
+        checkZc2SigmaVisibility(clientModel->getNumBlocks());
     } else {
         // Disable possibility to show main window via action
         toggleHideAction->setEnabled(false);
@@ -678,8 +659,8 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     receiveCoinsAction->setEnabled(enabled);
     receiveCoinsMenuAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
-    lelantusAction->setEnabled(enabled);
-    masternodeAction->setEnabled(enabled);
+    sigmaAction->setEnabled(enabled);
+    znodeAction->setEnabled(enabled);
     encryptWalletAction->setEnabled(enabled);
     backupWalletAction->setEnabled(enabled);
     changePassphraseAction->setEnabled(enabled);
@@ -689,9 +670,9 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     usedReceivingAddressesAction->setEnabled(enabled);
     openAction->setEnabled(enabled);
 
-#ifdef ENABLE_ELYSIUM
-    if (isElysiumEnabled()) {
-        elyAssetsAction->setEnabled(enabled);
+#ifdef ENABLE_EXODUS
+    if (isExodusEnabled()) {
+        exoAssetsAction->setEnabled(enabled);
         toolboxAction->setEnabled(enabled);
     }
 #endif
@@ -811,11 +792,11 @@ void BitcoinGUI::gotoOverviewPage()
     if (walletFrame) walletFrame->gotoOverviewPage();
 }
 
-#ifdef ENABLE_ELYSIUM
-void BitcoinGUI::gotoElyAssetsPage()
+#ifdef ENABLE_EXODUS
+void BitcoinGUI::gotoExoAssetsPage()
 {
-    elyAssetsAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoElyAssetsPage();
+    exoAssetsAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoExoAssetsPage();
 }
 #endif
 
@@ -825,11 +806,11 @@ void BitcoinGUI::gotoHistoryPage()
     if (walletFrame) walletFrame->gotoHistoryPage();
 }
 
-#ifdef ENABLE_ELYSIUM
-void BitcoinGUI::gotoElysiumHistoryTab()
+#ifdef ENABLE_EXODUS
+void BitcoinGUI::gotoExodusHistoryTab()
 {
     historyAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoElysiumHistoryTab();
+    if (walletFrame) walletFrame->gotoExodusHistoryTab();
 }
 #endif
 
@@ -839,7 +820,7 @@ void BitcoinGUI::gotoBitcoinHistoryTab()
     if (walletFrame) walletFrame->gotoBitcoinHistoryTab();
 }
 
-#ifdef ENABLE_ELYSIUM
+#ifdef ENABLE_EXODUS
 void BitcoinGUI::gotoToolboxPage()
 {
     toolboxAction->setChecked(true);
@@ -847,11 +828,11 @@ void BitcoinGUI::gotoToolboxPage()
 }
 #endif
 
-void BitcoinGUI::gotoMasternodePage()
+void BitcoinGUI::gotoZnodePage()
 {
     QSettings settings;
-    masternodeAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoMasternodePage();
+    znodeAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoZnodePage();
 }
 
 void BitcoinGUI::gotoReceiveCoinsPage()
@@ -871,10 +852,14 @@ void BitcoinGUI::gotoSignMessageTab(QString addr)
     if (walletFrame) walletFrame->gotoSignMessageTab(addr);
 }
 
-void BitcoinGUI::gotoLelantusPage()
+void BitcoinGUI::gotoSigmaPage()
 {
-    lelantusAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoLelantusPage();
+    if (walletFrame) walletFrame->gotoSigmaPage();
+}
+
+void BitcoinGUI::gotoZc2SigmaPage()
+{
+    if (walletFrame) walletFrame->gotoZc2SigmaPage();
 }
 
 void BitcoinGUI::gotoVerifyMessageTab(QString addr)
@@ -883,9 +868,8 @@ void BitcoinGUI::gotoVerifyMessageTab(QString addr)
 }
 #endif // ENABLE_WALLET
 
-void BitcoinGUI::updateNetworkState()
+void BitcoinGUI::setNumConnections(int count)
 {
-    int count = clientModel->getNumConnections();
     QString icon;
     switch(count)
     {
@@ -895,55 +879,16 @@ void BitcoinGUI::updateNetworkState()
     case 7: case 8: case 9: icon = ":/icons/connect_3"; break;
     default: icon = ":/icons/connect_4"; break;
     }
-
-    QString tooltip;
-
-    if (clientModel->getNetworkActive()) {
-        tooltip = tr("%n active connection(s) to BZX network", "", count) + QString(".<br>") + tr("Click to disable network activity.");
-    } else {
-        tooltip = tr("Network activity disabled.") + QString("<br>") + tr("Click to enable network activity again.");
-        icon = ":/icons/network_disabled";
-    }
-
-    // Don't word-wrap this (fixed-width) tooltip
-    tooltip = QString("<nobr>") + tooltip + QString("</nobr>");
-    connectionsControl->setToolTip(tooltip);
-
-    connectionsControl->setPixmap(platformStyle->SingleColorIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-}
-
-void BitcoinGUI::setNumConnections(int count)
-{
-    updateNetworkState();
-}
-
-void BitcoinGUI::setNetworkActive(bool networkActive)
-{
-    updateNetworkState();
-}
-
-void BitcoinGUI::updateHeadersSyncProgressLabel()
-{
-    int64_t headersTipTime = clientModel->getHeaderTipTime();
-    int headersTipHeight = clientModel->getHeaderTipHeight();
-    int estHeadersLeft = (GetTime() - headersTipTime) / Params().GetConsensus().nPowTargetSpacing;
-    if (estHeadersLeft > HEADER_HEIGHT_DELTA_SYNC)
-        progressBarLabel->setText(tr("Syncing Headers (%1%)...").arg(QString::number(100.0 / (headersTipHeight+estHeadersLeft)*headersTipHeight, 'f', 1)));
+    labelConnectionsIcon->setPixmap(platformStyle->SingleColorIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Zcoin network", "", count));
 }
 
 void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVerificationProgress, bool header)
 {
-    if (modalOverlay)
-    {
-        if (header)
-            modalOverlay->setKnownBestHeight(count, blockDate);
-        else
-            modalOverlay->tipUpdate(count, blockDate, nVerificationProgress);
-    }
-    if (!clientModel)
+    if(!clientModel)
         return;
 
-    // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbled text)
+    // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
     statusBar()->clearMessage();
 
     // Acquire current block source
@@ -951,11 +896,9 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
     switch (blockSource) {
         case BLOCK_SOURCE_NETWORK:
             if (header) {
-                updateHeadersSyncProgressLabel();
                 return;
             }
             progressBarLabel->setText(tr("Synchronizing with network..."));
-            updateHeadersSyncProgressLabel();
             break;
         case BLOCK_SOURCE_DISK:
             if (header) {
@@ -971,7 +914,8 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
             if (header) {
                 return;
             }
-            progressBarLabel->setText(tr("Connecting to peers..."));
+            // Case: not Importing, not Reindexing and no network connection
+            progressBarLabel->setText(tr("No block source available..."));
             break;
     }
 
@@ -982,24 +926,32 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
 
     tooltip = tr("Processed %n block(s) of transaction history.", "", count);
 
-#ifdef ENABLE_WALLET
-    if(walletFrame)
+    if(!znodeSync.IsBlockchainSynced())
     {
-        if (secs < 45*60) {
-            modalOverlay->showHide(true, true);
-            // TODO instead of hiding it forever, we should add meaningful information about MN sync to the overlay
-            modalOverlay->hideForever();
+        // Represent time from last generated block in human readable text
+        QString timeBehindText;
+        const int HOUR_IN_SECONDS = 60*60;
+        const int DAY_IN_SECONDS = 24*60*60;
+        const int WEEK_IN_SECONDS = 7*24*60*60;
+        const int YEAR_IN_SECONDS = 31556952; // Average length of year in Gregorian calendar
+        if(secs < 2*DAY_IN_SECONDS)
+        {
+            timeBehindText = tr("%n hour(s)","",secs/HOUR_IN_SECONDS);
+        }
+        else if(secs < 2*WEEK_IN_SECONDS)
+        {
+            timeBehindText = tr("%n day(s)","",secs/DAY_IN_SECONDS);
+        }
+        else if(secs < YEAR_IN_SECONDS)
+        {
+            timeBehindText = tr("%n week(s)","",secs/WEEK_IN_SECONDS);
         }
         else
         {
-            modalOverlay->showHide();
+            qint64 years = secs / YEAR_IN_SECONDS;
+            qint64 remainder = secs % YEAR_IN_SECONDS;
+            timeBehindText = tr("%1 and %2").arg(tr("%n year(s)", "", years)).arg(tr("%n week(s)","", remainder/WEEK_IN_SECONDS));
         }
-    }
-#endif // ENABLE_WALLET
-
-    if (!masternodeSync.IsBlockchainSynced())
-    {
-        QString timeBehindText = GUIUtil::formatNiceTimeOffset(secs);
 
         progressBarLabel->setVisible(true);
         progressBar->setFormat(tr("%1 behind").arg(timeBehindText));
@@ -1011,26 +963,21 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
         if(count != prevBlocks)
         {
             labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(QString(
-                ":/movies/spinner-%1").arg(spinnerFrame, 3, 10, QChar('0')))
-                .pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+                            ":/movies/spinner-%1").arg(spinnerFrame, 3, 10, QChar('0')))
+                                               .pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
             spinnerFrame = (spinnerFrame + 1) % SPINNER_FRAMES;
         }
         prevBlocks = count;
 
 #ifdef ENABLE_WALLET
         if(walletFrame)
-        {
             walletFrame->showOutOfSyncWarning(true);
-            modalOverlay->showHide();
-        }
 #endif // ENABLE_WALLET
 
         tooltip += QString("<br>");
         tooltip += tr("Last received block was generated %1 ago.").arg(timeBehindText);
         tooltip += QString("<br>");
         tooltip += tr("Transactions after this will not yet be visible.");
-    } else if (fLiteMode) {
-        setAdditionalDataSyncProgress(1);
     }
 
     // Don't word-wrap this (fixed-width) tooltip
@@ -1040,56 +987,53 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
     progressBarLabel->setToolTip(tooltip);
     progressBar->setToolTip(tooltip);
 
-#ifdef ENABLE_WALLET
-    checkLelantusVisibility(count);
-#endif // ENABLE_WALLET
-
-    checkZnodeVisibility(count);
+    checkZc2SigmaVisibility(count);
 }
 
 
-void BitcoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
+void BitcoinGUI::setAdditionalDataSyncProgress(int count, double nSyncProgress)
 {
     if(!clientModel)
-        return;
-
-    // No additional data sync should be happening while blockchain is not synced, nothing to update
-    if(!masternodeSync.IsBlockchainSynced())
         return;
 
     // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
     statusBar()->clearMessage();
 
     QString tooltip;
+    tooltip = tr("Processed %n block(s) of transaction history.", "", count);
 
-    QString strSyncStatus;
     // Set icon state: spinning if catching up, tick otherwise
-    tooltip = tr("Up to date") + QString(".<br>") + tooltip;
+
+    if(znodeSync.IsBlockchainSynced())
+    {
+        QString strSyncStatus;
+        tooltip = tr("Up to date") + QString(".<br>") + tooltip;
+
+        if(znodeSync.IsSynced()) {
+            progressBarLabel->setVisible(false);
+            progressBar->setVisible(false);
+            labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/synced").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+        } else {
+
+            labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(QString(
+                            ":/movies/spinner-%1").arg(spinnerFrame, 3, 10, QChar('0')))
+                                               .pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+            spinnerFrame = (spinnerFrame + 1) % SPINNER_FRAMES;
 
 #ifdef ENABLE_WALLET
-    if(walletFrame)
-        walletFrame->showOutOfSyncWarning(false);
+            if(walletFrame)
+                walletFrame->showOutOfSyncWarning(false);
 #endif // ENABLE_WALLET
 
-    if(masternodeSync.IsSynced()) {
-        progressBarLabel->setVisible(false);
-        progressBar->setVisible(false);
-        labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/synced").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
-    } else {
+            progressBar->setFormat(tr("Synchronizing additional data: %p%"));
+            progressBar->setMaximum(1000000000);
+            progressBar->setValue(nSyncProgress * 1000000000.0 + 0.5);
+        }
 
-        labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(QString(
-                        ":/movies/spinner-%1").arg(spinnerFrame, 3, 10, QChar('0')))
-                                            .pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
-        spinnerFrame = (spinnerFrame + 1) % SPINNER_FRAMES;
-
-        progressBar->setFormat(tr("Synchronizing additional data: %p%"));
-        progressBar->setMaximum(1000000000);
-        progressBar->setValue(nSyncProgress * 1000000000.0 + 0.5);
+        strSyncStatus = QString(znodeSync.GetSyncStatus().c_str());
+        progressBarLabel->setText(strSyncStatus);
+        tooltip = strSyncStatus + QString("<br>") + tooltip;
     }
-
-    strSyncStatus = QString(masternodeSync.GetSyncStatus().c_str());
-    progressBarLabel->setText(strSyncStatus);
-    tooltip = strSyncStatus + QString("<br>") + tooltip;
 
     // Don't word-wrap this (fixed-width) tooltip
     tooltip = QString("<nobr>") + tooltip + QString("</nobr>");
@@ -1102,7 +1046,7 @@ void BitcoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
 
 void BitcoinGUI::message(const QString &title, const QString &message, unsigned int style, bool *ret)
 {
-    QString strTitle = tr("BZX"); // default title
+    QString strTitle = tr("Zcoin"); // default title
     // Default to information icon
     int nMBoxIcon = QMessageBox::Information;
     int nNotifyIcon = Notificator::Information;
@@ -1128,7 +1072,7 @@ void BitcoinGUI::message(const QString &title, const QString &message, unsigned 
             break;
         }
     }
-    // Append title to "BZX - "
+    // Append title to "Zcoin - "
     if (!msgType.isEmpty())
         strTitle += " - " + msgType;
 
@@ -1269,50 +1213,42 @@ bool BitcoinGUI::handlePaymentRequest(const SendCoinsRecipient& recipient)
     return false;
 }
 
-void BitcoinGUI::setElysiumPendingStatus(bool pending)
+void BitcoinGUI::setExodusPendingStatus(bool pending)
 {
     if (!pending) {
-        labelElysiumPendingIcon->hide();
-        labelElysiumPendingText->hide();
+        labelExodusPendingIcon->hide();
+        labelExodusPendingText->hide();
     } else {
-        labelElysiumPendingIcon->show();
-        labelElysiumPendingText->show();
-        labelElysiumPendingIcon->setPixmap(QIcon(":/icons/elysium_hourglass").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-        labelElysiumPendingIcon->setToolTip(tr("You have Elysium transactions awaiting confirmation."));
+        labelExodusPendingIcon->show();
+        labelExodusPendingText->show();
+        labelExodusPendingIcon->setPixmap(QIcon(":/icons/exodus_hourglass").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        labelExodusPendingIcon->setToolTip(tr("You have Exodus transactions awaiting confirmation."));
     }
 }
 
-void BitcoinGUI::setHDStatus(int hdEnabled)
-{
-    labelWalletHDStatusIcon->setPixmap(platformStyle->SingleColorIcon(hdEnabled ? ":/icons/hd_enabled" : ":/icons/hd_disabled").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-    labelWalletHDStatusIcon->setToolTip(hdEnabled ? tr("HD key generation is <b>enabled</b>") : tr("HD key generation is <b>disabled</b>"));
-
-    // eventually disable the QLabel to set its opacity to 50%
-    labelWalletHDStatusIcon->setEnabled(hdEnabled);
-}
 
 void BitcoinGUI::setEncryptionStatus(int status)
 {
     switch(status)
     {
     case WalletModel::Unencrypted:
-        labelWalletEncryptionIcon->hide();
+        labelEncryptionIcon->hide();
         encryptWalletAction->setChecked(false);
         changePassphraseAction->setEnabled(false);
         encryptWalletAction->setEnabled(true);
         break;
     case WalletModel::Unlocked:
-        labelWalletEncryptionIcon->show();
-        labelWalletEncryptionIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/lock_open").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-        labelWalletEncryptionIcon->setToolTip(tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
+        labelEncryptionIcon->show();
+        labelEncryptionIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/lock_open").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        labelEncryptionIcon->setToolTip(tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
         encryptWalletAction->setChecked(true);
         changePassphraseAction->setEnabled(true);
         encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
         break;
     case WalletModel::Locked:
-        labelWalletEncryptionIcon->show();
-        labelWalletEncryptionIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/lock_closed").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
-        labelWalletEncryptionIcon->setToolTip(tr("Wallet is <b>encrypted</b> and currently <b>locked</b>"));
+        labelEncryptionIcon->show();
+        labelEncryptionIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/lock_closed").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        labelEncryptionIcon->setToolTip(tr("Wallet is <b>encrypted</b> and currently <b>locked</b>"));
         encryptWalletAction->setChecked(true);
         changePassphraseAction->setEnabled(true);
         encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
@@ -1392,18 +1328,6 @@ void BitcoinGUI::setTrayIconVisible(bool fHideTrayIcon)
     }
 }
 
-void BitcoinGUI::showModalOverlay()
-{
-    if (modalOverlay && (progressBar->isVisible() || modalOverlay->isLayerVisible()))
-        modalOverlay->toggleVisibility();
-}
-
-void BitcoinGUI::updateLelantusPage()
-{
-    auto blocks = clientModel->getNumBlocks();
-    checkLelantusVisibility(blocks);
-}
-
 static bool ThreadSafeMessageBox(BitcoinGUI *gui, const std::string& message, const std::string& caption, unsigned int style)
 {
     bool modal = (style & CClientUIInterface::MODAL);
@@ -1435,20 +1359,12 @@ void BitcoinGUI::unsubscribeFromCoreSignals()
     uiInterface.ThreadSafeQuestion.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _3, _4));
 }
 
-void BitcoinGUI::checkZnodeVisibility(int numBlocks)
-{
-    masternodeAction->setVisible(true);
-}
+void BitcoinGUI::checkZc2SigmaVisibility(int numBlocks) {
+    if(!zc2SigmaAction->isVisible() && sigma::IsRemintWindow(numBlocks)) {
+        const bool show = Zc2SigmaPage::showZc2SigmaPage();
 
-void BitcoinGUI::checkLelantusVisibility(int numBlocks)
-{
-        lelantusAction->setVisible(true);
-}
-
-void BitcoinGUI::toggleNetworkActive()
-{
-    if (clientModel) {
-        clientModel->setNetworkActive(!clientModel->getNetworkActive());
+        if(show)
+            zc2SigmaAction->setVisible(true);
     }
 }
 
@@ -1490,17 +1406,17 @@ void UnitDisplayStatusBarControl::createContextMenu()
 }
 
 /** Lets the control know about the Options Model (and its signals) */
-void UnitDisplayStatusBarControl::setOptionsModel(OptionsModel *_optionsModel)
+void UnitDisplayStatusBarControl::setOptionsModel(OptionsModel *optionsModel)
 {
-    if (_optionsModel)
+    if (optionsModel)
     {
-        this->optionsModel = _optionsModel;
+        this->optionsModel = optionsModel;
 
         // be aware of a display unit change reported by the OptionsModel object.
-        connect(_optionsModel,SIGNAL(displayUnitChanged(int)),this,SLOT(updateDisplayUnit(int)));
+        connect(optionsModel,SIGNAL(displayUnitChanged(int)),this,SLOT(updateDisplayUnit(int)));
 
         // initialize the display units label with the current value in the model.
-        updateDisplayUnit(_optionsModel->getDisplayUnit());
+        updateDisplayUnit(optionsModel->getDisplayUnit());
     }
 }
 

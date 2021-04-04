@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2009-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -43,17 +43,14 @@ struct UniValueType {
     UniValue::VType type;
 };
 
-class JSONRPCRequest
+class JSONRequest
 {
 public:
     UniValue id;
     std::string strMethod;
     UniValue params;
-    bool fHelp;
-    std::string URI;
-    std::string authUser;
 
-    JSONRPCRequest() { id = NullUniValue; params = NullUniValue; fHelp = false; }
+    JSONRequest() { id = NullUniValue; }
     void parse(const UniValue& valRequest);
 };
 
@@ -77,11 +74,6 @@ bool RPCIsInWarmup(std::string *statusOut);
  */
 void RPCTypeCheck(const UniValue& params,
                   const std::list<UniValue::VType>& typesExpected, bool fAllowNull=false);
-
-/**
- * Type-check one argument; throws JSONRPCError if wrong type given.
- */
-void RPCTypeCheckArgument(const UniValue& value, UniValue::VType typeExpected);
 
 /*
   Check for expected keys/value types in an Object.
@@ -132,7 +124,7 @@ void RPCUnsetTimerInterface(RPCTimerInterface *iface);
  */
 void RPCRunLater(const std::string& name, boost::function<void(void)> func, int64_t nSeconds);
 
-typedef UniValue(*rpcfn_type)(const JSONRPCRequest& jsonRequest);
+typedef UniValue(*rpcfn_type)(const UniValue& params, bool fHelp);
 
 class CRPCCommand
 {
@@ -141,7 +133,6 @@ public:
     std::string name;
     rpcfn_type actor;
     bool okSafeMode;
-    std::vector<std::string> argNames;
 };
 
 /**
@@ -154,15 +145,16 @@ private:
 public:
     CRPCTable();
     const CRPCCommand* operator[](const std::string& name) const;
-    std::string help(const std::string& name, const JSONRPCRequest& helpreq) const;
+    std::string help(const std::string& name) const;
 
     /**
      * Execute a method.
-     * @param request The JSONRPCRequest to execute
+     * @param method   Method to execute
+     * @param params   UniValue Array of arguments (JSON objects)
      * @returns Result of the call.
      * @throws an exception (UniValue) when an error happens.
      */
-    UniValue execute(const JSONRPCRequest &request) const;
+    UniValue execute(const std::string &method, const UniValue &params) const;
 
     /**
     * Returns a list of registered commands
@@ -190,41 +182,33 @@ extern uint256 ParseHashO(const UniValue& o, std::string strKey);
 extern std::vector<unsigned char> ParseHexV(const UniValue& v, std::string strName);
 extern std::vector<unsigned char> ParseHexO(const UniValue& o, std::string strKey);
 
-extern int32_t ParseInt32V(const UniValue& v, const std::string &strName);
-extern int64_t ParseInt64V(const UniValue& v, const std::string &strName);
-extern double ParseDoubleV(const UniValue& v, const std::string &strName);
-extern bool ParseBoolV(const UniValue& v, const std::string &strName);
-
+extern int64_t nWalletUnlockTime;
 extern CAmount AmountFromValue(const UniValue& value);
 extern UniValue ValueFromAmount(const CAmount& amount);
 extern double GetDifficulty(const CBlockIndex* blockindex = NULL);
+extern std::string HelpRequiringPassphrase();
 extern std::string HelpExampleCli(const std::string& methodname, const std::string& args);
 extern std::string HelpExampleRpc(const std::string& methodname, const std::string& args);
 
-extern UniValue getaddressmempool(const JSONRPCRequest &request);
-extern UniValue getaddressutxos(const JSONRPCRequest &request);
-extern UniValue getaddressdeltas(const JSONRPCRequest &request);
-extern UniValue getaddresstxids(const JSONRPCRequest &request);
-extern UniValue getaddressbalance(const JSONRPCRequest &request);
+extern UniValue getaddressmempool(const UniValue& params, bool fHelp);
+extern UniValue getaddressutxos(const UniValue& params, bool fHelp);
+extern UniValue getaddressdeltas(const UniValue& params, bool fHelp);
+extern UniValue getaddresstxids(const UniValue& params, bool fHelp);
+extern UniValue getaddressbalance(const UniValue& params, bool fHelp);
 
-extern UniValue getanonymityset(const JSONRPCRequest& params);
-extern UniValue getmintmetadata(const JSONRPCRequest& params);
-extern UniValue getusedcoinserials(const JSONRPCRequest& params);
-extern UniValue getlatestcoinids(const JSONRPCRequest& params);
+extern UniValue getpoolinfo(const UniValue& params, bool fHelp);
+extern UniValue spork(const UniValue& params, bool fHelp);
+extern UniValue znode(const UniValue& params, bool fHelp);
+extern UniValue znodelist(const UniValue& params, bool fHelp);
+extern UniValue znodebroadcast(const UniValue& params, bool fHelp);
+extern UniValue znsync(const UniValue& params, bool fHelp);
 
-extern UniValue znode(const JSONRPCRequest &request);
-extern UniValue znodelist(const JSONRPCRequest &request);
-extern UniValue znodebroadcast(const JSONRPCRequest &request);
-extern UniValue znsync(const JSONRPCRequest &request);
+extern void EnsureWalletIsUnlocked();
 
 bool StartRPC();
 void InterruptRPC();
 void StopRPC();
 std::string JSONRPCExecBatch(const UniValue& vReq);
-void RPCNotifyBlockChange(bool ibd, const CBlockIndex *);
-
-// Retrieves any serialization flags requested in command line argument
-int RPCSerializationFlags();
 
 // Retrieves any serialization flags requested in command line argument
 int RPCSerializationFlags();

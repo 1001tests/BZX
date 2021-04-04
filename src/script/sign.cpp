@@ -84,8 +84,6 @@ static bool SignStep(const BaseSignatureCreator& creator, const CScript& scriptP
     case TX_NULL_DATA:
     case TX_ZEROCOINMINT:
     case TX_ZEROCOINMINTV3:
-    case TX_LELANTUSMINT:
-    case TX_LELANTUSJMINT:
         return false;
     case TX_PUBKEY:
         keyID = CPubKey(vSolutions[0]).GetID();
@@ -198,7 +196,9 @@ SignatureData DataFromTransaction(const CMutableTransaction& tx, unsigned int nI
     SignatureData data;
     assert(tx.vin.size() > nIn);
     data.scriptSig = tx.vin[nIn].scriptSig;
-    data.scriptWitness = tx.vin[nIn].scriptWitness;
+    if (tx.wit.vtxinwit.size() > nIn) {
+        data.scriptWitness = tx.wit.vtxinwit[nIn].scriptWitness;
+    }
     return data;
 }
 
@@ -206,7 +206,10 @@ void UpdateTransaction(CMutableTransaction& tx, unsigned int nIn, const Signatur
 {
     assert(tx.vin.size() > nIn);
     tx.vin[nIn].scriptSig = data.scriptSig;
-    tx.vin[nIn].scriptWitness = data.scriptWitness;
+    if (!data.scriptWitness.IsNull() || tx.wit.vtxinwit.size() > nIn) {
+        tx.wit.vtxinwit.resize(tx.vin.size());
+        tx.wit.vtxinwit[nIn].scriptWitness = data.scriptWitness;
+    }
 }
 
 bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutableTransaction& txTo, unsigned int nIn, const CAmount& amount, int nHashType)
@@ -319,8 +322,6 @@ static Stacks CombineSignatures(const CScript& scriptPubKey, const BaseSignature
     case TX_NULL_DATA:
     case TX_ZEROCOINMINT:
     case TX_ZEROCOINMINTV3:
-    case TX_LELANTUSMINT:
-    case TX_LELANTUSJMINT:
         // Don't know anything about this, assume bigger one is correct:
         if (sigs1.script.size() >= sigs2.script.size())
             return sigs1;

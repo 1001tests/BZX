@@ -41,25 +41,9 @@
         <source>&amp;Delete</source>
         <translation>مٹا</translation>
     </message>
-    <message>
-        <source>Choose the address to send coins to</source>
-        <translation>کوئین وصول کرنے والے کا پتہ</translation>
-    </message>
-    <message>
-        <source>Choose the address to receive coins with</source>
-        <translation>کوئین وصول کرنے والے کا پتہ</translation>
-    </message>
-    <message>
-        <source>C&amp;hoose</source>
-        <translation>چننا</translation>
-    </message>
     </context>
 <context>
     <name>AddressTableModel</name>
-    <message>
-        <source>Address</source>
-        <translation> پتہ</translation>
-    </message>
     </context>
 <context>
     <name>AskPassphraseDialog</name>
@@ -80,7 +64,7 @@
     <name>BanTableModel</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Error</source>
         <translation>نقص</translation>
@@ -126,9 +110,6 @@
     </message>
     </context>
 <context>
-    <name>ModalOverlay</name>
-    </context>
-<context>
     <name>OpenURIDialog</name>
     </context>
 <context>
@@ -151,9 +132,6 @@
     </message>
     </context>
 <context>
-    <name>QObject::QObject</name>
-    </context>
-<context>
     <name>QRImageWidget</name>
     </context>
 <context>
@@ -167,10 +145,6 @@
     <message>
         <source>Copy &amp;Address</source>
         <translation>کاپی پتہ</translation>
-    </message>
-    <message>
-        <source>Address</source>
-        <translation> پتہ</translation>
     </message>
     </context>
 <context>
@@ -220,10 +194,6 @@
     </context>
 <context>
     <name>TransactionView</name>
-    <message>
-        <source>Address</source>
-        <translation> پتہ</translation>
-    </message>
     </context>
 <context>
     <name>UnitDisplayStatusBarControl</name>
@@ -238,7 +208,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Insufficient funds</source>
         <translation>ناکافی فنڈز</translation>

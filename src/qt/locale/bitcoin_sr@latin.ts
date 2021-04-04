@@ -100,7 +100,7 @@
         <translation>Potvrdite šifrovanje novčanika</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BZXS&lt;/b&gt;!</source>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
         <translation>Upozorenje: Ako šifrujete svoj novčanik, i potom izgubite svoju pristupnu frazu &lt;b&gt;IZGUBIĆETE SVE SVOJE BITKOINE&lt;/b&gt;!</translation>
     </message>
     <message>
@@ -124,7 +124,7 @@
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Synchronizing with network...</source>
         <translation>Usklađivanje sa mrežom...</translation>
@@ -158,16 +158,16 @@
         <translation>Otvori &amp;URI...</translation>
     </message>
     <message>
-        <source>Send coins to a BZX address</source>
-        <translation>Pošalji novčiće na BZX adresu</translation>
+        <source>Send coins to a Zcoin address</source>
+        <translation>Pošalji novčiće na Zcoin adresu</translation>
     </message>
     <message>
         <source>&amp;Verify message...</source>
         <translation>&amp;Proveri poruku...</translation>
     </message>
     <message>
-        <source>BZX</source>
-        <translation>BZX</translation>
+        <source>Zcoin</source>
+        <translation>Zcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -255,6 +255,10 @@
         <translation>Iznos:</translation>
     </message>
     <message>
+        <source>Priority:</source>
+        <translation>Prioritet:</translation>
+    </message>
+    <message>
         <source>Fee:</source>
         <translation>Naknada:</translation>
     </message>
@@ -269,6 +273,10 @@
     <message>
         <source>Date</source>
         <translation>Datum</translation>
+    </message>
+    <message>
+        <source>Priority</source>
+        <translation>Prioritet</translation>
     </message>
     </context>
 <context>
@@ -300,9 +308,6 @@
     </message>
     </context>
 <context>
-    <name>ModalOverlay</name>
-    </context>
-<context>
     <name>OpenURIDialog</name>
     </context>
 <context>
@@ -323,9 +328,6 @@
         <source>Amount</source>
         <translation>Kolicina</translation>
     </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
     </context>
 <context>
     <name>QRImageWidget</name>
@@ -351,6 +353,10 @@
     <message>
         <source>Amount:</source>
         <translation>Iznos:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>Prioritet:</translation>
     </message>
     <message>
         <source>Fee:</source>
@@ -404,10 +410,10 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
-        <source>BZX Core</source>
-        <translation>BZX Core</translation>
+        <source>Zcoin Core</source>
+        <translation>Zcoin Core</translation>
     </message>
     <message>
         <source>Information</source>

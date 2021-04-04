@@ -4,10 +4,8 @@
 #define CONNECTION_PRIVATE
 #define TOR_CHANNEL_INTERNAL_
 #define CONTROL_PRIVATE
-#define CONTROL_EVENTS_PRIVATE
 #define OCIRC_EVENT_PRIVATE
 #define ORCONN_EVENT_PRIVATE
-#include "app/main/subsysmgr.h"
 #include "core/or/or.h"
 #include "core/or/channel.h"
 #include "core/or/channeltls.h"
@@ -15,9 +13,8 @@
 #include "core/or/ocirc_event.h"
 #include "core/or/orconn_event.h"
 #include "core/mainloop/connection.h"
-#include "feature/control/control_events.h"
+#include "feature/control/control.h"
 #include "test/test.h"
-#include "test/test_helpers.h"
 
 #include "core/or/or_circuit_st.h"
 #include "core/or/origin_circuit_st.h"
@@ -396,40 +393,38 @@ test_cntev_dirboot_defer_orconn(void *arg)
 }
 
 static void
-setup_orconn_state(orconn_state_msg_t *msg, uint64_t gid, uint64_t chan,
+setup_orconn_state(orconn_event_msg_t *msg, uint64_t gid, uint64_t chan,
                    int proxy_type)
 {
-  msg->gid = gid;
-  msg->chan = chan;
-  msg->proxy_type = proxy_type;
+  msg->type = ORCONN_MSGTYPE_STATE;
+  msg->u.state.gid = gid;
+  msg->u.state.chan = chan;
+  msg->u.state.proxy_type = proxy_type;
 }
 
 static void
-send_orconn_state(const orconn_state_msg_t *msg_in, uint8_t state)
+send_orconn_state(orconn_event_msg_t *msg, uint8_t state)
 {
-  orconn_state_msg_t *msg = tor_malloc(sizeof(*msg));
-
-  *msg = *msg_in;
-  msg->state = state;
-  orconn_state_publish(msg);
+  msg->u.state.state = state;
+  orconn_event_publish(msg);
 }
 
 static void
 send_ocirc_chan(uint32_t gid, uint64_t chan, bool onehop)
 {
-  ocirc_chan_msg_t *msg = tor_malloc(sizeof(*msg));
+  ocirc_event_msg_t msg;
 
-  msg->gid = gid;
-  msg->chan = chan;
-  msg->onehop = onehop;
-  ocirc_chan_publish(msg);
+  msg.type = OCIRC_MSGTYPE_CHAN;
+  msg.u.chan.gid = gid;
+  msg.u.chan.chan = chan;
+  msg.u.chan.onehop = onehop;
+  ocirc_event_publish(&msg);
 }
 
 static void
 test_cntev_orconn_state(void *arg)
 {
-  orconn_state_msg_t conn;
-  memset(&conn, 0, sizeof(conn));
+  orconn_event_msg_t conn;
 
   (void)arg;
   MOCK(queue_control_event_string, mock_queue_control_event_string);
@@ -446,8 +441,8 @@ test_cntev_orconn_state(void *arg)
   send_orconn_state(&conn, OR_CONN_STATE_OPEN);
   assert_bootmsg("15 TAG=handshake_done");
 
-  conn.gid = 2;
-  conn.chan = 2;
+  conn.u.state.gid = 2;
+  conn.u.state.chan = 2;
   send_orconn_state(&conn, OR_CONN_STATE_CONNECTING);
   /* It doesn't know it's an origin circuit yet */
   assert_bootmsg("15 TAG=handshake_done");
@@ -468,8 +463,7 @@ test_cntev_orconn_state(void *arg)
 static void
 test_cntev_orconn_state_pt(void *arg)
 {
-  orconn_state_msg_t conn;
-  memset(&conn, 0, sizeof(conn));
+  orconn_event_msg_t conn;
 
   (void)arg;
   MOCK(queue_control_event_string, mock_queue_control_event_string);
@@ -489,8 +483,8 @@ test_cntev_orconn_state_pt(void *arg)
   assert_bootmsg("15 TAG=handshake_done");
 
   send_ocirc_chan(2, 2, false);
-  conn.gid = 2;
-  conn.chan = 2;
+  conn.u.state.gid = 2;
+  conn.u.state.chan = 2;
   send_orconn_state(&conn, OR_CONN_STATE_CONNECTING);
   assert_bootmsg("76 TAG=ap_conn_pt");
   send_orconn_state(&conn, OR_CONN_STATE_PROXY_HANDSHAKING);
@@ -504,8 +498,7 @@ test_cntev_orconn_state_pt(void *arg)
 static void
 test_cntev_orconn_state_proxy(void *arg)
 {
-  orconn_state_msg_t conn;
-  memset(&conn, 0, sizeof(conn));
+  orconn_event_msg_t conn;
 
   (void)arg;
   MOCK(queue_control_event_string, mock_queue_control_event_string);
@@ -525,8 +518,8 @@ test_cntev_orconn_state_proxy(void *arg)
   assert_bootmsg("15 TAG=handshake_done");
 
   send_ocirc_chan(2, 2, false);
-  conn.gid = 2;
-  conn.chan = 2;
+  conn.u.state.gid = 2;
+  conn.u.state.chan = 2;
   send_orconn_state(&conn, OR_CONN_STATE_CONNECTING);
   assert_bootmsg("78 TAG=ap_conn_proxy");
   send_orconn_state(&conn, OR_CONN_STATE_PROXY_HANDSHAKING);
@@ -540,18 +533,15 @@ test_cntev_orconn_state_proxy(void *arg)
 #define TEST(name, flags)                               \
   { #name, test_cntev_ ## name, flags, 0, NULL }
 
-#define T_PUBSUB(name, setup)                                           \
-  { #name, test_cntev_ ## name, TT_FORK, &helper_pubsub_setup, NULL }
-
 struct testcase_t controller_event_tests[] = {
   TEST(sum_up_cell_stats, TT_FORK),
   TEST(append_cell_stats, TT_FORK),
   TEST(format_cell_stats, TT_FORK),
   TEST(event_mask, TT_FORK),
-  T_PUBSUB(dirboot_defer_desc, TT_FORK),
-  T_PUBSUB(dirboot_defer_orconn, TT_FORK),
-  T_PUBSUB(orconn_state, TT_FORK),
-  T_PUBSUB(orconn_state_pt, TT_FORK),
-  T_PUBSUB(orconn_state_proxy, TT_FORK),
+  TEST(dirboot_defer_desc, TT_FORK),
+  TEST(dirboot_defer_orconn, TT_FORK),
+  TEST(orconn_state, TT_FORK),
+  TEST(orconn_state_pt, TT_FORK),
+  TEST(orconn_state_proxy, TT_FORK),
   END_OF_TESTCASES
 };

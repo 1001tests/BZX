@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Bitcoin Core developers
+// Copyright (c) 2011-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,8 +8,7 @@
 
 #include "base58.h"
 #include "consensus/consensus.h"
-#include "lelantus.h"
-#include "validation.h"
+#include "main.h"
 #include "timedata.h"
 #include "wallet/wallet.h"
 
@@ -45,26 +44,16 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     uint256 hash = wtx.GetHash();
     std::map<std::string, std::string> mapValue = wtx.mapValue;
 
-    bool isAllSigmaSpendFromMe = false;
-    for (const auto& vin : wtx.tx->vin) {
+    bool isAllSigmaSpendFromMe;
+
+    for (const auto& vin : wtx.vin) {
         isAllSigmaSpendFromMe = (wallet->IsMine(vin) & ISMINE_SPENDABLE) && vin.IsSigmaSpend();
         if (!isAllSigmaSpendFromMe)
             break;
     }
 
-    bool isAllJoinSplitFromMe = false;
-    for (const auto& vin : wtx.tx->vin) {
-        isAllJoinSplitFromMe = (wallet->IsMine(vin) & ISMINE_SPENDABLE) && vin.IsLelantusJoinSplit();
-        if (!isAllJoinSplitFromMe)
-            break;
-    }
-
-    if (wtx.tx->IsZerocoinSpend() || isAllSigmaSpendFromMe || isAllJoinSplitFromMe) {
-        CAmount nTxFee = nDebit - wtx.tx->GetValueOut();
-        if (isAllJoinSplitFromMe && wtx.tx->vin.size() > 0) {
-            nTxFee = lelantus::ParseLelantusJoinSplit(wtx.tx->vin[0])->getFee();
-        }
-
+    if (wtx.IsZerocoinSpend() || isAllSigmaSpendFromMe) {
+        CAmount nTxFee = nDebit - wtx.GetValueOut();
         bool first = true;
 
         bool isAllToMe = true;
@@ -72,12 +61,12 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         bool involvesWatchAddress = false;
         bool firstAddress = true;
 
-        for (const CTxOut& txout : wtx.tx->vout) {
+        for (const CTxOut& txout : wtx.vout) {
             isminetype mine = wallet->IsMine(txout);
             if (!mine) {
                 isAllToMe = false;
                 break;
-            } else if (!txout.scriptPubKey.IsSigmaMint() && !txout.scriptPubKey.IsLelantusJMint()) {
+            } else if (!txout.scriptPubKey.IsSigmaMint()) {
                 CTxDestination address;
                 ExtractDestination(txout.scriptPubKey, address);
                 if (firstAddress) {
@@ -90,7 +79,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 involvesWatchAddress = true;
         }
 
-        if (isAllToMe) {
+        if(isAllToMe){
             TransactionRecord sub(hash, nTime);
             sub.involvesWatchAddress = involvesWatchAddress;
             sub.type = TransactionRecord::SpendToSelf;
@@ -99,7 +88,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             sub.debit = -nTxFee;
             parts.append(sub);
         } else {
-            for (const CTxOut& txout : wtx.tx->vout) {
+            for (const CTxOut& txout : wtx.vout) {
                 if (wtx.IsChange(txout)) {
                     continue;
                 }
@@ -130,16 +119,16 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             }
         }
     }
-    else if (wtx.tx->IsZerocoinRemint()) {
+    else if (wtx.IsZerocoinRemint()) {
         TransactionRecord sub(hash, nTime);
         sub.type = TransactionRecord::SpendToSelf;
         CAmount txAmount = 0;
-        for (const CTxOut &txout: wtx.tx->vout)
+        for (const CTxOut &txout: wtx.vout)
             txAmount += txout.nValue;
         sub.idx = parts.size();
         sub.debit = -txAmount;
         sub.credit = txAmount;
-        sub.address = QCoreApplication::translate("BZX-core", "Zerocoin->Sigma remint").toStdString();
+        sub.address = QCoreApplication::translate("zcoin-core", "Zerocoin->Sigma remint").toStdString();
         parts.append(sub);
     }
     else if (nNet > 0 || wtx.IsCoinBase())
@@ -147,15 +136,14 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         //
         // Credit
         //
-        for(unsigned int i = 0; i < wtx.tx->vout.size(); i++)
+        BOOST_FOREACH(const CTxOut& txout, wtx.vout)
         {
-            const CTxOut& txout = wtx.tx->vout[i];
             isminetype mine = wallet->IsMine(txout);
             if (mine)
             {
                 TransactionRecord sub(hash, nTime);
                 CTxDestination address;
-                sub.idx = i; // vout index
+                sub.idx = parts.size(); // sequence number
                 sub.credit = txout.nValue;
                 sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
 
@@ -184,7 +172,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     {
         bool involvesWatchAddress = false;
         isminetype fAllFromMe = ISMINE_SPENDABLE;
-        BOOST_FOREACH(const CTxIn& txin, wtx.tx->vin)
+        BOOST_FOREACH(const CTxIn& txin, wtx.vin)
         {
             isminetype mine = wallet->IsMine(txin);
             if(mine & ISMINE_WATCH_ONLY) involvesWatchAddress = true;
@@ -192,23 +180,23 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         }
 
         isminetype fAllToMe = ISMINE_SPENDABLE;
-        BOOST_FOREACH(const CTxOut& txout, wtx.tx->vout)
+        BOOST_FOREACH(const CTxOut& txout, wtx.vout)
         {
             isminetype mine = wallet->IsMine(txout);
             if(mine & ISMINE_WATCH_ONLY) involvesWatchAddress = true;
             if(fAllToMe > mine) fAllToMe = mine;
         }
 
-        if(wtx.tx->IsSigmaMint() && !wtx.tx->IsSigmaSpend())
+        if(wtx.IsSigmaMint() && !wtx.IsSigmaSpend())
             fAllToMe = ISMINE_SPENDABLE;
 
         if (fAllFromMe && fAllToMe)
         {
             CAmount nChange = wtx.GetChange();
-            if (wtx.tx->IsSigmaMint() || wtx.tx->IsZerocoinMint() || wtx.tx->IsLelantusMint())
+            if (wtx.IsSigmaMint() || wtx.IsZerocoinMint())
             {
                 // Mint to self
-                parts.append(TransactionRecord(hash, nTime, TransactionRecord::Anonymize, "",
+                parts.append(TransactionRecord(hash, nTime, TransactionRecord::Mint, "",
                     -(nDebit - nChange), 0));
             } else {
                 // Payment to self
@@ -222,13 +210,13 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             //
             // Debit
             //
-            CAmount nTxFee = nDebit - wtx.tx->GetValueOut();
+            CAmount nTxFee = nDebit - wtx.GetValueOut();
 
-            for (unsigned int nOut = 0; nOut < wtx.tx->vout.size(); nOut++)
+            for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
             {
-                const CTxOut& txout = wtx.tx->vout[nOut];
+                const CTxOut& txout = wtx.vout[nOut];
                 TransactionRecord sub(hash, nTime);
-                sub.idx = nOut;
+                sub.idx = parts.size();
                 sub.involvesWatchAddress = involvesWatchAddress;
 
                 if(wallet->IsMine(txout))
@@ -245,9 +233,9 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                     sub.type = TransactionRecord::SendToAddress;
                     sub.address = CBitcoinAddress(address).ToString();
                 }
-                else if(wtx.tx->IsZerocoinMint() || wtx.tx->IsSigmaMint() || wtx.tx->IsLelantusMint())
+                else if(wtx.IsZerocoinMint() || wtx.IsSigmaMint())
                 {
-                    sub.type = TransactionRecord::Anonymize;
+                    sub.type = TransactionRecord::Mint;
                 }
                 else
                 {
@@ -304,15 +292,15 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
 
     if (!CheckFinalTx(wtx))
     {
-        if (wtx.tx->nLockTime < LOCKTIME_THRESHOLD)
+        if (wtx.nLockTime < LOCKTIME_THRESHOLD)
         {
             status.status = TransactionStatus::OpenUntilBlock;
-            status.open_for = wtx.tx->nLockTime - chainActive.Height();
+            status.open_for = wtx.nLockTime - chainActive.Height();
         }
         else
         {
             status.status = TransactionStatus::OpenUntilDate;
-            status.open_for = wtx.tx->nLockTime;
+            status.open_for = wtx.nLockTime;
         }
     }
     // For generated transactions, determine maturity

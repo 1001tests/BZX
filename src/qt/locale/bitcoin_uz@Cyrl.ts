@@ -68,7 +68,7 @@
     <name>BanTableModel</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
         <translation>&amp;Хабар ёзиш...</translation>
@@ -146,8 +146,8 @@
         <translation>Дискдаги блоклар қайта индексланмоқда...</translation>
     </message>
     <message>
-        <source>Send coins to a BZX address</source>
-        <translation>Тангаларни BZX манзилига жўнатиш</translation>
+        <source>Send coins to a Zcoin address</source>
+        <translation>Тангаларни Zcoin манзилига жўнатиш</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -170,8 +170,8 @@
         <translation>Хабарни &amp;тасдиқлаш...</translation>
     </message>
     <message>
-        <source>BZX</source>
-        <translation>BZX</translation>
+        <source>Zcoin</source>
+        <translation>Zcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -198,12 +198,12 @@
         <translation>Ҳамёнингизга тегишли махфий калитларни кодлаш</translation>
     </message>
     <message>
-        <source>Sign messages with your BZX addresses to prove you own them</source>
-        <translation>BZX манзилидан унинг эгаси эканлигингизни исботлаш учун хабарлар ёзинг</translation>
+        <source>Sign messages with your Zcoin addresses to prove you own them</source>
+        <translation>Zcoin манзилидан унинг эгаси эканлигингизни исботлаш учун хабарлар ёзинг</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified BZX addresses</source>
-        <translation>Хабарларни махсус BZX манзилларингиз билан ёзилганлигига ишонч ҳосил қилиш учун уларни тасдиқланг</translation>
+        <source>Verify messages to ensure they were signed with specified Zcoin addresses</source>
+        <translation>Хабарларни махсус Zcoin манзилларингиз билан ёзилганлигига ишонч ҳосил қилиш учун уларни тасдиқланг</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -222,8 +222,8 @@
         <translation>Ички ойналар асбоблар панели</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and BZX: URIs)</source>
-        <translation>Тўловлар (QR кодлари ва BZX ёрдамида яратишлар: URI’лар) сўраш</translation>
+        <source>Request payments (generates QR codes and zcoin: URIs)</source>
+        <translation>Тўловлар (QR кодлари ва zcoin ёрдамида яратишлар: URI’лар) сўраш</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -234,16 +234,40 @@
         <translation>Фойдаланилган қабул қилинган манзиллар ва ёрлиқлар рўйхатини кўрсатиш</translation>
     </message>
     <message>
-        <source>Open a BZX: URI or payment request</source>
-        <translation>BZX’ни очиш: URI ёки тўлов сўрови</translation>
+        <source>Open a zcoin: URI or payment request</source>
+        <translation>Zcoin’ни очиш: URI ёки тўлов сўрови</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
         <translation>&amp;Буйруқлар сатри мосламалари</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to BZX network</source>
-        <translation><numerusform>%n та BZX тармоғига фаол уланиш мавжуд</numerusform></translation>
+        <source>%n active connection(s) to Zcoin network</source>
+        <translation><numerusform>%n та Zcoin тармоғига фаол уланиш мавжуд</numerusform></translation>
+    </message>
+    <message>
+        <source>No block source available...</source>
+        <translation>Блок манбалари мавжуд эмас...</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n hour(s)</source>
+        <translation><numerusform>%n соат</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n day(s)</source>
+        <translation><numerusform>%n кун</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n week(s)</source>
+        <translation><numerusform>%n ҳафта</numerusform></translation>
+    </message>
+    <message>
+        <source>%1 and %2</source>
+        <translation>%1 ва %2</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n year(s)</source>
+        <translation><numerusform>%n йил</numerusform></translation>
     </message>
     <message>
         <source>%1 behind</source>
@@ -293,7 +317,7 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>Ҳамён &lt;b&gt;кодланган&lt;/b&gt; ва вақтинча &lt;b&gt;қулфланган&lt;/b&gt;</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -307,6 +331,10 @@
     <message>
         <source>Amount:</source>
         <translation>Миқдори:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>Муҳимлиги:</translation>
     </message>
     <message>
         <source>Fee:</source>
@@ -351,6 +379,10 @@
     <message>
         <source>Confirmed</source>
         <translation>Тасдиқланди</translation>
+    </message>
+    <message>
+        <source>Priority</source>
+        <translation>Муҳимлиги</translation>
     </message>
     </context>
 <context>
@@ -443,17 +475,6 @@
     <message>
         <source>Error</source>
         <translation>Хатолик</translation>
-    </message>
-    </context>
-<context>
-    <name>ModalOverlay</name>
-    <message>
-        <source>Form</source>
-        <translation>Шакл</translation>
-    </message>
-    <message>
-        <source>Last block time</source>
-        <translation>Сўнгги блок вақти</translation>
     </message>
     </context>
 <context>
@@ -601,8 +622,8 @@
         <translation>Шакл</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the BZX network after a connection is established, but this process has not completed yet.</source>
-        <translation>Кўрсатилган маълумот эскирган бўлиши мумкин. Ҳамёнингиз алоқа ўрнатилгандан сўнг BZX тармоқ билан автоматик тарзда синхронланади, аммо жараён ҳалигача тугалланмади.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Zcoin network after a connection is established, but this process has not completed yet.</source>
+        <translation>Кўрсатилган маълумот эскирган бўлиши мумкин. Ҳамёнингиз алоқа ўрнатилгандан сўнг Zcoin тармоқ билан автоматик тарзда синхронланади, аммо жараён ҳалигача тугалланмади.</translation>
     </message>
     <message>
         <source>Watch-only:</source>
@@ -674,7 +695,11 @@
         <source>User Agent</source>
         <translation>Фойдаланувчи вакил</translation>
     </message>
-    </context>
+    <message>
+        <source>Ping Time</source>
+        <translation>Ping вақти</translation>
+    </message>
+</context>
 <context>
     <name>QObject</name>
     <message>
@@ -682,8 +707,8 @@
         <translation>Миқдори</translation>
     </message>
     <message>
-        <source>Enter a BZX address (e.g. %1)</source>
-        <translation>BZX манзилини киритинг (масалан.  %1)</translation>
+        <source>Enter a Zcoin address (e.g. %1)</source>
+        <translation>Zcoin манзилини киритинг (масалан.  %1)</translation>
     </message>
     <message>
         <source>%1 m</source>
@@ -705,14 +730,7 @@
         <source>%1 ms</source>
         <translation>%1 мс</translation>
     </message>
-    <message>
-        <source>%1 and %2</source>
-        <translation>%1 ва %2</translation>
-    </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
-    </context>
+</context>
 <context>
     <name>QRImageWidget</name>
     </context>
@@ -1003,6 +1021,10 @@
         <translation>Миқдори:</translation>
     </message>
     <message>
+        <source>Priority:</source>
+        <translation>Муҳимлиги:</translation>
+    </message>
+    <message>
         <source>Fee:</source>
         <translation>Солиқ:</translation>
     </message>
@@ -1037,6 +1059,10 @@
     <message>
         <source>Recommended:</source>
         <translation>Тавсия этилган</translation>
+    </message>
+    <message>
+        <source>Confirmation time:</source>
+        <translation>Тасдиқ вақти</translation>
     </message>
     <message>
         <source>normal</source>
@@ -1190,7 +1216,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Options:</source>
         <translation>Танламалар:</translation>
@@ -1208,8 +1234,8 @@
         <translation>Демон сифатида орқа фонда ишга туширинг ва буйруқларга рози бўлинг</translation>
     </message>
     <message>
-        <source>BZX Core</source>
-        <translation>BZX Core</translation>
+        <source>Zcoin Core</source>
+        <translation>Zcoin Core</translation>
     </message>
     <message>
         <source>Connection options:</source>

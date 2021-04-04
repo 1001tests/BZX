@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 #   This software has been dedicated to the public domain under the CC0
 #   public domain dedication.

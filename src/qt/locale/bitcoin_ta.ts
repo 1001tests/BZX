@@ -52,7 +52,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>&amp;Overview</source>
         <translation>&amp;கண்ணோட்டம்</translation>
@@ -90,8 +90,8 @@
         <translation>&amp;செய்தியை சரிசெய்...</translation>
     </message>
     <message>
-        <source>BZX</source>
-        <translation>BZX</translation>
+        <source>Zcoin</source>
+        <translation>Zcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -120,6 +120,14 @@
     <message>
         <source>&amp;Help</source>
         <translation>&amp;உதவி</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n hour(s)</source>
+        <translation><numerusform>%n மணி</numerusform><numerusform>%n மணி</numerusform></translation>
+    </message>
+    <message>
+        <source>%1 and %2</source>
+        <translation>%1 மற்றும் %2</translation>
     </message>
     <message>
         <source>%1 behind</source>
@@ -177,6 +185,10 @@
         <translation>விலை:</translation>
     </message>
     <message>
+        <source>Priority:</source>
+        <translation>முன்னுரிமை</translation>
+    </message>
+    <message>
         <source>Fee:</source>
         <translation>கட்டணம்:</translation>
     </message>
@@ -204,6 +216,10 @@
         <source>Confirmed</source>
         <translation>உறுதியாக</translation>
     </message>
+    <message>
+        <source>Priority</source>
+        <translation>முன்னுரிமை</translation>
+    </message>
     </context>
 <context>
     <name>EditAddressDialog</name>
@@ -227,17 +243,6 @@
     <message>
         <source>Error</source>
         <translation>தவறு</translation>
-    </message>
-    </context>
-<context>
-    <name>ModalOverlay</name>
-    <message>
-        <source>Form</source>
-        <translation>படிவம்</translation>
-    </message>
-    <message>
-        <source>Hide</source>
-        <translation>மறை</translation>
     </message>
     </context>
 <context>
@@ -350,7 +355,11 @@
         <source>User Agent</source>
         <translation>பயனர் முகவர்</translation>
     </message>
-    </context>
+    <message>
+        <source>Ping Time</source>
+        <translation>பிங் நேரம்</translation>
+    </message>
+</context>
 <context>
     <name>QObject</name>
     <message>
@@ -377,14 +386,7 @@
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
-    <message>
-        <source>%1 and %2</source>
-        <translation>%1 மற்றும் %2</translation>
-    </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
-    </context>
+</context>
 <context>
     <name>QRImageWidget</name>
     </context>
@@ -587,6 +589,10 @@
         <translation>விலை</translation>
     </message>
     <message>
+        <source>Priority:</source>
+        <translation>முன்னுரிமை</translation>
+    </message>
+    <message>
         <source>Fee:</source>
         <translation>கட்டணம்:</translation>
     </message>
@@ -706,10 +712,10 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
-        <source>BZX Core</source>
-        <translation>BZX மையம்</translation>
+        <source>Zcoin Core</source>
+        <translation>Zcoin மையம்</translation>
     </message>
     <message>
         <source>(default: %u)</source>

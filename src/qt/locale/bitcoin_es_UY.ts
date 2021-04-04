@@ -56,7 +56,7 @@
     <name>BanTableModel</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Synchronizing with network...</source>
         <translation>Sincronizando con la red...</translation>
@@ -110,16 +110,16 @@
         <translation>Recibiendo direcciones</translation>
     </message>
     <message>
-        <source>Send coins to a BZX address</source>
-        <translation>Enviar monedas a una dirección BZX</translation>
+        <source>Send coins to a Zcoin address</source>
+        <translation>Enviar monedas a una dirección Zcoin</translation>
     </message>
     <message>
         <source>Change the passphrase used for wallet encryption</source>
         <translation>Cambie la clave utilizada para el cifrado del monedero</translation>
     </message>
     <message>
-        <source>BZX</source>
-        <translation>BZX</translation>
+        <source>Zcoin</source>
+        <translation>Zcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -192,7 +192,7 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>El Monedero esta &lt;b&gt;cifrado&lt;/b&gt; y actualmente &lt;b&gt;bloqueado&lt;/b&gt;</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -208,6 +208,10 @@
         <translation>AMonto:</translation>
     </message>
     <message>
+        <source>Priority:</source>
+        <translation>Prioridad:</translation>
+    </message>
+    <message>
         <source>Change:</source>
         <translation>Cambio:</translation>
     </message>
@@ -218,6 +222,10 @@
     <message>
         <source>Confirmed</source>
         <translation>Confirmado</translation>
+    </message>
+    <message>
+        <source>Priority</source>
+        <translation>Prioridad</translation>
     </message>
     </context>
 <context>
@@ -249,13 +257,6 @@
     </message>
     </context>
 <context>
-    <name>ModalOverlay</name>
-    <message>
-        <source>Form</source>
-        <translation>Formulario</translation>
-    </message>
-    </context>
-<context>
     <name>OpenURIDialog</name>
     </context>
 <context>
@@ -284,9 +285,6 @@
     </context>
 <context>
     <name>QObject</name>
-    </context>
-<context>
-    <name>QObject::QObject</name>
     </context>
 <context>
     <name>QRImageWidget</name>
@@ -332,6 +330,10 @@
     <message>
         <source>Amount:</source>
         <translation>AMonto:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>Prioridad:</translation>
     </message>
     <message>
         <source>Change:</source>
@@ -437,7 +439,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Options:</source>
         <translation>Opciones:</translation>

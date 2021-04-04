@@ -64,7 +64,7 @@
     <name>BanTableModel</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
         <translation>Parakstīt &amp;ziņojumu...</translation>
@@ -142,8 +142,8 @@
         <translation>Bloku reindeksēšana no diska...</translation>
     </message>
     <message>
-        <source>Send coins to a BZX address</source>
-        <translation>Nosūtīt bitkoinus uz BZX adresi</translation>
+        <source>Send coins to a Zcoin address</source>
+        <translation>Nosūtīt bitkoinus uz Zcoin adresi</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -166,8 +166,8 @@
         <translation>&amp;Pārbaudīt ziņojumu...</translation>
     </message>
     <message>
-        <source>BZX</source>
-        <translation>BZX</translation>
+        <source>Zcoin</source>
+        <translation>Zcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -194,12 +194,12 @@
         <translation>Šifrēt privātās atslēgas kuras pieder tavam maciņam</translation>
     </message>
     <message>
-        <source>Sign messages with your BZX addresses to prove you own them</source>
-        <translation>Parakstīt ziņojumus ar savām BZX adresēm lai pierādītu ka tās pieder tev</translation>
+        <source>Sign messages with your Zcoin addresses to prove you own them</source>
+        <translation>Parakstīt ziņojumus ar savām Zcoin adresēm lai pierādītu ka tās pieder tev</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified BZX addresses</source>
-        <translation>Pārbaudīt ziņojumus lai pārliecinātos, ka tie tika parakstīti ar norādītajām BZX adresēm</translation>
+        <source>Verify messages to ensure they were signed with specified Zcoin addresses</source>
+        <translation>Pārbaudīt ziņojumus lai pārliecinātos, ka tie tika parakstīti ar norādītajām Zcoin adresēm</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -218,16 +218,24 @@
         <translation>Ciļņu rīkjosla</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and BZX: URIs)</source>
-        <translation>Pieprasīt maksājumus (izveido QR kodu un BZX: URIs)</translation>
+        <source>Request payments (generates QR codes and zcoin: URIs)</source>
+        <translation>Pieprasīt maksājumus (izveido QR kodu un zcoin: URIs)</translation>
     </message>
     <message>
-        <source>Open a BZX: URI or payment request</source>
-        <translation>Atvērt BZX URI vai maksājuma pieprasījumu</translation>
+        <source>Open a zcoin: URI or payment request</source>
+        <translation>Atvērt zcoin URI vai maksājuma pieprasījumu</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
         <translation>&amp;Komandrindas iespējas</translation>
+    </message>
+    <message>
+        <source>No block source available...</source>
+        <translation>Nav pieejams neviens bloku avots...</translation>
+    </message>
+    <message>
+        <source>%1 and %2</source>
+        <translation>%1 un %2</translation>
     </message>
     <message>
         <source>%1 behind</source>
@@ -273,7 +281,7 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>Maciņš ir &lt;b&gt;šifrēts&lt;/b&gt; un pašlaik &lt;b&gt;slēgts&lt;/b&gt;</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -287,6 +295,10 @@
     <message>
         <source>Amount:</source>
         <translation>Daudzums:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>Prioritāte:</translation>
     </message>
     <message>
         <source>Fee:</source>
@@ -327,6 +339,10 @@
     <message>
         <source>Confirmed</source>
         <translation>Apstiprināts</translation>
+    </message>
+    <message>
+        <source>Priority</source>
+        <translation>Prioritāte</translation>
     </message>
     </context>
 <context>
@@ -403,17 +419,6 @@
     <message>
         <source>Error</source>
         <translation>Kļūda</translation>
-    </message>
-    </context>
-<context>
-    <name>ModalOverlay</name>
-    <message>
-        <source>Form</source>
-        <translation>Forma</translation>
-    </message>
-    <message>
-        <source>Last block time</source>
-        <translation>Pēdējā bloka laiks</translation>
     </message>
     </context>
 <context>
@@ -499,15 +504,15 @@
     </message>
     <message>
         <source>Enable coin &amp;control features</source>
-        <translation>Ieslēgt BZX &amp;kontroles funkcijas</translation>
+        <translation>Ieslēgt monēta &amp;kontroles funkcijas</translation>
     </message>
     <message>
         <source>&amp;Spend unconfirmed change</source>
         <translation>&amp;Tērēt neapstiprinātu atlikumu</translation>
     </message>
     <message>
-        <source>Automatically open the BZX client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Uz rūtera automātiski atvērt BZX klienta portu. Tas strādā tikai tad, ja rūteris atbalsta UPnP un tas ir ieslēgts.</translation>
+        <source>Automatically open the Zcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Uz rūtera automātiski atvērt Zcoin klienta portu. Tas strādā tikai tad, ja rūteris atbalsta UPnP un tas ir ieslēgts.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -559,7 +564,7 @@
     </message>
     <message>
         <source>Whether to show coin control features or not.</source>
-        <translation>Vai rādīt BZX kontroles funkcijas vai nē.</translation>
+        <translation>Vai rādīt Zcoin kontroles funkcijas vai nē.</translation>
     </message>
     <message>
         <source>&amp;OK</source>
@@ -593,8 +598,8 @@
         <translation>Forma</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the BZX network after a connection is established, but this process has not completed yet.</source>
-        <translation>Attēlotā informācija var būt novecojusi. Jūsu maciņš pēc savienojuma izveides automātiski sinhronizējas ar BZX tīklu, taču šis process vēl nav beidzies.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Zcoin network after a connection is established, but this process has not completed yet.</source>
+        <translation>Attēlotā informācija var būt novecojusi. Jūsu maciņš pēc savienojuma izveides automātiski sinhronizējas ar Zcoin tīklu, taču šis process vēl nav beidzies.</translation>
     </message>
     <message>
         <source>Available:</source>
@@ -649,13 +654,6 @@
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
-    <message>
-        <source>%1 and %2</source>
-        <translation>%1 un %2</translation>
-    </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
     </context>
 <context>
     <name>QRImageWidget</name>
@@ -852,7 +850,7 @@
     </message>
     <message>
         <source>Coin Control Features</source>
-        <translation>BZX Kontroles Funkcijas</translation>
+        <translation>Zcoin Kontroles Funkcijas</translation>
     </message>
     <message>
         <source>Inputs...</source>
@@ -877,6 +875,10 @@
     <message>
         <source>Amount:</source>
         <translation>Daudzums:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>Prioritāte:</translation>
     </message>
     <message>
         <source>Fee:</source>
@@ -1027,8 +1029,8 @@
         <translation>Kopēt parakstu uz sistēmas starpliktuvi</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this BZX address</source>
-        <translation>Parakstīt ziņojumu lai pierādītu, ka esi šīs BZX adreses īpašnieks.</translation>
+        <source>Sign the message to prove you own this Zcoin address</source>
+        <translation>Parakstīt ziņojumu lai pierādītu, ka esi šīs Zcoin adreses īpašnieks.</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
@@ -1098,7 +1100,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Options:</source>
         <translation>Iespējas:</translation>
@@ -1124,8 +1126,8 @@
         <translation>Darbināt fonā kā servisu un pieņemt komandas</translation>
     </message>
     <message>
-        <source>BZX Core</source>
-        <translation>BZX Core</translation>
+        <source>Zcoin Core</source>
+        <translation>Zcoin Core</translation>
     </message>
     <message>
         <source>&lt;category&gt; can be:</source>
@@ -1134,6 +1136,10 @@
     <message>
         <source>Block creation options:</source>
         <translation>Bloka izveidošanas iestatījumi:</translation>
+    </message>
+    <message>
+        <source>Connect only to the specified node(s)</source>
+        <translation>Savienoties tikai ar norādītajām nodēm.</translation>
     </message>
     <message>
         <source>Connection options:</source>
@@ -1186,6 +1192,10 @@
     <message>
         <source>Transaction amount too small</source>
         <translation>Transakcijas summa ir pārāk maza</translation>
+    </message>
+    <message>
+        <source>Transaction amounts must be positive</source>
+        <translation>Transakcijas summai ir jābūt pozitīvai</translation>
     </message>
     <message>
         <source>Transaction too large</source>

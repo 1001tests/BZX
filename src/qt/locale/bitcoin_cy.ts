@@ -52,7 +52,7 @@
     <name>BanTableModel</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Synchronizing with network...</source>
         <translation>Cysoni â'r rhwydwaith...</translation>
@@ -114,8 +114,8 @@
         <translation>Newid y cyfrinymadrodd a ddefnyddiwyd ar gyfer amgryptio'r waled</translation>
     </message>
     <message>
-        <source>BZX</source>
-        <translation>BZX</translation>
+        <source>Zcoin</source>
+        <translation>Zcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -148,6 +148,26 @@
     <message>
         <source>Tabs toolbar</source>
         <translation>Bar offer tabiau</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n hour(s)</source>
+        <translation><numerusform>%n awr</numerusform><numerusform>%n awr</numerusform><numerusform>%n awr</numerusform><numerusform>%n awr</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n day(s)</source>
+        <translation><numerusform>%n dydd</numerusform><numerusform>%n dydd</numerusform><numerusform>%n dydd</numerusform><numerusform>%n dydd</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n week(s)</source>
+        <translation><numerusform>%n wythnos</numerusform><numerusform>%n wythnos</numerusform><numerusform>%n wythnos</numerusform><numerusform>%n wythnos</numerusform></translation>
+    </message>
+    <message>
+        <source>%1 and %2</source>
+        <translation>%1 a %2</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n year(s)</source>
+        <translation><numerusform>%n blwydd</numerusform><numerusform>%n blwydd</numerusform><numerusform>%n blwydd</numerusform><numerusform>%n blwydd</numerusform></translation>
     </message>
     <message>
         <source>Error</source>
@@ -209,7 +229,7 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>Mae'r waled &lt;b&gt;wedi'i amgryptio&lt;/b&gt; ac &lt;b&gt;ar glo&lt;/b&gt; ar hyn o bryd</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -259,13 +279,6 @@
     <message>
         <source>Error</source>
         <translation>Gwall</translation>
-    </message>
-    </context>
-<context>
-    <name>ModalOverlay</name>
-    <message>
-        <source>Form</source>
-        <translation>Ffurflen</translation>
     </message>
     </context>
 <context>
@@ -329,13 +342,6 @@
     </context>
 <context>
     <name>QObject</name>
-    <message>
-        <source>%1 and %2</source>
-        <translation>%1 a %2</translation>
-    </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
     </context>
 <context>
     <name>QRImageWidget</name>
@@ -478,14 +484,14 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Options:</source>
         <translation>Opsiynau:</translation>
     </message>
     <message>
-        <source>BZX Core</source>
-        <translation>Craidd BZX</translation>
+        <source>Zcoin Core</source>
+        <translation>Craidd Zcoin</translation>
     </message>
     <message>
         <source>Information</source>

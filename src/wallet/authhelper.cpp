@@ -5,7 +5,7 @@
 #include "base58.h"
 #include "authhelper.h"
 #include "wallet.h"
-#include "validation.h"
+#include "main.h"
 
 struct AuthorizationHelper::Impl
 {

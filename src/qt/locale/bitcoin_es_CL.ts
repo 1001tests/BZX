@@ -64,7 +64,7 @@
     <name>BanTableModel</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>ZcoinGUI</name>
     <message>
         <source>Sign &amp;message...</source>
         <translation>Firmar &amp;Mensaje...</translation>
@@ -142,8 +142,8 @@
         <translation>Cargando el index de bloques...</translation>
     </message>
     <message>
-        <source>Send coins to a BZX address</source>
-        <translation>Enviar monedas a una dirección BZX</translation>
+        <source>Send coins to a Zcoin address</source>
+        <translation>Enviar monedas a una dirección Zcoin</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -166,8 +166,8 @@
         <translation>Verificar mensaje....</translation>
     </message>
     <message>
-        <source>BZX</source>
-        <translation>BZX</translation>
+        <source>Zcoin</source>
+        <translation>Zcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -186,7 +186,7 @@
         <translation>&amp;Mostrar/Ocultar</translation>
     </message>
     <message>
-        <source>Sign messages with your BZX addresses to prove you own them</source>
+        <source>Sign messages with your Zcoin addresses to prove you own them</source>
         <translation>Firmar un mensaje para provar que usted es dueño de esta dirección</translation>
     </message>
     <message>
@@ -206,8 +206,12 @@
         <translation>Barra de pestañas</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and BZX: URIs)</source>
-        <translation>Pide pagos (genera codigos QR and BZX: URls)</translation>
+        <source>Request payments (generates QR codes and zcoin: URIs)</source>
+        <translation>Pide pagos (genera codigos QR and zcoin: URIs)</translation>
+    </message>
+    <message>
+        <source>%1 and %2</source>
+        <translation>%1 y %2</translation>
     </message>
     <message>
         <source>Error</source>
@@ -245,12 +249,16 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>La billetera esta &lt;b&gt;codificada&lt;/b&gt; y actualmente &lt;b&gt;bloqueda&lt;/b&gt;</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
         <source>Amount:</source>
         <translation>Cantidad:</translation>
+    </message>
+    <message>
+        <source>Priority:</source>
+        <translation>prioridad:</translation>
     </message>
     <message>
         <source>Fee:</source>
@@ -272,6 +280,10 @@
     <message>
         <source>Confirmed</source>
         <translation>Confirmado</translation>
+    </message>
+    <message>
+        <source>Priority</source>
+        <translation>prioridad</translation>
     </message>
     </context>
 <context>
@@ -323,13 +335,6 @@
     </message>
     </context>
 <context>
-    <name>ModalOverlay</name>
-    <message>
-        <source>Form</source>
-        <translation>Formulario</translation>
-    </message>
-    </context>
-<context>
     <name>OpenURIDialog</name>
     <message>
         <source>URI:</source>
@@ -363,8 +368,8 @@
         <translation>experto</translation>
     </message>
     <message>
-        <source>Automatically open the BZX client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Abre automáticamente el puerto del cliente BZX en el router. Esto funciona solo cuando tu router es compatible con UPnP y está habilitado.</translation>
+        <source>Automatically open the Zcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Abre automáticamente el puerto del cliente Zcoin en el router. Esto funciona solo cuando tu router es compatible con UPnP y está habilitado.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -455,13 +460,6 @@
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
-    <message>
-        <source>%1 and %2</source>
-        <translation>%1 y %2</translation>
-    </message>
-    </context>
-<context>
-    <name>QObject::QObject</name>
     </context>
 <context>
     <name>QRImageWidget</name>
@@ -578,6 +576,10 @@
         <translation>Cantidad:</translation>
     </message>
     <message>
+        <source>Priority:</source>
+        <translation>prioridad:</translation>
+    </message>
+    <message>
         <source>Fee:</source>
         <translation>comisión:
 </translation>
@@ -687,7 +689,7 @@
         <translation>Firma</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this BZX address</source>
+        <source>Sign the message to prove you own this Zcoin address</source>
         <translation>Firmar un mensjage para probar que usted es dueño de esta dirección</translation>
     </message>
     <message>
@@ -750,7 +752,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>BZX-core</name>
+    <name>zcoin-core</name>
     <message>
         <source>Options:</source>
         <translation>Opciones:
@@ -772,8 +774,13 @@
 </translation>
     </message>
     <message>
-        <source>BZX Core</source>
-        <translation>BZX core</translation>
+        <source>Zcoin Core</source>
+        <translation>Zcoin Core</translation>
+    </message>
+    <message>
+        <source>Connect only to the specified node(s)</source>
+        <translation>Conecta solo al nodo especificado
+</translation>
     </message>
     <message>
         <source>Error loading block database</source>
