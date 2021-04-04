@@ -4095,7 +4095,8 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     }
 
     // Check the merkle root.
-    if (fCheckMerkleRoot && nHeight > 450000) {//xxxx
+    //if (fCheckMerkleRoot && nHeight > 450000) {//xxxx
+    if (fCheckMerkleRoot) {//xxxx
         bool mutated;
         uint256 hashMerkleRoot2 = BlockMerkleRoot(block, &mutated);
         if (block.hashMerkleRoot != hashMerkleRoot2)
