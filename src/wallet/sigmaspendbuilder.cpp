@@ -151,7 +151,7 @@ CAmount SigmaSpendBuilder::GetInputs(std::vector<std::unique_ptr<InputSigner>>& 
     return total;
 }
 
-CAmount SigmaSpendBuilder::GetChanges(std::vector<CTxOut>& outputs, CAmount amount, CWalletDB& walletdb)
+CAmount SigmaSpendBuilder::GetChanges(std::vector<CTxOut>& outputs, CAmount amount)
 {
     outputs.clear();
     changes.clear();
