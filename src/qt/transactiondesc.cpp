@@ -137,7 +137,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx, TransactionReco
     //
     // Amount
     //
-    if ((wtx.IsCoinBase() ||  wtx.tx->IsZerocoinSpend() || wtx.tx->IsSigmaSpend())
+    if (wtx.IsCoinBase() ||  wtx.tx->IsZerocoinSpend() || wtx.tx->IsSigmaSpend())
     {
         //
         // Coinbase
