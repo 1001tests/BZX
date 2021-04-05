@@ -57,11 +57,6 @@ bool CTxIn::IsLelantusJoinSplit() const
     return (prevout.IsNull() && scriptSig.size() > 0 && (scriptSig[0] == OP_LELANTUSJOINSPLIT) );
 }
 
-bool CTxIn::IsZerocoinRemint() const
-{
-    return (prevout.IsNull() && scriptSig.size() > 0 && (scriptSig[0] == OP_ZEROCOINTOSIGMAREMINT));
-}
-
 std::string CTxIn::ToString() const
 {
     std::string str;
@@ -188,9 +183,6 @@ bool CTransaction::IsZerocoinMint() const
 
 bool CTransaction::IsSigmaMint() const
 {
-    if (IsZerocoinRemint())
-        return false;
-        
     for (const CTxOut &txout: vout) {
         if (txout.scriptPubKey.IsSigmaMint())
             return true;
@@ -214,7 +206,7 @@ bool CTransaction::IsZerocoinTransaction() const
 
 bool CTransaction::IsZerocoinV3SigmaTransaction() const
 {
-    return IsSigmaSpend() || IsSigmaMint() || IsZerocoinRemint();
+    return IsSigmaSpend() || IsSigmaMint();
 }
 
 bool CTransaction::IsLelantusTransaction() const
@@ -222,17 +214,8 @@ bool CTransaction::IsLelantusTransaction() const
     return IsLelantusMint() || IsLelantusJoinSplit();
 }
 
-bool CTransaction::IsZerocoinRemint() const
-{
-    for (const CTxIn &txin: vin) {
-        if (txin.IsZerocoinRemint())
-            return true;
-    }
-    return false;
-}
-
 bool CTransaction::HasNoRegularInputs() const {
-    return IsZerocoinSpend() || IsSigmaSpend() || IsZerocoinRemint() || IsLelantusJoinSplit();
+    return IsZerocoinSpend() || IsSigmaSpend() || IsLelantusJoinSplit();
 }
 
 unsigned int CTransaction::CalculateModifiedSize(unsigned int nTxSize) const

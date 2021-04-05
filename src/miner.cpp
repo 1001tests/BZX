@@ -757,10 +757,6 @@ void BlockAssembler::addPriorityTxs()
             // If now that this txs is added we've surpassed our desired priority size
             // or have dropped below the AllowFreeThreshold, then we're done adding priority txs
             if (nBlockSize >= nBlockPrioritySize || !AllowFree(actualPriority)) {
-                // Make exception for zerocoin->sigma remints
-                if (!iter->GetTx().IsZerocoinRemint())
-                    break;
-            }
 
             // This tx was successfully added, so
             // add transactions that depend on this one to the priority queue to try again

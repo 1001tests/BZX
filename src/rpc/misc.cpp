@@ -593,9 +593,6 @@ void handleSingleAddress(const UniValue& uniAddress, std::vector<std::pair<uint1
         addresses.push_back(std::make_pair(uint160(), AddressType::lelantusMint));
         addresses.push_back(std::make_pair(uint160(), AddressType::lelantusJMint));
         addresses.push_back(std::make_pair(uint160(), AddressType::lelantusJSplit));
-
-    } else if(zerocoin::utils::isZerocoinRemint(addr)) {
-        addresses.push_back(std::make_pair(uint160(), AddressType::zerocoinRemint));
     } else {
         CBitcoinAddress address(addr);
         uint160 hashBytes;

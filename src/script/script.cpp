@@ -146,9 +146,8 @@ const char* GetOpName(opcodetype opcode)
     // zerocoin
     case OP_ZEROCOINMINT           : return "OP_ZEROCOINMINT";
     case OP_ZEROCOINSPEND          : return "OP_ZEROCOINSPEND";
-    case OP_SIGMAMINT         : return "OP_SIGMAMINT";
-    case OP_SIGMASPEND        : return "OP_SIGMASPEND";
-    case OP_ZEROCOINTOSIGMAREMINT  : return "OP_ZEROCOINTOSIGMAREMINT";
+    case OP_SIGMAMINT              : return "OP_SIGMAMINT";
+    case OP_SIGMASPEND             : return "OP_SIGMASPEND";
     // lelantus
     case OP_LELANTUSMINT       : return "OP_LELANTUSMINT";
     case OP_LELANTUSJMINT      : return "OP_LELANTUSJMINT";
@@ -307,11 +306,6 @@ bool CScript::IsSigmaSpend() const {
             (*this)[0] == OP_SIGMASPEND);
 }
 
-bool CScript::IsZerocoinRemint() const {
-    return (this->size() > 0 &&
-            (*this)[0] == OP_ZEROCOINTOSIGMAREMINT);
-}
-
 bool CScript::IsLelantusMint() const {
     return (this->size() > 0 &&
             (*this)[0] == OP_LELANTUSMINT);
@@ -328,7 +322,7 @@ bool CScript::IsLelantusJoinSplit() const {
 }
 
 bool CScript::IsMint() const {
-    return IsZerocoinMint() || IsSigmaMint() || IsZerocoinRemint() || IsLelantusMint() || IsLelantusJMint();
+    return IsZerocoinMint() || IsSigmaMint() || IsLelantusMint() || IsLelantusJMint();
 }
 
 bool CScript::HasCanonicalPushes() const

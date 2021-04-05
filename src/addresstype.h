@@ -10,7 +10,6 @@ enum struct AddressType
     , zerocoinSpend = 4
     , sigmaMint = 5
     , sigmaSpend = 6
-    , zerocoinRemint = 7
     , lelantusMint = 8
     , lelantusJMint = 9
     , lelantusJSplit = 10
@@ -40,10 +39,6 @@ inline bool isSigmaSpend(std::string const & str){
 
 inline bool isSigma(std::string const & str){
     return str == "Sigma";
-}
-
-inline bool isZerocoinRemint(std::string const & str){
-    return str == "Remint";
 }
 
 inline bool isLelantus(std::string const & str){

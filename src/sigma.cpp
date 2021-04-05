@@ -69,15 +69,6 @@ bool IsSigmaAllowed(int height)
 
 }
 
-bool IsRemintWindow(int height) {
-
-    if (height > 450000)
-    {
-        LogPrintf("IsSigmaAllowed: no\n");
-        return false;
-    }
-}
-
 secp_primitives::GroupElement ParseSigmaMintScript(const CScript& script)
 {
     if (script.size() < 1) {
@@ -149,11 +140,11 @@ bool CheckSigmaBlock(CValidationState &state, const CBlock& block) {
     CAmount blockSpendsValue(0);
 
     for (const auto& tx : block.vtx) {
-        auto txSpendsValue = tx->IsZerocoinRemint() ? 0 : GetSpendAmount(*tx);
+        auto txSpendsValue = GetSpendAmount(*tx);
         size_t txSpendsAmount = 0;
 
         for (const auto& in : tx->vin) {
-            if (in.IsSigmaSpend() || in.IsZerocoinRemint()) {
+            if (in.IsSigmaSpend()) {
                 txSpendsAmount++;
             }
         }

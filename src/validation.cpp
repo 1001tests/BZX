@@ -573,7 +573,7 @@ int64_t GetTransactionSigOpCost(const CTransaction &tx, const CCoinsViewCache &i
 {
     int64_t nSigOps = GetLegacySigOpCount(tx) * WITNESS_SCALE_FACTOR;
 
-    if (tx.IsCoinBase() || tx.IsZerocoinSpend() || tx.IsSigmaSpend() || tx.IsZerocoinRemint() || tx.IsLelantusJoinSplit())
+    if (tx.IsCoinBase() || tx.IsZerocoinSpend() || tx.IsSigmaSpend() || tx.IsLelantusJoinSplit())
         return nSigOps;
 
     if (flags & SCRIPT_VERIFY_P2SH) {
@@ -681,7 +681,6 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
     {
         for (const auto& txin : tx.vin)
             if (txin.prevout.IsNull() && !(txin.scriptSig.IsZerocoinSpend()
-                || txin.IsZerocoinRemint()
                 || txin.IsLelantusJoinSplit() ))
                 return state.DoS(10, false, REJECT_INVALID, "bad-txns-prevout-null");
 
@@ -834,11 +833,6 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
 
     if (tx.IsZerocoinSpend()) {
         if (chainActive.Height() > 450000)
-            return state.DoS(100, error("Zerocoin spends no more allowed in mempool"),
-                             REJECT_INVALID, "bad-txns-zerocoin");
-    }
-
-    if (tx.IsZerocoinRemint()) {
             return state.DoS(100, error("Zerocoin spends no more allowed in mempool"),
                              REJECT_INVALID, "bad-txns-zerocoin");
     }
@@ -1926,7 +1920,7 @@ void static InvalidBlockFound(CBlockIndex *pindex, const CValidationState &state
 void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo &txundo, int nHeight)
 {
     // mark inputs spent
-    if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit()) {
+    if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit()) {
         txundo.vprevout.reserve(tx.vin.size());
         BOOST_FOREACH(const CTxIn &txin, tx.vin) {
             txundo.vprevout.emplace_back();
@@ -2017,7 +2011,7 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
 
 bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsViewCache &inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, PrecomputedTransactionData& txdata, std::vector<CScriptCheck> *pvChecks)
 {
-    if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit())
+    if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit())
     {
         if (!Consensus::CheckTxInputs(tx, state, inputs, GetSpendHeight(inputs)))
             return false;
@@ -2602,7 +2596,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                              REJECT_INVALID, "bad-txns-input-invalid");
 
 
-        if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit())
+        if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit())
         {
             if (!view.HaveInputs(tx))
                 return state.DoS(100, error("ConnectBlock(): inputs missing/spent"),
@@ -2626,7 +2620,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         || tx.IsZerocoinMint()
         || tx.IsSigmaSpend()
         || tx.IsSigmaMint()
-        || tx.IsZerocoinRemint()
         || tx.IsLelantusMint()
         || tx.IsLelantusJoinSplit()) {
             if( tx.IsSigmaSpend())
@@ -2660,7 +2653,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                              REJECT_INVALID, "bad-blk-sigops");
 
         txdata.emplace_back(tx);
-        if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit())
+        if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit())
         {
             nFees += view.GetValueIn(tx)-tx.GetValueOut();
 

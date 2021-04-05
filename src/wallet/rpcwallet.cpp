@@ -1472,7 +1472,7 @@ void ListTransactions(CWallet * const pwallet, const CWalletTx& wtx, const strin
             }
             entry.push_back(Pair("account", strSentAccount));
             MaybePushAddress(entry, s.destination, addr);
-            if (wtx.tx->IsZerocoinSpend() || wtx.tx->IsSigmaSpend() || wtx.tx->IsZerocoinRemint() || wtx.tx->IsLelantusJoinSplit()) {
+            if (wtx.tx->IsZerocoinSpend() || wtx.tx->IsSigmaSpend() || wtx.tx->IsLelantusJoinSplit()) {
                 entry.push_back(Pair("category", "spend"));
             }
             else if (wtx.tx->IsZerocoinMint() || wtx.tx->IsSigmaMint() || wtx.tx->IsLelantusMint()) {
@@ -3212,7 +3212,7 @@ UniValue spendmany(const JSONRPCRequest& request) {
     if (request.fHelp || request.params.size() < 2 || request.params.size() > 5)
         throw std::runtime_error(
                 "spendmany \"fromaccount\" {\"address\":amount,...} ( minconf \"comment\" [\"address\",...] )\n"
-                "\nSpend multiple coins and remint changes in a single transaction by specify addresses and amount for each address."
+                "\nSpend multiple coins in a single transaction by specify addresses and amount for each address."
                 + HelpRequiringPassphrase(pwallet) + "\n"
                 "\nArguments:\n"
                 "1. \"fromaccount\"         (string, required) DEPRECATED. The account to send the funds from. Should be \"\" for the default account\n"

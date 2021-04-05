@@ -158,7 +158,6 @@ public:
     bool IsZerocoinSpend() const;
     bool IsSigmaSpend() const;
     bool IsLelantusJoinSplit() const;
-    bool IsZerocoinRemint() const;
 };
 
 /** An output of a transaction.  It contains the public key that the next input
@@ -450,8 +449,6 @@ public:
     bool IsLelantusJoinSplit() const;
     bool IsLelantusMint() const;
 
-    bool IsZerocoinRemint() const;
-
     bool HasNoRegularInputs() const;
 
     /**
@@ -465,7 +462,6 @@ public:
     {
         return (vin.size() == 1 && vin[0].prevout.IsNull() && (vin[0].scriptSig.size() == 0
             || (vin[0].scriptSig[0] != OP_ZEROCOINSPEND
-            && vin[0].scriptSig[0] != OP_ZEROCOINTOSIGMAREMINT
             && vin[0].scriptSig[0] != OP_LELANTUSJOINSPLIT)));
     }
 

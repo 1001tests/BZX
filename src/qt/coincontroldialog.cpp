@@ -463,7 +463,6 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog, bool a
             auto const &script = out.tx->tx->vout[out.i].scriptPubKey;
             auto isMint = script.IsZerocoinMint()
                         || script.IsSigmaMint()
-                        || script.IsZerocoinRemint()
                         || script.IsLelantusMint()
                         || script.IsLelantusJMint();
 
