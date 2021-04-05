@@ -1525,8 +1525,7 @@ isminetype CWallet::IsMine(const CTxIn &txin) const
         if (db.HasLelantusSpendSerialEntry(joinsplit->getCoinSerialNumbers()[0]) || db.HasCoinSpendSerialEntry(joinsplit->getCoinSerialNumbers()[0])) {
             return ISMINE_SPENDABLE;
         }
-    }
-    else {
+    } else {
         map<uint256, CWalletTx>::const_iterator mi = mapWallet.find(txin.prevout.hash);
         if (mi != mapWallet.end())
         {
