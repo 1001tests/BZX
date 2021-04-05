@@ -383,10 +383,8 @@ make_intro_from_plaintext(
 
   /* Output the cell */
   *cell_out = cell;
-  cell = NULL;
 
  done:
-  tor_free(cell);
   return cell_len;
 }
 
@@ -537,3 +535,4 @@ struct testcase_t introduce_tests[] = {
   INTRODUCE_LEGACY(late_parse_v3),
   END_OF_TESTCASES
 };
+

@@ -22,7 +22,7 @@
 #include <openssl/ec.h>
 #include <openssl/ecdh.h>
 #include <openssl/obj_mac.h>
-#endif /* defined(ENABLE_OPENSSL) */
+#endif
 
 #include "core/or/circuitlist.h"
 #include "app/config/config.h"
@@ -701,7 +701,7 @@ bench_ecdh_p224(void)
 {
   bench_ecdh_impl(NID_secp224r1, "P-224");
 }
-#endif /* defined(ENABLE_OPENSSL) */
+#endif
 
 static void
 bench_md_parse(void)

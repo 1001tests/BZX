@@ -10,4 +10,4 @@ extern const char *notCompletelyValidCertString;
 extern const char *validCertString;
 extern const char *caCertString;
 
-#endif /* !defined(TEST_TORTLS_H) */
+#endif

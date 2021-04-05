@@ -4,9 +4,6 @@
 #include "orconfig.h"
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef HAVE_SYS_RESOURCE_H
-#include <sys/resource.h>
-#endif
 
 /* To prevent 'assert' from going away. */
 #undef TOR_COVERAGE
@@ -46,7 +43,7 @@ crash(int x)
     *(volatile int *)0 = 0;
 #endif /* defined(__clang_analyzer__) || defined(__COVERITY__) */
   } else if (crashtype == 1) {
-    tor_assertf(1 == 0, "%d != %d", 1, 0);
+    tor_assert(1 == 0);
   } else if (crashtype == -1) {
     ;
   }
@@ -90,11 +87,6 @@ main(int argc, char **argv)
          "\"backtraces\" or \"none\"");
     return 1;
   }
-
-#ifdef HAVE_SYS_RESOURCE_H
-  struct rlimit rlim = { .rlim_cur = 0, .rlim_max = 0 };
-  setrlimit(RLIMIT_CORE, &rlim);
-#endif
 
 #if !(defined(HAVE_EXECINFO_H) && defined(HAVE_BACKTRACE) && \
    defined(HAVE_BACKTRACE_SYMBOLS_FD) && defined(HAVE_SIGACTION))
