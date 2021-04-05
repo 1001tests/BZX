@@ -1050,7 +1050,7 @@ static const char EX_RI_ED_BAD_CROSSCERT1[] =
   "-----END ED25519 CERT-----\n"
   "onion-key-crosscert\n"
   "-----BEGIN CROSSCERT-----\n"
-  "qC9Kph/kGtONR2DxZDoIFFgnDFC+/7H07EgCiYQdIFIROc+gGK9qBOgeFEptrkXF\n"
+  "qC9Kph/kGtONR2DxZDoIFFgnDFC+/7H07EgCiYQdIBZXc+gGK9qBOgeFEptrkXF\n"
   "XdE35xxox5xSASQvp7hjFwxUtJRGOtf2O98regqeeaz6O9VPXHkLf51uqX3bVgq8\n"
   "KvFAsFFS66GxhtbrVjpyRgIwHAYvse1WVESfLuZZTn0=\n"
   "-----END CROSSCERT-----\n"

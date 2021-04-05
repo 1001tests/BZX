@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2015 The Bitcoin Core developers
+// Copyright (c) 2011-2016 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@
 
 #include "base58.h"
 #include "wallet/wallet.h"
-#include "main.h"
+#include "validation.h"
 
 #include <boost/foreach.hpp>
 
@@ -35,10 +35,10 @@ struct AddressTableEntry
     QString pubcoin;
 
     AddressTableEntry() {}
-    AddressTableEntry(Type type, const QString &label, const QString &address):
-        type(type), label(label), address(address) {}
-    AddressTableEntry(Type type, const QString &pubcoin):
-            type(type), pubcoin(pubcoin) {}
+    AddressTableEntry(Type _type, const QString &_label, const QString &_address):
+        type(_type), label(_label), address(_address) {}
+    AddressTableEntry(Type _type, const QString &_pubcoin):
+        type(_type), pubcoin(_pubcoin) {}
 };
 
 struct AddressTableEntryLessThan
@@ -79,8 +79,8 @@ public:
     QList<AddressTableEntry> cachedAddressTable;
     AddressTableModel *parent;
 
-    AddressTablePriv(CWallet *wallet, AddressTableModel *parent):
-        wallet(wallet), parent(parent) {}
+    AddressTablePriv(CWallet *_wallet, AddressTableModel *_parent):
+        wallet(_wallet), parent(_parent) {}
 
     void refreshAddressTable()
     {
@@ -97,22 +97,6 @@ public:
                 cachedAddressTable.append(AddressTableEntry(addressType,
                                   QString::fromStdString(strName),
                                   QString::fromStdString(address.ToString())));
-            }
-            //[zcoin] add load pubcoin
-            std::list<CZerocoinEntry> listPubcoin;
-            CWalletDB(wallet->strWalletFile).ListPubCoin(listPubcoin);
-            BOOST_FOREACH(const CZerocoinEntry& item, listPubcoin)
-            {
-                if(item.randomness != 0 && item.serialNumber != 0){
-                    const std::string& pubCoin = item.value.GetHex();
-                    // const std::string& isUsed = item.IsUsed ? "Used" : "New";
-                    const std::string& isUsedDenomStr = item.IsUsed
-                            ? "Used (" + std::to_string(item.denomination) + " mint)"
-                            : "New (" + std::to_string(item.denomination) + " mint)";
-                    cachedAddressTable.append(AddressTableEntry(AddressTableEntry::Zerocoin,
-                                                                QString::fromStdString(isUsedDenomStr),
-                                                                QString::fromStdString(pubCoin)));
-                }
             }
         }
         // qLowerBound() and qUpperBound() require our cachedAddressTable list to be sorted in asc order
@@ -167,7 +151,7 @@ public:
             break;
         }
     }
-    //[zcoin] updateEntry
+    //[BZX] updateEntry
     void updateEntry(const QString &pubCoin, const QString &isUsed, int status)
     {
         // Find address / label in model
@@ -222,8 +206,8 @@ public:
     }
 };
 
-AddressTableModel::AddressTableModel(CWallet *wallet, WalletModel *parent) :
-    QAbstractTableModel(parent),walletModel(parent),wallet(wallet),priv(0)
+AddressTableModel::AddressTableModel(CWallet *_wallet, WalletModel *parent) :
+    QAbstractTableModel(parent),walletModel(parent),wallet(_wallet),priv(0)
 {
     columns << tr("Label") << tr("Address");
     priv = new AddressTablePriv(wallet, this);
@@ -402,7 +386,7 @@ void AddressTableModel::updateEntry(const QString &address,
     priv->updateEntry(address, label, isMine, purpose, status);
 }
 
-//[zcoin] AddressTableModel.updateEntry()
+//[BZX] AddressTableModel.updateEntry()
 void AddressTableModel::updateEntry(const QString &pubCoin, const QString &isUsed, int status)
 {
     // Update stealth address book model from Bitcoin core
@@ -518,28 +502,4 @@ int AddressTableModel::lookupAddress(const QString &address) const
 void AddressTableModel::emitDataChanged(int idx)
 {
     Q_EMIT dataChanged(index(idx, 0, QModelIndex()), index(idx, columns.length()-1, QModelIndex()));
-}
-
-bool AddressTableModel::zerocoinMint(string &stringError, string denomAmount)
-{
-    WalletModel::UnlockContext ctx(walletModel->requestUnlock());
-    if(!ctx.isValid())
-    {
-        // Unlock wallet failed or was cancelled
-        return false;
-    }
-
-    return wallet->CreateZerocoinMintModel(stringError, denomAmount, ZEROCOIN);
-}
-
-bool AddressTableModel::zerocoinSpend(string &stringError, string thirdPartyAddress, string denomAmount)
-{
-    WalletModel::UnlockContext ctx(walletModel->requestUnlock());
-    if(!ctx.isValid())
-    {
-        // Unlock wallet failed or was cancelled
-        return false;
-    }
-
-    return wallet->CreateZerocoinSpendModel(stringError, thirdPartyAddress, denomAmount);
 }
