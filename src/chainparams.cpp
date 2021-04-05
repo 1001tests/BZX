@@ -236,7 +236,6 @@ public:
         extraNonce[3] = 0x00;
         consensus.hashGenesisBlock = genesis.GetHash();
         genesis = CreateGenesisBlock(1485785935, 2610, 0x1f0fffff, 2, 0 * COIN, extraNonce);
-        consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f"));
         assert(genesis.hashMerkleRoot == uint256S("0x31f49b23f8a1185f85a6a6972446e72a86d50ca0e3b3ffe217d0c2fea30473db"));
         vSeeds.push_back(CDNSSeedData("51.77.145.35", "51.77.145.35", false));
