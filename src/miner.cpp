@@ -754,10 +754,6 @@ void BlockAssembler::addPriorityTxs()
         if (TestForBlock(iter)) {
             AddToBlock(iter);
 
-            // If now that this txs is added we've surpassed our desired priority size
-            // or have dropped below the AllowFreeThreshold, then we're done adding priority txs
-            if (nBlockSize >= nBlockPrioritySize || !AllowFree(actualPriority)) {
-
             // This tx was successfully added, so
             // add transactions that depend on this one to the priority queue to try again
             BOOST_FOREACH(CTxMemPool::txiter child, mempool.GetMemPoolChildren(iter))
