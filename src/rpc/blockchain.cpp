@@ -26,9 +26,6 @@
 #include "evo/deterministicmns.h"
 #include "evo/cbtx.h"
 
-#include "llmq/quorums_chainlocks.h"
-#include "llmq/quorums_instantsend.h"
-
 #include <stdint.h>
 
 #include <univalue.h>
@@ -108,7 +105,6 @@ UniValue blockheaderToJSON(const CBlockIndex* blockindex)
     CBlockIndex *pnext = chainActive.Next(blockindex);
     if (pnext)
         result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
-    result.push_back(Pair("chainlock", llmq::chainLocksHandler->HasChainLock(blockindex->nHeight, blockindex->GetBlockHash())));
     return result;
 }
 
@@ -156,7 +152,6 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     CBlockIndex *pnext = chainActive.Next(blockindex);
     if (pnext)
         result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
-    result.push_back(Pair("chainlock", llmq::chainLocksHandler->HasChainLock(blockindex->nHeight, blockindex->GetBlockHash())));
     return result;
 }
 
@@ -1024,8 +1019,8 @@ UniValue gettxout(const JSONRPCRequest& request)
             "     \"hex\" : \"hex\",        (string) \n"
             "     \"reqSigs\" : n,          (numeric) Number of required signatures\n"
             "     \"type\" : \"pubkeyhash\", (string) The type, eg pubkeyhash\n"
-            "     \"addresses\" : [          (array of string) array of BZX addresses\n"
-            "        \"BZXaddress\"     (string) BZX address\n"
+            "     \"addresses\" : [          (array of string) array of Zcoin addresses\n"
+            "        \"zcoinaddress\"     (string) Zcoin address\n"
             "        ,...\n"
             "     ]\n"
             "  },\n"
@@ -1120,13 +1115,13 @@ static UniValue SoftForkMajorityDesc(int version, CBlockIndex* pindex, const Con
     switch(version)
     {
         case 2:
-            activated = true;
+            activated = pindex->nHeight >= consensusParams.BIP34Height;
             break;
         case 3:
-            activated = true;
+            activated = pindex->nHeight >= consensusParams.BIP66Height;
             break;
         case 4:
-            activated = true;
+            activated = pindex->nHeight >= consensusParams.BIP65Height;
             break;
     }
     rv.push_back(Pair("status", activated));

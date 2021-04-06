@@ -1,12 +1,13 @@
 #include "masternodelist.h"
 #include "ui_masternodelist.h"
 
+#include "activeznode.h"
 #include "clientmodel.h"
 #include "clientversion.h"
 #include "coins.h"
 #include "guiutil.h"
 #include "init.h"
-#include "masternode-sync.h"
+#include "znode-sync.h"
 #include "netbase.h"
 #include "sync.h"
 #include "validation.h"
@@ -111,15 +112,6 @@ void MasternodeList::handleMasternodeListChanged()
 
 void MasternodeList::updateDIP3ListScheduled()
 {
-    TRY_LOCK(cs_main, fMainAcquired);
-    if (!fMainAcquired) return;
-
-#ifdef ENABLE_WALLET
-    if (!pwalletMain) return;
-    TRY_LOCK(pwalletMain->cs_wallet, fWalletAcquired);
-    if (!fWalletAcquired) return;
-#endif
-
     TRY_LOCK(cs_dip3list, fLockAcquired);
     if (!fLockAcquired) return;
 
@@ -138,7 +130,7 @@ void MasternodeList::updateDIP3ListScheduled()
             fFilterUpdatedDIP3 = false;
         }
     } else if (mnListChanged) {
-        int64_t nMnListUpdateSecods = masternodeSync.IsBlockchainSynced() ? MASTERNODELIST_UPDATE_SECONDS : MASTERNODELIST_UPDATE_SECONDS*10;
+        int64_t nMnListUpdateSecods = znodeSync.IsBlockchainSynced() ? MASTERNODELIST_UPDATE_SECONDS : MASTERNODELIST_UPDATE_SECONDS*10;
         int64_t nSecondsToWait = nTimeUpdatedDIP3 - GetTime() + nMnListUpdateSecods;
 
         if (nSecondsToWait <= 0) {

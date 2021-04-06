@@ -11,7 +11,6 @@
 #include "clientversion.h"
 #include "rpc/client.h"
 #include "rpc/protocol.h"
-#include "stacktraces.h"
 #include "util.h"
 #include "utilstrencodings.h"
 
@@ -78,22 +77,14 @@ static int AppInitRPC(int argc, char* argv[])
     // Parameters
     //
     ParseParameters(argc, argv);
-
-#ifdef ENABLE_CRASH_HOOKS
-    if (IsArgSet("-printcrashinfo")) {
-        std::cout << GetCrashInfoStrFromSerializedStr(GetArg("-printcrashinfo", "")) << std::endl;
-        return true;
-    }
-#endif
-
     if (argc<2 || IsArgSet("-?") || IsArgSet("-h") || IsArgSet("-help") || IsArgSet("-version")) {
         std::string strUsage = strprintf(_("%s RPC client version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n";
         if (!IsArgSet("-version")) {
             strUsage += "\n" + _("Usage:") + "\n" +
-                  "  bitcoinzero-cli [options] <command> [params]  " + strprintf(_("Send command to %s"), _(PACKAGE_NAME)) + "\n" +
-                  "  bitcoinzero-cli [options] -named <command> [name=value] ... " + strprintf(_("Send command to %s (with named arguments)"), _(PACKAGE_NAME)) + "\n" +
-                  "  bitcoinzero-cli [options] help                " + _("List commands") + "\n" +
-                  "  bitcoinzero-cli [options] help <command>      " + _("Get help for a command") + "\n";
+                  "  zcoin-cli [options] <command> [params]  " + strprintf(_("Send command to %s"), _(PACKAGE_NAME)) + "\n" +
+                  "  zcoin-cli [options] -named <command> [name=value] ... " + strprintf(_("Send command to %s (with named arguments)"), _(PACKAGE_NAME)) + "\n" +
+                  "  zcoin-cli [options] help                " + _("List commands") + "\n" +
+                  "  zcoin-cli [options] help <command>      " + _("Get help for a command") + "\n";
 
             strUsage += "\n" + HelpMessageCli();
         }
@@ -353,7 +344,7 @@ int CommandLineRPC(int argc, char *argv[])
         nRet = EXIT_FAILURE;
     }
     catch (...) {
-        PrintExceptionContinue(std::current_exception(), "CommandLineRPC()");
+        PrintExceptionContinue(NULL, "CommandLineRPC()");
         throw;
     }
 
@@ -365,11 +356,6 @@ int CommandLineRPC(int argc, char *argv[])
 
 int main(int argc, char* argv[])
 {
-#ifdef ENABLE_CRASH_HOOKS
-    RegisterPrettySignalHandlers();
-    RegisterPrettyTerminateHander();
-#endif
-
     SetupEnvironment();
     if (!SetupNetworking()) {
         fprintf(stderr, "Error: Initializing networking failed\n");
@@ -380,8 +366,12 @@ int main(int argc, char* argv[])
         int ret = AppInitRPC(argc, argv);
         if (ret != CONTINUE_EXECUTION)
             return ret;
+    }
+    catch (const std::exception& e) {
+        PrintExceptionContinue(&e, "AppInitRPC()");
+        return EXIT_FAILURE;
     } catch (...) {
-        PrintExceptionContinue(std::current_exception(), "AppInitRPC()");
+        PrintExceptionContinue(NULL, "AppInitRPC()");
         return EXIT_FAILURE;
     }
 
@@ -389,8 +379,10 @@ int main(int argc, char* argv[])
     try {
         ret = CommandLineRPC(argc, argv);
     }
-    catch (...) {
-        PrintExceptionContinue(std::current_exception(), "CommandLineRPC()");
+    catch (const std::exception& e) {
+        PrintExceptionContinue(&e, "CommandLineRPC()");
+    } catch (...) {
+        PrintExceptionContinue(NULL, "CommandLineRPC()");
     }
     return ret;
 }

@@ -1,5 +1,5 @@
-#ifndef BZX_ELYSIUM_WALLETMODELS_H
-#define BZX_ELYSIUM_WALLETMODELS_H
+#ifndef ZCOIN_ELYSIUM_WALLETMODELS_H
+#define ZCOIN_ELYSIUM_WALLETMODELS_H
 
 #include "property.h"
 #include "sigmaprimitives.h"
@@ -206,4 +206,4 @@ basic_ostream<Char, Traits>& operator<<(basic_ostream<Char, Traits>& os, const S
 
 } // namespace std
 
-#endif // BZX_ELYSIUM_WALLETMODELS_H
+#endif // ZCOIN_ELYSIUM_WALLETMODELS_H

@@ -14,7 +14,6 @@
 #include "ctpl.h"
 #include "random.h"
 #include "serialize.h"
-#include "stacktraces.h"
 #include "sync.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
@@ -111,8 +110,8 @@ bool fMasternodeMode = false;
 bool fLiteMode = false;
 int nWalletBackups = 10;
 
-const char * const BITCOIN_CONF_FILENAME = "bitcoinzero.conf";
-const char * const BITCOIN_PID_FILENAME = "bitcoinzero.pid";
+const char * const BITCOIN_CONF_FILENAME = "zcoin.conf";
+const char * const BITCOIN_PID_FILENAME = "zcoind.pid";
 
 CCriticalSection cs_args;
 map<string, string> mapArgs;
@@ -480,32 +479,39 @@ std::string HelpMessageOpt(const std::string &option, const std::string &message
            std::string("\n\n");
 }
 
-#ifdef ENABLE_CRASH_HOOKS
-static std::string FormatException(const std::exception_ptr pex, const char* pszThread)
+static std::string FormatException(const std::exception* pex, const char* pszThread)
 {
-    return strprintf("EXCEPTION: %s", GetPrettyExceptionStr(pex));
-}
+#ifdef WIN32
+    char pszModule[MAX_PATH] = "";
+    GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
+#else
+    const char* pszModule = "zcoin";
 #endif
+    if (pex)
+        return strprintf(
+            "EXCEPTION: %s       \n%s       \n%s in %s       \n", typeid(*pex).name(), pex->what(), pszModule, pszThread);
+    else
+        return strprintf(
+            "UNKNOWN EXCEPTION       \n%s in %s       \n", pszModule, pszThread);
+}
 
-void PrintExceptionContinue(const std::exception_ptr pex, const char* pszThread)
+void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 {
-#ifdef ENABLE_CRASH_HOOKS
     std::string message = FormatException(pex, pszThread);
     LogPrintf("\n\n************************\n%s\n", message);
     fprintf(stderr, "\n\n************************\n%s\n", message.c_str());
-#endif
 }
 
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\BZX
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\BZX
-    // Mac: ~/Library/Application Support/BZX
-    // Unix: ~/.BZX
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\zcoin
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\zcoin
+    // Mac: ~/Library/Application Support/zcoin
+    // Unix: ~/.zcoin
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "bitcoinzero";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "zcoin";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -515,10 +521,10 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/bitcoinzero;
+    return pathRet / "Library/Application Support/zcoin";
 #else
     // Unix
-    return pathRet / ".bitcoinzero";
+    return pathRet / ".zcoin";
 #endif
 #endif
 }
@@ -596,12 +602,17 @@ void ClearDatadirCache()
 boost::filesystem::path GetConfigFile(const std::string& confPath)
 {
     boost::filesystem::path pathConfigFile(confPath);
-    if (!pathConfigFile.is_complete()) {
-        boost::filesystem::path dataDir = GetDataDir(false);
+    if (!pathConfigFile.is_complete())
+        pathConfigFile = GetDataDir(false) / pathConfigFile;
 
-        pathConfigFile = dataDir / pathConfigFile;
-    }
+    return pathConfigFile;
+}
 
+boost::filesystem::path GetZnodeConfigFile()
+{
+    boost::filesystem::path pathConfigFile(GetArg("-znconf", "znode.conf"));
+    if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir() / pathConfigFile;
+    LogPrintf("pathConfigFile=%s\n", pathConfigFile);
     return pathConfigFile;
 }
 
@@ -609,7 +620,7 @@ void ReadConfigFile(const std::string& confPath)
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile(confPath));
     if (!streamConfig.good())
-        return; // No BZX.conf file is OK
+        return; // No zcoin.conf file is OK
 
     {
         LOCK(cs_args);
@@ -630,7 +641,6 @@ void ReadConfigFile(const std::string& confPath)
     // If datadir is changed in .conf file:
     ClearDatadirCache();
 }
-
 
 #ifndef WIN32
 boost::filesystem::path GetPidFile()
@@ -961,17 +971,13 @@ int GetNumCores()
 
 std::string CopyrightHolders(const std::string& strPrefix)
 {
-    const auto copyright_devs = strprintf(_(COPYRIGHT_HOLDERS), _(COPYRIGHT_HOLDERS_SUBSTITUTION));
-    std::string strCopyrightHolders = strPrefix + copyright_devs;
+    std::string strCopyrightHolders = strPrefix + strprintf(_(COPYRIGHT_HOLDERS), _(COPYRIGHT_HOLDERS_SUBSTITUTION));
 
-    // Make sure BZX Core copyright is not removed by accident
-    if (copyright_devs.find(_("BZX Core")) == std::string::npos) {
-        strCopyrightHolders += '\n' + strPrefix + "The BZX Core developers";
+    // Check for untranslated substitution to make sure Bitcoin Core copyright is not removed by accident
+    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Bitcoin Core") == std::string::npos) {
+        strCopyrightHolders
+                += '\n' + strPrefix + "The Bitcoin Core developers"
+                +  '\n' + strPrefix + "The Zcoin Core developers";
     }
-    // Make sure Bitcoin Core copyright is not removed by accident
-    if (copyright_devs.find("Bitcoin Core") == std::string::npos) {
-        strCopyrightHolders += '\n' + strPrefix + "The Bitcoin Core developers";
-    }
-    
     return strCopyrightHolders;
 }

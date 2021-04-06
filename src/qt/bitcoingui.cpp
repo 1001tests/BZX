@@ -33,15 +33,17 @@
 
 #include "chainparams.h"
 #include "init.h"
-#include "lelantus.h"
-#include "sigma.h"
 #include "ui_interface.h"
 #include "util.h"
 
+#include "znode.h"
 #include "evo/deterministicmns.h"
-#include "masternode-sync.h"
+#include "znodesync-interface.h"
+#include "znodelist.h"
 #include "masternodelist.h"
+#include "notifyznodewarning.h"
 #include "elysium_qtutils.h"
+#include "zc2sigmapage.h"
 
 #ifdef ENABLE_ELYSIUM
 #include "../elysium/elysium.h"
@@ -133,7 +135,8 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     openRPCConsoleAction(0),
     openAction(0),
     showHelpMessageAction(0),
-    lelantusAction(0),
+    zc2SigmaAction(0),
+    znodeAction(0),
     masternodeAction(0),
     trayIcon(0),
     trayIconMenu(0),
@@ -324,7 +327,7 @@ void BitcoinGUI::createActions()
 	tabGroup->addAction(overviewAction);
 
 	sendCoinsAction = new QAction(platformStyle->SingleColorIcon(":/icons/send"), tr("&Send"), this);
-	sendCoinsAction->setStatusTip(tr("Send coins to a BZX address"));
+	sendCoinsAction->setStatusTip(tr("Send coins to a Zcoin address"));
 	sendCoinsAction->setToolTip(sendCoinsAction->statusTip());
 	sendCoinsAction->setCheckable(true);
 	sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + key++));
@@ -335,7 +338,7 @@ void BitcoinGUI::createActions()
 	sendCoinsMenuAction->setToolTip(sendCoinsMenuAction->statusTip());
 
 	receiveCoinsAction = new QAction(platformStyle->SingleColorIcon(":/icons/receiving_addresses"), tr("&Receive"), this);
-	receiveCoinsAction->setStatusTip(tr("Request payments (generates QR codes and BZX: URIs)"));
+	receiveCoinsAction->setStatusTip(tr("Request payments (generates QR codes and zcoin: URIs)"));
 	receiveCoinsAction->setToolTip(receiveCoinsAction->statusTip());
 	receiveCoinsAction->setCheckable(true);
 	receiveCoinsAction->setShortcut(QKeySequence(Qt::ALT + key++));
@@ -352,26 +355,42 @@ void BitcoinGUI::createActions()
 	historyAction->setShortcut(QKeySequence(Qt::ALT + key++));
 	tabGroup->addAction(historyAction);
 
-#ifdef ENABLE_WALLET
-    lelantusAction = new QAction(platformStyle->SingleColorIcon(":/icons/lelantus"), tr("&Lelantus"), this);
-    lelantusAction->setStatusTip(tr("Anonymize your coins"));
-    lelantusAction->setToolTip(lelantusAction->statusTip());
-    lelantusAction->setCheckable(true);
-    lelantusAction->setShortcut(QKeySequence(Qt::ALT + key++));
-    tabGroup->addAction(lelantusAction);
-    lelantusAction->setVisible(true);
+    sigmaAction = new QAction(platformStyle->SingleColorIcon(":/icons/sigma"), tr("Si&gma"), this);
+    sigmaAction->setStatusTip(tr("Anonymize your coins and perform private transfers using Sigma"));
+    sigmaAction->setToolTip(sigmaAction->statusTip());
+    sigmaAction->setCheckable(true);
+    sigmaAction->setShortcut(QKeySequence(Qt::ALT +  key++));
+    tabGroup->addAction(sigmaAction);
+    sigmaAction->setVisible(true);
 
+    zc2SigmaAction = new QAction(platformStyle->SingleColorIcon(":/icons/zerocoin"), tr("&Remint"), this);
+    zc2SigmaAction->setStatusTip(tr("Show the list of public Zerocoins that could be reminted in Sigma"));
+    zc2SigmaAction->setToolTip(zc2SigmaAction->statusTip());
+    zc2SigmaAction->setCheckable(true);
+    zc2SigmaAction->setShortcut(QKeySequence(Qt::ALT +  key++));
+    tabGroup->addAction(zc2SigmaAction);
+    zc2SigmaAction->setVisible(false);
+
+#ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
-    masternodeAction = new QAction(platformStyle->SingleColorIcon(":/icons/znodes"), tr("&Masternodes"), this);
-    masternodeAction->setStatusTip(tr("Browse masternodes"));
+    znodeAction = new QAction(platformStyle->SingleColorIcon(":/icons/znodes"), tr("&Znodes"), this);
+    znodeAction->setStatusTip(tr("Browse Znodes"));
+    znodeAction->setToolTip(znodeAction->statusTip());
+    znodeAction->setCheckable(true);
+
+    masternodeAction = new QAction(platformStyle->SingleColorIcon(":/icons/znodes"), tr("&Znodes"), this);
+    masternodeAction->setStatusTip(tr("Browse Znodes"));
     masternodeAction->setToolTip(masternodeAction->statusTip());
     masternodeAction->setCheckable(true);
 #ifdef Q_OS_MAC
+    znodeAction->setShortcut(QKeySequence(Qt::CTRL + key++));
     masternodeAction->setShortcut(QKeySequence(Qt::CTRL + key++));
 #else
+    znodeAction->setShortcut(QKeySequence(Qt::ALT +  key++));
     masternodeAction->setShortcut(QKeySequence(Qt::ALT +  key++));
 #endif
+    tabGroup->addAction(znodeAction);
     tabGroup->addAction(masternodeAction);
 #endif
 
@@ -396,6 +415,8 @@ void BitcoinGUI::createActions()
 #endif
 
 #ifdef ENABLE_WALLET
+    connect(znodeAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(znodeAction, SIGNAL(triggered()), this, SLOT(gotoZnodePage()));
     connect(masternodeAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(masternodeAction, SIGNAL(triggered()), this, SLOT(gotoMasternodePage()));
 	connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -410,7 +431,8 @@ void BitcoinGUI::createActions()
 	connect(receiveCoinsMenuAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
 	connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
 	connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
-	connect(lelantusAction, SIGNAL(triggered()), this, SLOT(gotoLelantusPage()));
+	connect(sigmaAction, SIGNAL(triggered()), this, SLOT(gotoSigmaPage()));
+        connect(zc2SigmaAction, SIGNAL(triggered()), this, SLOT(gotoZc2SigmaPage()));
 
 #ifdef ENABLE_ELYSIUM
     if (elysiumEnabled) {
@@ -448,9 +470,9 @@ void BitcoinGUI::createActions()
     changePassphraseAction = new QAction(platformStyle->TextColorIcon(":/icons/key"), tr("&Change Passphrase..."), this);
     changePassphraseAction->setStatusTip(tr("Change the passphrase used for wallet encryption"));
     signMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/edit"), tr("Sign &message..."), this);
-    signMessageAction->setStatusTip(tr("Sign messages with your BZX addresses to prove you own them"));
+    signMessageAction->setStatusTip(tr("Sign messages with your Zcoin addresses to prove you own them"));
     verifyMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/verify"), tr("&Verify message..."), this);
-    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified BZX addresses"));
+    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified Zcoin addresses"));
 
     openRPCConsoleAction = new QAction(platformStyle->TextColorIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging and diagnostic console"));
@@ -463,11 +485,11 @@ void BitcoinGUI::createActions()
     usedReceivingAddressesAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
 
     openAction = new QAction(platformStyle->TextColorIcon(":/icons/open"), tr("Open &URI..."), this);
-    openAction->setStatusTip(tr("Open a BZX: URI or payment request"));
+    openAction->setStatusTip(tr("Open a zcoin: URI or payment request"));
 
     showHelpMessageAction = new QAction(platformStyle->TextColorIcon(":/icons/info"), tr("&Command-line options"), this);
     showHelpMessageAction->setMenuRole(QAction::NoRole);
-    showHelpMessageAction->setStatusTip(tr("Show the %1 help message to get a list with possible BZX command-line options").arg(tr(PACKAGE_NAME)));
+    showHelpMessageAction->setStatusTip(tr("Show the %1 help message to get a list with possible Zcoin command-line options").arg(tr(PACKAGE_NAME)));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
@@ -553,7 +575,9 @@ void BitcoinGUI::createToolBars()
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
-        toolbar->addAction(lelantusAction);
+        toolbar->addAction(sigmaAction);
+        toolbar->addAction(zc2SigmaAction);
+        toolbar->addAction(znodeAction);
         toolbar->addAction(masternodeAction);
 
 #ifdef ENABLE_ELYSIUM
@@ -604,27 +628,18 @@ void BitcoinGUI::setClientModel(ClientModel *_clientModel)
         }
 #endif // ENABLE_WALLET
         unitDisplayControl->setOptionsModel(_clientModel->getOptionsModel());
-
+        
         OptionsModel* optionsModel = _clientModel->getOptionsModel();
         if(optionsModel)
         {
             // be aware of the tray icon disable state change reported by the OptionsModel object.
             connect(optionsModel,SIGNAL(hideTrayIconChanged(bool)),this,SLOT(setTrayIconVisible(bool)));
-
-            // update lelantus page if option is changed.
-            connect(optionsModel,SIGNAL(lelantusPageChanged(bool)),this,SLOT(updateLelantusPage()));
-
+        
             // initialize the disable state of the tray icon with the current value in the model.
             setTrayIconVisible(optionsModel->getHideTrayIcon());
         }
-        {
-            auto blocks = clientModel->getNumBlocks();
-            checkZnodeVisibility(blocks);
-
-#ifdef ENABLE_WALLET
-            checkLelantusVisibility(blocks);
-#endif // ENABLE_WALLET
-        }
+        checkZc2SigmaVisibility(clientModel->getNumBlocks());
+        checkZnodeVisibility(clientModel->getNumBlocks());
     } else {
         // Disable possibility to show main window via action
         toggleHideAction->setEnabled(false);
@@ -678,7 +693,8 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     receiveCoinsAction->setEnabled(enabled);
     receiveCoinsMenuAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
-    lelantusAction->setEnabled(enabled);
+    sigmaAction->setEnabled(enabled);
+    znodeAction->setEnabled(enabled);
     masternodeAction->setEnabled(enabled);
     encryptWalletAction->setEnabled(enabled);
     backupWalletAction->setEnabled(enabled);
@@ -847,6 +863,13 @@ void BitcoinGUI::gotoToolboxPage()
 }
 #endif
 
+void BitcoinGUI::gotoZnodePage()
+{
+    QSettings settings;
+    znodeAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoZnodePage();
+}
+
 void BitcoinGUI::gotoMasternodePage()
 {
     QSettings settings;
@@ -871,10 +894,14 @@ void BitcoinGUI::gotoSignMessageTab(QString addr)
     if (walletFrame) walletFrame->gotoSignMessageTab(addr);
 }
 
-void BitcoinGUI::gotoLelantusPage()
+void BitcoinGUI::gotoSigmaPage()
 {
-    lelantusAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoLelantusPage();
+    if (walletFrame) walletFrame->gotoSigmaPage();
+}
+
+void BitcoinGUI::gotoZc2SigmaPage()
+{
+    if (walletFrame) walletFrame->gotoZc2SigmaPage();
 }
 
 void BitcoinGUI::gotoVerifyMessageTab(QString addr)
@@ -899,7 +926,7 @@ void BitcoinGUI::updateNetworkState()
     QString tooltip;
 
     if (clientModel->getNetworkActive()) {
-        tooltip = tr("%n active connection(s) to BZX network", "", count) + QString(".<br>") + tr("Click to disable network activity.");
+        tooltip = tr("%n active connection(s) to Zcoin network", "", count) + QString(".<br>") + tr("Click to disable network activity.");
     } else {
         tooltip = tr("Network activity disabled.") + QString("<br>") + tr("Click to enable network activity again.");
         icon = ":/icons/network_disabled";
@@ -997,7 +1024,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
     }
 #endif // ENABLE_WALLET
 
-    if (!masternodeSync.IsBlockchainSynced())
+    if (!znodeSyncInterface.IsBlockchainSynced())
     {
         QString timeBehindText = GUIUtil::formatNiceTimeOffset(secs);
 
@@ -1040,10 +1067,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
     progressBarLabel->setToolTip(tooltip);
     progressBar->setToolTip(tooltip);
 
-#ifdef ENABLE_WALLET
-    checkLelantusVisibility(count);
-#endif // ENABLE_WALLET
-
+    checkZc2SigmaVisibility(count);
     checkZnodeVisibility(count);
 }
 
@@ -1054,7 +1078,7 @@ void BitcoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
         return;
 
     // No additional data sync should be happening while blockchain is not synced, nothing to update
-    if(!masternodeSync.IsBlockchainSynced())
+    if(!znodeSyncInterface.IsBlockchainSynced())
         return;
 
     // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
@@ -1071,10 +1095,14 @@ void BitcoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
         walletFrame->showOutOfSyncWarning(false);
 #endif // ENABLE_WALLET
 
-    if(masternodeSync.IsSynced()) {
+    if(znodeSyncInterface.IsSynced()) {
         progressBarLabel->setVisible(false);
         progressBar->setVisible(false);
         labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/synced").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+        //also check for Znode warning here
+        if(NotifyZnodeWarning::shouldShow()){
+            NotifyZnodeWarning::notify();
+        }
     } else {
 
         labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(QString(
@@ -1087,7 +1115,7 @@ void BitcoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
         progressBar->setValue(nSyncProgress * 1000000000.0 + 0.5);
     }
 
-    strSyncStatus = QString(masternodeSync.GetSyncStatus().c_str());
+    strSyncStatus = QString(znodeSyncInterface.GetSyncStatus().c_str());
     progressBarLabel->setText(strSyncStatus);
     tooltip = strSyncStatus + QString("<br>") + tooltip;
 
@@ -1102,7 +1130,7 @@ void BitcoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
 
 void BitcoinGUI::message(const QString &title, const QString &message, unsigned int style, bool *ret)
 {
-    QString strTitle = tr("BZX"); // default title
+    QString strTitle = tr("Zcoin"); // default title
     // Default to information icon
     int nMBoxIcon = QMessageBox::Information;
     int nNotifyIcon = Notificator::Information;
@@ -1128,7 +1156,7 @@ void BitcoinGUI::message(const QString &title, const QString &message, unsigned 
             break;
         }
     }
-    // Append title to "BZX - "
+    // Append title to "Zcoin - "
     if (!msgType.isEmpty())
         strTitle += " - " + msgType;
 
@@ -1287,7 +1315,7 @@ void BitcoinGUI::setHDStatus(int hdEnabled)
     labelWalletHDStatusIcon->setPixmap(platformStyle->SingleColorIcon(hdEnabled ? ":/icons/hd_enabled" : ":/icons/hd_disabled").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
     labelWalletHDStatusIcon->setToolTip(hdEnabled ? tr("HD key generation is <b>enabled</b>") : tr("HD key generation is <b>disabled</b>"));
 
-    // eventually disable the QLabel to set its opacity to 50%
+    // eventually disable the QLabel to set its opacity to 50% 
     labelWalletHDStatusIcon->setEnabled(hdEnabled);
 }
 
@@ -1398,12 +1426,6 @@ void BitcoinGUI::showModalOverlay()
         modalOverlay->toggleVisibility();
 }
 
-void BitcoinGUI::updateLelantusPage()
-{
-    auto blocks = clientModel->getNumBlocks();
-    checkLelantusVisibility(blocks);
-}
-
 static bool ThreadSafeMessageBox(BitcoinGUI *gui, const std::string& message, const std::string& caption, unsigned int style)
 {
     bool modal = (style & CClientUIInterface::MODAL);
@@ -1435,14 +1457,37 @@ void BitcoinGUI::unsubscribeFromCoreSignals()
     uiInterface.ThreadSafeQuestion.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _3, _4));
 }
 
-void BitcoinGUI::checkZnodeVisibility(int numBlocks)
-{
-    masternodeAction->setVisible(true);
+void BitcoinGUI::checkZc2SigmaVisibility(int numBlocks) {
+    if(!zc2SigmaAction->isVisible() && sigma::IsRemintWindow(numBlocks)) {
+        const bool show = Zc2SigmaPage::showZc2SigmaPage();
+
+        if(show)
+            zc2SigmaAction->setVisible(true);
+    }
 }
 
-void BitcoinGUI::checkLelantusVisibility(int numBlocks)
-{
-        lelantusAction->setVisible(true);
+void BitcoinGUI::checkZnodeVisibility(int numBlocks) {
+
+    const Consensus::Params& params = ::Params().GetConsensus();
+    // Before legacy window
+    if(numBlocks < params.DIP0003Height){
+        znodeAction->setVisible(true);
+        masternodeAction->setVisible(false);
+    } // during legacy window
+    else if(numBlocks < params.DIP0003EnforcementHeight){
+        znodeAction->setText(tr("&Znodes (legacy)"));
+        znodeAction->setStatusTip(tr("Browse legacy Znodes"));
+        znodeAction->setVisible(true);
+        masternodeAction->setVisible(true);
+    } // DIP0003 Enforcement
+    else {
+        znodeAction->setVisible(false);
+        masternodeAction->setVisible(true);
+    }
+
+    //also check for Znode warning here
+    if(NotifyZnodeWarning::shouldShow())
+        NotifyZnodeWarning::notify();
 }
 
 void BitcoinGUI::toggleNetworkActive()

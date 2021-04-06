@@ -246,7 +246,8 @@ template <typename T> size_t GetSerializeSize(const T& t, int nType, int nVersio
 template <typename S, typename T> size_t GetSerializeSize(const S& s, const T& t);
 
 /**
- * Please note that BZX drops support for big-endian architectures and thus these functions are simple read/writes
+ * Please note that Zcoin drops support for big-endian architectures and thus these functions are simple read/writes
+ * It significantly improves MTP structures serialization performance
  */
 
 template <typename ItemType>

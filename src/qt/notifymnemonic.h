@@ -1,5 +1,5 @@
-#ifndef BZX_NOTIFYMNEMONIC_H
-#define BZX_NOTIFYMNEMONIC_H
+#ifndef ZCOIN_NOTIFYMNEMONIC_H
+#define ZCOIN_NOTIFYMNEMONIC_H
 
 
 #include <QWizard>
@@ -22,4 +22,4 @@ private:
     Ui::NotifyMnemonic *ui;
 };
 
-#endif //BZX_NOTIFYMNEMONIC_H
+#endif //ZCOIN_NOTIFYMNEMONIC_H

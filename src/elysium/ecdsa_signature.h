@@ -1,9 +1,9 @@
-// Copyright (c) 2020 The BZX Core Developers
+// Copyright (c) 2020 The Zcoin Core Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BZX_ELYSIUM_ECDSA_SIGNATURE_H
-#define BZX_ELYSIUM_ECDSA_SIGNATURE_H
+#ifndef ZCOIN_ELYSIUM_ECDSA_SIGNATURE_H
+#define ZCOIN_ELYSIUM_ECDSA_SIGNATURE_H
 
 #include "ecdsa_context.h"
 
@@ -26,8 +26,7 @@ public:
     ECDSASignature(secp256k1_ecdsa_signature const &sig);
 
 public:
-    static ECDSASignature ParseCompact(ECDSAContext const &context, unsigned char const *signature);
-    static ECDSASignature ParseDER(ECDSAContext const &context, unsigned char const *signature, size_t len);
+    static ECDSASignature Parse(ECDSAContext const &context, unsigned char const *signature, size_t len);
 
 public:
     std::vector<unsigned char> GetCompact(ECDSAContext const &context) const;
@@ -73,4 +72,4 @@ private:
 
 } // namespace elysium
 
-#endif // BZX_ELYSIUM_ECDSA_SIGNATURE_H
+#endif // ZCOIN_ELYSIUM_ECDSA_SIGNATURE_H

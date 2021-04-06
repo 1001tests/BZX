@@ -15,8 +15,7 @@
 #include <secp256k1/include/Scalar.h>
 #include <secp256k1/include/GroupElement.h>
 #include "sigma/coin.h"
-#include "evo/spork.h"
-#include "sigma_params.h"
+#include "zerocoin_params.h"
 #include "util.h"
 #include "chainparams.h"
 #include "coin_containers.h"
@@ -212,6 +211,12 @@ public:
     unsigned int nBits;
     unsigned int nNonce;
 
+    // Zcoin - MTP
+    int32_t nVersionMTP = 0x1000;
+    uint256 mtpHashValue;
+    // Reserved fields
+    uint256 reserved[2];
+
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     int32_t nSequenceId;
 
@@ -222,6 +227,13 @@ public:
     //! Maps <denomination,id> to vector of public coins
     map<pair<int,int>, vector<CBigNum>> mintedPubCoins;
 
+    //! Accumulator updates. Contains only changes made by mints in this block
+    //! Maps <denomination, id> to <accumulator value (CBigNum), number of such mints in this block>
+    map<pair<int,int>, pair<CBigNum,int>> accumulatorChanges;
+
+	//! Same as accumulatorChanges but for alternative modulus
+	map<pair<int,int>, pair<CBigNum,int>> alternativeAccumulatorChanges;
+
     //! Values of coin serials spent in this block
 	set<CBigNum> spentSerials;
 
@@ -230,16 +242,9 @@ public:
     //! Public coin values of mints in this block, ordered by serialized value of public coin
     //! Maps <denomination,id> to vector of public coins
     std::map<pair<sigma::CoinDenomination, int>, vector<sigma::PublicCoin>> sigmaMintedPubCoins;
-    //! Map id to <public coin, tag>
-    std::map<int, vector<std::pair<lelantus::PublicCoin, uint256>>>  lelantusMintedPubCoins;
 
     //! Values of coin serials spent in this block
     sigma::spend_info_container sigmaSpentSerials;
-    std::unordered_map<Scalar, int> lelantusSpentSerials;
-
-    //! list of disabling sporks active at this block height
-    //! map {feature name} -> {block number when feature is re-enabled again, parameter}
-    ActiveSporkMap activeDisablingSporks;
 
     void SetNull()
     {
@@ -263,12 +268,14 @@ public:
         nBits          = 0;
         nNonce         = 0;
 
+        nVersionMTP = 0;
+        mtpHashValue = reserved[0] = reserved[1] = uint256();
 
+        mintedPubCoins.clear();
         sigmaMintedPubCoins.clear();
-        lelantusMintedPubCoins.clear();
+        accumulatorChanges.clear();
+        spentSerials.clear();
         sigmaSpentSerials.clear();
-        lelantusSpentSerials.clear();
-        activeDisablingSporks.clear();
     }
 
     CBlockIndex()
@@ -286,6 +293,12 @@ public:
         nBits          = block.nBits;
         nNonce         = block.nNonce;
 
+        if (block.IsMTP()) {
+            nVersionMTP = block.nVersionMTP;
+            mtpHashValue = block.mtpHashValue;
+            reserved[0] = block.reserved[0];
+            reserved[1] = block.reserved[1];
+        }
     }
 
     CDiskBlockPos GetBlockPos() const {
@@ -317,12 +330,24 @@ public:
         block.nBits          = nBits;
         block.nNonce         = nNonce;
 
+        // Zcoin - MTP
+        if(block.IsMTP()){
+			block.nVersionMTP = nVersionMTP;
+            block.mtpHashValue = mtpHashValue;
+            block.reserved[0] = reserved[0];
+            block.reserved[1] = reserved[1];
+		}
         return block;
     }
 
     uint256 GetBlockHash() const
     {
         return *phashBlock;
+    }
+
+    uint256 GetBlockPoWHash() const
+    {
+        return GetBlockHeader().GetPoWHash(nHeight);
     }
 
     int64_t GetBlockTime() const
@@ -437,12 +462,25 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
-        //READWRITE(lelantusMintedPubCoins);
-        //READWRITE(lelantusSpentSerials); //xxxx
 
-        const auto &params = Params().GetConsensus();
-        if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nEvoSporkStartBlock && nHeight < params.nEvoSporkStopBlock)
-            READWRITE(activeDisablingSporks);
+        // Zcoin - MTP
+        if (nTime > ZC_GENESIS_BLOCK_TIME && nTime >= Params().GetConsensus().nMTPSwitchTime) {
+            READWRITE(nVersionMTP);
+            READWRITE(mtpHashValue);
+            READWRITE(reserved[0]);
+            READWRITE(reserved[1]);
+        }
+
+        if (!(s.GetType() & SER_GETHASH) && nVersion >= ZC_ADVANCED_INDEX_VERSION) {
+            READWRITE(mintedPubCoins);
+		    READWRITE(accumulatorChanges);
+            READWRITE(spentSerials);
+	    }
+
+        if (!(s.GetType() & SER_GETHASH) && nHeight >= Params().GetConsensus().nSigmaStartBlock) {
+            READWRITE(sigmaMintedPubCoins);
+            READWRITE(sigmaSpentSerials);
+        }
 
         nDiskBlockVersion = nVersion;
     }
@@ -456,6 +494,13 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+
+        if (block.IsMTP()) {
+            block.nVersionMTP = nVersionMTP;
+            block.mtpHashValue = mtpHashValue;
+            block.reserved[0] = reserved[0];
+            block.reserved[1] = reserved[1];
+        }
 
         return block.GetHash();
     }

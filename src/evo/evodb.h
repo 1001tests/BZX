@@ -21,7 +21,7 @@ private:
 
     typedef CDBTransaction<CDBWrapper, CDBBatch> RootTransaction;
     typedef CDBTransaction<RootTransaction, RootTransaction> CurTransaction;
-    typedef CScopedDBTransaction<RootTransaction, RootTransaction, CEvoDB> ScopedTransaction;
+    typedef CScopedDBTransaction<RootTransaction, RootTransaction> ScopedTransaction;
 
     CDBBatch rootBatch;
     RootTransaction rootDBTransaction;
@@ -33,7 +33,7 @@ public:
     std::unique_ptr<ScopedTransaction> BeginTransaction()
     {
         LOCK(cs);
-        auto t = ScopedTransaction::Begin(curDBTransaction, *this);
+        auto t = ScopedTransaction::Begin(curDBTransaction);
         return t;
     }
 
@@ -84,9 +84,6 @@ public:
 
     bool VerifyBestBlock(const uint256& hash);
     void WriteBestBlock(const uint256& hash);
-
-    void CommitTransaction(CurTransaction & tx);
-    void ClearTransaction(CurTransaction & tx);
 };
 
 extern CEvoDB* evoDb;

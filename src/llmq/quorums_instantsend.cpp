@@ -5,7 +5,6 @@
 #include "quorums_chainlocks.h"
 #include "quorums_instantsend.h"
 #include "quorums_utils.h"
-#include "evo/spork.h"
 
 #include "bls/bls_batchverifier.h"
 #include "chainparams.h"
@@ -13,11 +12,15 @@
 #include "txmempool.h"
 #include "masternode-sync.h"
 #include "net_processing.h"
+#include "spork.h"
 #include "validation.h"
 
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
 #endif
+
+// needed for AUTO_IX_MEMPOOL_THRESHOLD
+#include "instantx.h"
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>
@@ -1143,7 +1146,7 @@ void CInstantSendManager::UpdatedBlockTip(const CBlockIndex* pindexNew)
     // TODO remove this after DIP8 has activated
     bool fDIP0008Active = chainActive.Height() >= Params().GetConsensus().DIP0008Height;
 
-    if (fDIP0008Active && IsChainlocksEnabled(pindexNew)) {
+    if (sporkManager.IsSporkActive(SPORK_19_CHAINLOCKS_ENABLED) && fDIP0008Active) {
         // Nothing to do here. We should keep all islocks and let chainlocks handle them.
         return;
     }
@@ -1514,6 +1517,21 @@ void CInstantSendManager::WorkThreadMain()
             }
         }
     }
+}
+
+bool IsOldInstantSendEnabled()
+{
+    return sporkManager.IsSporkActive(SPORK_2_INSTANTSEND_ENABLED) && !sporkManager.IsSporkActive(SPORK_20_INSTANTSEND_LLMQ_BASED);
+}
+
+bool IsNewInstantSendEnabled()
+{
+    return sporkManager.IsSporkActive(SPORK_2_INSTANTSEND_ENABLED) && sporkManager.IsSporkActive(SPORK_20_INSTANTSEND_LLMQ_BASED);
+}
+
+bool IsInstantSendEnabled()
+{
+    return sporkManager.IsSporkActive(SPORK_2_INSTANTSEND_ENABLED);
 }
 
 }

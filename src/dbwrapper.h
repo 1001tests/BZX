@@ -726,7 +726,7 @@ public:
     }
 };
 
-template<typename Parent, typename CommitTarget, typename CommitGuard>
+template<typename Parent, typename CommitTarget>
 class CScopedDBTransaction {
 public:
     typedef CDBTransaction<Parent, CommitTarget> Transaction;
@@ -736,10 +736,9 @@ private:
     std::function<void ()> commitHandler;
     std::function<void ()> rollbackHandler;
     bool didCommitOrRollback{};
-    CommitGuard & commitGuard;
 
 public:
-    CScopedDBTransaction(Transaction &dbTx, CommitGuard & commitGuard) : dbTransaction(dbTx), commitGuard(commitGuard) {}
+    CScopedDBTransaction(Transaction &dbTx) : dbTransaction(dbTx) {}
     ~CScopedDBTransaction() {
         if (!didCommitOrRollback)
             Rollback();
@@ -747,21 +746,21 @@ public:
     void Commit() {
         assert(!didCommitOrRollback);
         didCommitOrRollback = true;
-        commitGuard.CommitTransaction(dbTransaction);
+        dbTransaction.Commit();
         if (commitHandler)
             commitHandler();
     }
     void Rollback() {
         assert(!didCommitOrRollback);
         didCommitOrRollback = true;
-        commitGuard.ClearTransaction(dbTransaction);
+        dbTransaction.Clear();
         if (rollbackHandler)
             rollbackHandler();
     }
 
-    static std::unique_ptr<CScopedDBTransaction<Parent, CommitTarget, CommitGuard>> Begin(Transaction &dbTx, CommitGuard & commitGuard) {
+    static std::unique_ptr<CScopedDBTransaction<Parent, CommitTarget>> Begin(Transaction &dbTx) {
         assert(dbTx.IsClean());
-        return std::make_unique<CScopedDBTransaction<Parent, CommitTarget, CommitGuard>>(dbTx, commitGuard);
+        return std::make_unique<CScopedDBTransaction<Parent, CommitTarget>>(dbTx);
     }
 
     void SetCommitHandler(const std::function<void ()> &h) {

@@ -1,5 +1,5 @@
-#ifndef BZX_SIGMA_COINSPEND_H
-#define BZX_SIGMA_COINSPEND_H
+#ifndef ZCOIN_SIGMA_COINSPEND_H
+#define ZCOIN_SIGMA_COINSPEND_H
 
 #include "coin.h"
 #include "sigmaplus_proof.h"
@@ -32,8 +32,6 @@ public:
 
     const Scalar& getCoinSerialNumber();
 
-    const SigmaPlusProof<Scalar, GroupElement>& getProof();
-
     CoinDenomination getDenomination() const;
 
     int64_t getIntDenomination() const;
@@ -52,11 +50,7 @@ public:
 
     bool HasValidSerial() const;
 
-    bool Verify(
-            const std::vector<sigma::PublicCoin>& anonymity_set,
-            const SpendMetaData &m,
-            bool fPadding,
-            bool fSkipVerification = false) const;
+    bool Verify(const std::vector<sigma::PublicCoin>& anonymity_set, const SpendMetaData &m, bool fPadding) const;
 
     ADD_SERIALIZE_METHODS;
     template <typename Stream, typename Operation>
@@ -94,4 +88,4 @@ private:
 
 } //namespace sigma
 
-#endif // BZX_SIGMA_COINSPEND_H
+#endif // ZCOIN_SIGMA_COINSPEND_H

@@ -1,5 +1,5 @@
-#ifndef BZX_ELYSIUM_TX_H
-#define BZX_ELYSIUM_TX_H
+#ifndef ZCOIN_ELYSIUM_TX_H
+#define ZCOIN_ELYSIUM_TX_H
 
 class CMPMetaDEx;
 class CMPOffer;
@@ -395,4 +395,4 @@ private:
 /** Parses a transaction and populates the CMPTransaction object. */
 int ParseTransaction(const CTransaction& tx, int nBlock, unsigned int idx, CMPTransaction& mptx, unsigned int nTime=0);
 
-#endif // BZX_ELYSIUM_TX_H
+#endif // ZCOIN_ELYSIUM_TX_H

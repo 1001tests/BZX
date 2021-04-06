@@ -23,9 +23,6 @@
 #include "random.h"
 #include "netaddress.h"
 #include "bls/bls.h"
-#include "lelantus.h"
-
-#include "evo/spork.h"
 
 #undef foreach
 #include "boost/multi_index_container.hpp"
@@ -471,6 +468,7 @@ private:
 public:
 
     static const int ROLLING_FEE_HALFLIFE = 60 * 60 * 12; // public only for testing
+    unsigned long countZCSpend;
     typedef boost::multi_index_container<
         CTxMemPoolEntry,
         boost::multi_index::indexed_by<
@@ -518,8 +516,6 @@ public:
 
     const setEntries & GetMemPoolParents(txiter entry) const;
     const setEntries & GetMemPoolChildren(txiter entry) const;
-
-    lelantus::CLelantusMempoolState lelantusState;
 private:
     typedef std::map<txiter, setEntries, CompareIteratorByHash> cacheMap;
 
@@ -553,8 +549,6 @@ private:
     void UpdateChild(txiter entry, txiter child, bool add);
 
     std::vector<indexed_transaction_set::const_iterator> GetSortedDepthAndScore() const;
-
-    CMempoolSporkManager sporkManager;
 
 public:
     indirectmap<COutPoint, const CTransaction*> mapNextTx;
@@ -619,9 +613,6 @@ public:
     void PrioritiseTransaction(const uint256 hash, const std::string strHash, double dPriorityDelta, const CAmount& nFeeDelta);
     void ApplyDeltas(const uint256 hash, double &dPriorityDelta, CAmount &nFeeDelta) const;
     void ClearPrioritisation(const uint256 hash);
-
-    bool IsTransactionAllowed(const CTransaction &tx, CValidationState &state) const;
-    ActiveSporkMap GetActiveSporks() const { return sporkManager.GetActiveSporks(); }
 
 public:
     /** Remove a set of transactions from the mempool.
@@ -727,7 +718,7 @@ public:
 
     /** Estimate priority needed to get into the next nBlocks */
     double estimatePriority(int nBlocks) const;
-
+    
     /** Write/Read estimates to disk */
     bool WriteFeeEstimates(CAutoFile& fileout) const;
     bool ReadFeeEstimates(CAutoFile& filein);
@@ -780,7 +771,7 @@ private:
     void removeUnchecked(txiter entry, MemPoolRemovalReason reason = MemPoolRemovalReason::UNKNOWN);
 };
 
-/**
+/** 
  * CCoinsView that brings transactions from a memorypool into view.
  * It does not check for spendings by memory pool transactions.
  */

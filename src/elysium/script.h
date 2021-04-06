@@ -1,5 +1,5 @@
-#ifndef BZX_ELYSIUM_SCRIPT_H
-#define BZX_ELYSIUM_SCRIPT_H
+#ifndef ZCOIN_ELYSIUM_SCRIPT_H
+#define ZCOIN_ELYSIUM_SCRIPT_H
 
 #include "../script/script.h"
 #include "../script/standard.h"
@@ -45,4 +45,4 @@ Output GetPushedValues(const CScript& script, Output output)
 
 } // namespace elysium
 
-#endif // BZX_ELYSIUM_SCRIPT_H
+#endif // ZCOIN_ELYSIUM_SCRIPT_H

@@ -1,5 +1,5 @@
-#ifndef BZX_ELYSIUM_SIGMA_H
-#define BZX_ELYSIUM_SIGMA_H
+#ifndef ZCOIN_ELYSIUM_SIGMA_H
+#define ZCOIN_ELYSIUM_SIGMA_H
 
 #include "property.h"
 #include "sigmaprimitives.h"
@@ -19,4 +19,4 @@ bool VerifySigmaSpend(
 
 } // namespace elysium
 
-#endif // BZX_ELYSIUM_SIGMA_H
+#endif // ZCOIN_ELYSIUM_SIGMA_H

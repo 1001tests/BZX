@@ -26,7 +26,7 @@ elif [[ $HOST = "x86_64-apple-darwin14" ]]; then
     ARCHIVE_NAME="osx-x64.zip"
 fi
 
-cp qt/bitcoinzero-qt bin/ || cp qt/bitcoinzero-qt.exe bin/ || echo "no qt"
+cp qt/zcoin-qt bin/ || cp qt/zcoin-qt.exe bin/ || echo "no qt"
 cp bitcoinzerod bin/ || cp bitcoinzerod.exe bin/ || echo "no daemon"
 cp bitcoinzero-cli bin/ || cp bitcoinzero-cli.exe bin/ || echo "no cli"
 cp bitcoinzero-tx bin/ || cp bitcoinzero-tx.exe bin/ || echo "no tx"

@@ -61,7 +61,7 @@ public:
 
 #ifdef ENABLE_WALLET
     /** Set the wallet model.
-        The wallet model represents a BZX wallet, and offers access to the list of transactions, address book and sending
+        The wallet model represents a Zcoin wallet, and offers access to the list of transactions, address book and sending
         functionality.
     */
     bool addWallet(const QString& name, WalletModel *walletModel);
@@ -119,7 +119,9 @@ private:
     QAction *openRPCConsoleAction;
     QAction *openAction;
     QAction *showHelpMessageAction;
-    QAction *lelantusAction;
+    QAction *sigmaAction;
+    QAction *zc2SigmaAction;
+    QAction *znodeAction;
     QAction *masternodeAction;
 
     QSystemTrayIcon *trayIcon;
@@ -154,10 +156,10 @@ private:
     /** Disconnect core signals from GUI client */
     void unsubscribeFromCoreSignals();
 
-   /** Updates Znode visibility */
+    /** Updates Zc2SigmaPage visibility */
+    void checkZc2SigmaVisibility(int numBlocks);
+    /** Updates Znode visibility */
     void checkZnodeVisibility(int numBlocks);
-    /** Updates Lelantus visibility */
-    void checkLelantusVisibility(int numBlocks);
     /** Update UI with latest network info from model. */
     void updateNetworkState();
 
@@ -221,16 +223,20 @@ private Q_SLOTS:
 #endif
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
-    /** Switch directly to BZX history tab */
+    /** Switch directly to Zcoin history tab */
     void gotoBitcoinHistoryTab();
+    /** Switch to znode page */
+    void gotoZnodePage();
     /** Switch to masternode page */
     void gotoMasternodePage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-    /** Switch to lelantus page */
-    void gotoLelantusPage();
+    /** Switch to sigma page */
+    void gotoSigmaPage();
+    /** Switch to ZC->sigma page */
+    void gotoZc2SigmaPage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
@@ -265,7 +271,7 @@ private Q_SLOTS:
 
     /** Show progress dialog e.g. for verifychain */
     void showProgress(const QString &title, int nProgress);
-
+    
     /** When hideTrayIcon setting is changed in OptionsModel hide or show the icon accordingly. */
     void setTrayIconVisible(bool);
 
@@ -273,9 +279,6 @@ private Q_SLOTS:
     void toggleNetworkActive();
 
     void showModalOverlay();
-
-    /** Update Lelantus page visibility */
-    void updateLelantusPage();
 };
 
 class UnitDisplayStatusBarControl : public QLabel

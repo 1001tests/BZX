@@ -1,5 +1,5 @@
-#ifndef BZX_ELYSIUM_PACKETENCODER_H
-#define BZX_ELYSIUM_PACKETENCODER_H
+#ifndef ZCOIN_ELYSIUM_PACKETENCODER_H
+#define ZCOIN_ELYSIUM_PACKETENCODER_H
 
 #include "script.h"
 
@@ -228,4 +228,4 @@ basic_ostream<Char, Traits>& operator<<(basic_ostream<Char, Traits>& os, PacketC
 
 } // namespace std
 
-#endif // BZX_ELYSIUM_PACKETENCODER_H
+#endif // ZCOIN_ELYSIUM_PACKETENCODER_H

@@ -59,9 +59,6 @@ bool WalletFrame::addWallet(const QString& name, WalletModel *walletModel)
 
     connect(walletView, SIGNAL(outOfSyncWarningClicked()), this, SLOT(outOfSyncWarningClicked()));
 
-    // Ensure walletview is able to response to resize and move events
-    gui->installEventFilter(walletView);
-
     return true;
 }
 
@@ -159,6 +156,13 @@ void WalletFrame::gotoToolboxPage()
 }
 #endif
 
+void WalletFrame::gotoZnodePage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoZnodePage();
+}
+
 void WalletFrame::gotoMasternodePage()
 {
     QMap<QString, WalletView*>::const_iterator i;
@@ -187,11 +191,25 @@ void WalletFrame::gotoSignMessageTab(QString addr)
         walletView->gotoSignMessageTab(addr);
 }
 
-void WalletFrame::gotoLelantusPage()
+void WalletFrame::gotoZerocoinPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoLelantusPage();
+        i.value()->gotoZerocoinPage();
+}
+
+void WalletFrame::gotoSigmaPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoSigmaPage();
+}
+
+void WalletFrame::gotoZc2SigmaPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoZc2SigmaPage();
 }
 
 void WalletFrame::gotoVerifyMessageTab(QString addr)

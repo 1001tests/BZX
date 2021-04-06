@@ -57,6 +57,7 @@ public:
     };
 
     const Consensus::Params& GetConsensus() const { return consensus; }
+    void SetRegTestMtpSwitchTime(uint32_t time) { if(consensus.chainType == Consensus::chainRegtest) consensus.nMTPSwitchTime = time;}
     const CMessageHeader::MessageStartChars& MessageStart() const { return pchMessageStart; }
     int GetDefaultPort() const { return nDefaultPort; }
 
@@ -82,9 +83,18 @@ public:
     int64_t MaxTipAge() const { return nMaxTipAge; }
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     int FulfilledRequestExpireTime() const { return nFulfilledRequestExpireTime; }
+    std::string SporkPubKey() const { return strSporkPubKey; }
+    std::string ZnodePaymentPubKey() const { return strZnodePaymentsPubKey; }
 	
-    const ChainTxData& TxData() const { return chainTxData; }
+	/** Zerocoin-related block numbers when features are changed */
+	int nSpendV15StartBlock;
+	int nSpendV2ID_1, nSpendV2ID_10, nSpendV2ID_25, nSpendV2ID_50, nSpendV2ID_100;
+	
+	int nModulusV2StartBlock;
+    int nModulusV1MempoolStopBlock;
+	int nModulusV1StopBlock;
 
+    const ChainTxData& TxData() const { return chainTxData; }
 protected:
     CChainParams() {}
 
@@ -108,6 +118,8 @@ protected:
     long nMaxTipAge;
     int nPoolMaxTransactions;
     int nFulfilledRequestExpireTime;
+    std::string strSporkPubKey;
+    std::string strZnodePaymentsPubKey;
     ChainTxData chainTxData;
 };
 

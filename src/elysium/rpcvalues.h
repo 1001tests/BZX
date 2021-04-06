@@ -1,5 +1,5 @@
-#ifndef BZX_ELYSIUM_RPCVALUES_H
-#define BZX_ELYSIUM_RPCVALUES_H
+#ifndef ZCOIN_ELYSIUM_RPCVALUES_H
+#define ZCOIN_ELYSIUM_RPCVALUES_H
 
 class CPubKey;
 class CTransaction;
@@ -45,4 +45,4 @@ SigmaDenomination ParseSigmaDenomination(const UniValue& value);
 
 }
 
-#endif // BZX_ELYSIUM_RPCVALUES_H
+#endif // ZCOIN_ELYSIUM_RPCVALUES_H

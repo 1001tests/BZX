@@ -1,5 +1,5 @@
-#ifndef BZX_QT_MANUALMINTDIALOG_H
-#define BZX_QT_MANUALMINTDIALOG_H
+#ifndef ZCOIN_QT_MANUALMINTDIALOG_H
+#define ZCOIN_QT_MANUALMINTDIALOG_H
 
 #include <QDialog>
 
@@ -22,4 +22,4 @@ private:
     const PlatformStyle *platformStyle;
 };
 
-#endif // BZX_QT_MANUALMINTDIALOG_H
+#endif // ZCOIN_QT_MANUALMINTDIALOG_H

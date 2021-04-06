@@ -61,23 +61,17 @@
          <item>
           <widget class="QLineEdit" name="filterLineEditDIP3">
            <property name="toolTip">
-            <string>Filter masternode list</string>
+            <string>Filter znode list</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="checkBoxMyMasternodesOnly">
            <property name="toolTip">
-            <string>Show only masternodes this wallet has keys for.</string>
+            <string>Show only znodes this wallet has keys for.</string>
            </property>
            <property name="text">
-            <string>My masternodes only</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
+            <string>My Znodes only</string>
            </property>
           </widget>
          </item>

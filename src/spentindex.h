@@ -357,4 +357,5 @@ struct CAddressIndexIteratorHeightKey {
     }
 };
 
+
 #endif // BITCOIN_SPENTINDEX_H

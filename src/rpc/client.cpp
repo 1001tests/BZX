@@ -85,6 +85,9 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "listunspent", 1, "maxconf" },
     { "listunspent", 2, "addresses" },
     { "regeneratemintpool", 0 },
+    { "listunspentmintzerocoins", 0 },
+    { "listunspentmintzerocoins", 1 },
+    { "listunspentmintzerocoins", 2 },
     { "listunspentsigmamints", 0 },
     { "listunspentsigmamints", 1 },
     { "listunspentsigmamints", 2 },
@@ -150,30 +153,30 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "echojson", 7, "arg7" },
     { "echojson", 8, "arg8" },
     { "echojson", 9, "arg9" },
-        //[BZX]
+        //[zcoin]
     { "setmininput", 0 },
     { "mint", 0 },
+    { "mintzerocoin", 0 },
+    { "spendzerocoin", 0 },
+    { "spendmanyzerocoin", 0 },
     { "spendmany", 1 },
     { "spendmany", 2 },
     { "spendmany", 4 },
     { "setgenerate", 0 },
     { "setgenerate", 1 },
+    { "setmintzerocoinstatus", 2 },
+    { "setmintzerocoinstatus", 1 },
     { "setsigmamintstatus", 1 },
-    { "setlelantusmintstatus", 1 },
+    { "listmintzerocoins", 0 },
     { "listsigmamints", 0 },
+    { "listpubcoins", 0 },
     { "listsigmapubcoins", 0 },
+    { "listspendzerocoins", 0 },
+    { "listspendzerocoins", 1 },
     { "listsigmaspends", 0 },
     { "listsigmaspends", 1 },
-    { "listlelantusjoinsplits", 0 },
-    { "listlelantusjoinsplits", 1 },
-    { "joinsplit", 0 },
-    { "joinsplit", 2 },
-    { "spendallzerocoin", 0 },
-    { "getanonymityset", 0},
-    { "getmintmetadata", 0 },
-    { "getusedcoinserials", 0 },
-    { "getlatestcoinids", 0 },
-
+	{ "spendallzerocoin", 0 },
+    { "remintzerocointosigma", 0 },
     /* Elysium - data retrieval calls */
 	{ "elysium_gettradehistoryforaddress", 1 },
 	{ "elysium_gettradehistoryforaddress", 2 },
@@ -322,9 +325,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
 	{ "trade_MP", 1 }, // depreciated
 	{ "trade_MP", 3 }, // depreciated
 	{ "trade_MP", 5 }, // depreciated
-
-    /* Evo spork */
-    { "spork", 2, "features"},
 };
 
 class CRPCConvertTable
