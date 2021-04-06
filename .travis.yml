@@ -76,11 +76,11 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: "Pz7lLzFo9VhuytIKHp3jR2gE28ezYTj4g+MpjctreJeapgmJQDiObncWyeuMGhhAZCHyObO4f1W6vYGYRSayAximxhbFYC2MG9GyG2qU8P3+736HffXWDh4lPz82C56DWeZlXaj6TezQXxjeMqOfQfqE0NpFp+bJckkdMrAKZLVU1pYBjwMU/hmKAP9o4a6AnKuYoih1LmXEkVlYdcphLKGyB/E45v1vBNE9n58rQXBBfPOBMaApWxeiTTjEvrCjln68yLfEaKFu8+DdtXKJSTGZ+e9IhO7t56eqGq/QFWpwsacf7JbmN51uAi8hM79OLxkDIm4xiItsaOIzm7dcZTUY3JSL0kjfU96cmA8JhsowEkqxFJBz8tDWWonosv6xeiT9jzxK+C6cYMfP0gYWf4IcMgwSOukI3iAlHfwONzqJtaJPEVJulEjSUC+XAqv3LkSonS/Pku9udPzEq818j5zXCtg2SW23c++WPE/xMYcB/QP1t25fQeFRxbMoHOaIow9OsMKRRmc2jQz4yVlcRNxKOnKHHuZuBww/XgsqryaYxKIUHU0gwc4wS9y3Xpz7Btp5LFkBmu9kFhHxn4suSPYGsQxgq5vtOSiDttsMSpA9757xxrcIHZliGGv5X36+4cg3HaU5qEb7TDggDvaNfcyCL9iUZhjUNf06fC6GXC0="
+    secure: "KhD6oA3mj3lQ+0RvOWp5Nox9Cc829wMnDLmSL38B7oHgos5ZlyOLlDmMsQZXppPWDi/7c6aJ07jYXPehpgqwkkybR5rTSxGR0ysd5RnicFn9M0ixAagNEa4cVFPM4eKO7lcemdvDMRyBD2/6TztYdmSVqDE+cj/XbZUMvyndnUcf5gKAXP6Rr6EqroObmSBo9opiMVW1oK05pxLTTNp5xqef8fate+4x3SozCa6db7jNYGciTWQB4oQoES/j5y+F16xn4LON55eYGQtGcNzCOwdU0x9UjUDk8yyxUt6Lu+JqeyZ6xA2UuR6F/c4M9X/EcLoPujES6OOGazuGk9kyYmwoxpdOK3XkHViapY3hxVyNQXhileOjT+iHz7J64nJminAkVEzvx7FrEw78RCA6WEiDEgPNUSQoK9Ngr8vDYFGNocye0N3L4u8AOdzZkxSlTXZ4X0uV31II7JIrx0vrpxO+mpriZyyrqPpO4sWxTXqUXwK6R6ZCNvBzgUtGMvuXlLZqshxEinjrhXVfsclp+JctwBejTdonPFNhqoQNZi+POFQqr/XvfclJFSaE+ZMGx5Z0Ob5rNUNC6vj4dl5LfN7Wx6WNHYYupKp8Lm540LVNfXR6rvy19u91rX1vrUqvDipe7g/GfrV+acOkqF8a5L9yG8+/HWdLP6I4gA7fAF4="
   file_glob: true
   file:
     - out/**/zip/*
-    - /home/travis/build/808tests/BZX/build-ci/BZX-$BUILD_TARGET/src/bin/zip/*
+    - /home/travis/build/909tests/BZX/build-ci/BZX-$BUILD_TARGET/src/bin/zip/*
   skip_cleanup: true
   on:
     tags: true
