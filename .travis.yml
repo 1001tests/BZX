@@ -13,25 +13,25 @@ cache:
     - $HOME/cache
 
 stages:
-  #- build depends
+  - build depends
   - build src
 
-#builddepends: &builddepends
-#  stage: build depends
-#  script:
-#    - $DOCKER_RUN_IN_BUILDER ./ci/build_depends.sh
+builddepends: &builddepends
+  stage: build depends
+  script:
+    - $DOCKER_RUN_IN_BUILDER ./ci/build_depends.sh
 
 buildsrc: &buildsrc
   stage: build src
   script:
-#    - $DOCKER_RUN_IN_BUILDER ./ci/build_depends.sh
+    - $DOCKER_RUN_IN_BUILDER ./ci/build_depends.sh
     - $DOCKER_RUN_IN_BUILDER ./ci/build_src.sh
 
 jobs:
   include:
     # build depends
-#    - <<: *builddepends
-#      env: BUILD_TARGET=win64
+    - <<: *builddepends
+      env: BUILD_TARGET=win64
     #- <<: *builddepends
       #env: BUILD_TARGET=linux64
     # build source
