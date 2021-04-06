@@ -40,7 +40,6 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "validation.h"
-#include "mtpstate.h"
 
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
@@ -505,7 +504,6 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-rpcserialversion", strprintf(_("Sets the serialization of raw transaction or block hex returned in non-verbose mode, non-segwit(0) or segwit(1) (default: %d)"), DEFAULT_RPC_SERIALIZE_VERSION));
     strUsage += HelpMessageOpt("-seednode=<ip>", _("Connect to a node to retrieve peer addresses, and disconnect"));
     strUsage += HelpMessageOpt("-timeout=<n>", strprintf(_("Specify connection timeout in milliseconds (minimum: 1, default: %d)"), DEFAULT_CONNECT_TIMEOUT));
-    strUsage += HelpMessageOpt("-torsetup", strprintf(_("Anonymous communication with TOR - Quickstart (default: %d)"), DEFAULT_TOR_SETUP));
     strUsage += HelpMessageOpt("-torcontrol=<ip>:<port>", strprintf(_("Tor control port to use if onion listening enabled (default: %s)"), DEFAULT_TOR_CONTROL));
     strUsage += HelpMessageOpt("-torpassword=<pass>", _("Tor control port password (default: empty)"));
 #ifdef USE_UPNP
@@ -764,7 +762,6 @@ void ThreadImport(std::vector <boost::filesystem::path> vImportFiles) {
 
     // -reindex
     if (fReindex) {
-        MTPState::GetMTPState()->Reset();
         int nFile = 0;
         while (true) {
             CDiskBlockPos pos(nFile, 0);
@@ -987,97 +984,6 @@ void InitParameterInteraction()
 
 static std::string ResolveErrMsg(const char *const optname, const std::string &strBind) {
     return strprintf(_("Cannot resolve -%s address: '%s'"), optname, strBind);
-}
-
-void RunTor(){
-	printf("TOR thread started.\n");
-
-	boost::optional < std::string > clientTransportPlugin;
-	struct stat sb;
-	if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR)
-			|| !std::system("which obfs4proxy")) {
-		clientTransportPlugin = "obfs4 exec obfs4proxy";
-	} else if (stat("obfs4proxy.exe", &sb) == 0 && sb.st_mode & S_IXUSR) {
-		clientTransportPlugin = "obfs4 exec obfs4proxy.exe";
-	}
-
-	fs::path tor_dir = GetDataDir() / "tor";
-	fs::create_directory(tor_dir);
-	fs::path log_file = tor_dir / "tor.log";
-
-	std::vector < std::string > argv;
-	argv.push_back("tor");
-	argv.push_back("--Log");
-	argv.push_back("notice file " + log_file.string());
-	argv.push_back("--SocksPort");
-	argv.push_back("9050");
-	argv.push_back("--ignore-missing-torrc");
-	argv.push_back("-f");
-	argv.push_back((tor_dir / "torrc").string());
-	argv.push_back("--HiddenServiceDir");
-	argv.push_back((tor_dir / "onion").string());
-	argv.push_back("--HiddenServicePort");
-	argv.push_back("8168");
-
-	if (clientTransportPlugin) {
-		printf("Using OBFS4.\n");
-		argv.push_back("--ClientTransportPlugin");
-		argv.push_back(*clientTransportPlugin);
-		argv.push_back("--UseBridges");
-		argv.push_back("1");
-	} else {
-		printf("No OBFS4 found, not using it.\n");
-	}
-
-	std::vector<char *> argv_c;
-	std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c),
-			convert_str);
-
-	tor_main(argv_c.size(), &argv_c[0]);
-}
-
-struct event_base *baseTor;
-boost::thread torEnabledThread;
-
-static void TorEnabledThread()
-{
-	RunTor();
-    event_base_dispatch(baseTor);
-}
-
-
-void StartTorEnabled(boost::thread_group& threadGroup, CScheduler& scheduler)
-{
-    assert(!baseTor);
-#ifdef WIN32
-    evthread_use_windows_threads();
-#else
-    evthread_use_pthreads();
-#endif
-    baseTor = event_base_new();
-    if (!baseTor) {
-        LogPrintf("tor: Unable to create event_base\n");
-        return;
-    }
-
-    torEnabledThread = boost::thread(boost::bind(&TraceThread<void (*)()>, "torcontrol", &TorEnabledThread));
-}
-
-void InterruptTorEnabled()
-{
-    if (baseTor) {
-        LogPrintf("tor: Thread interrupt\n");
-        event_base_loopbreak(baseTor);
-    }
-}
-
-void StopTorEnabled()
-{
-    if (baseTor) {
-        torEnabledThread.join();
-        event_base_free(baseTor);
-        baseTor = 0;
-    }
 }
 
 void InitLogging() {
@@ -1563,23 +1469,6 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         }
     }
 
-    // start tor
-    bool torEnabled = GetBoolArg("-torsetup", DEFAULT_TOR_SETUP);
-    if(torEnabled){
-    	StartTorEnabled(threadGroup, scheduler);
-        SetLimited(NET_TOR);
-        SetLimited(NET_IPV4);
-        SetLimited(NET_IPV6);
-        proxyType addrProxy = proxyType(LookupNumeric("127.0.0.1", 9050),
-                        true);
-        SetProxy(NET_IPV4, addrProxy);
-        SetProxy(NET_IPV6, addrProxy);
-        SetProxy(NET_TOR, addrProxy);
-        SetLimited(NET_IPV4, false);
-        SetLimited(NET_IPV6, false);
-        SetLimited(NET_TOR, false);
-    }
-
     bool proxyRandomize = GetBoolArg("-proxyrandomize", DEFAULT_PROXYRANDOMIZE);
     // -proxy sets a proxy for all outgoing network traffic
     // -noproxy (or -proxy=0) as well as the empty string can be used to not set a proxy, this is the default
@@ -1741,8 +1630,6 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
                 llmq::DestroyLLMQSystem();
                 delete pblocktree;
                 delete evoDb;
-
-                MTPState::GetMTPState()->SetMTPStartBlock(chainparams.GetConsensus().nMTPStartBlock);
 
                 pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
 

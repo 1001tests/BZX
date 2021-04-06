@@ -21,7 +21,7 @@ void NotifyZnodeWarning::notify()
 {
     const Consensus::Params& params = ::Params().GetConsensus();
     float numBlocksToEnforcement = params.DIP0003EnforcementHeight - chainActive.Tip()->nHeight;
-    float minutesToEnforcement = numBlocksToEnforcement * (params.nPowTargetSpacingMTP / 60);
+    float minutesToEnforcement = numBlocksToEnforcement * (150 / 60);
     float daysDecimal = minutesToEnforcement / 60 / 24;
     float daysToEnforcement = floor(daysDecimal);
     float hoursToEnforcement = floor((daysDecimal > 0 ? (daysDecimal - daysToEnforcement) : 0) * 24);

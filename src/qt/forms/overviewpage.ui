@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>642</width>
-    <height>342</height>
+    <height>359</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -495,19 +495,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="checkboxEnabledTor">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Anonymous communication with Tor</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>

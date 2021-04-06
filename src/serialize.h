@@ -245,11 +245,6 @@ template<typename Stream> inline void Unserialize(Stream& s, bool& a) { char f=s
 template <typename T> size_t GetSerializeSize(const T& t, int nType, int nVersion = 0);
 template <typename S, typename T> size_t GetSerializeSize(const S& s, const T& t);
 
-/**
- * Please note that Zcoin drops support for big-endian architectures and thus these functions are simple read/writes
- * It significantly improves MTP structures serialization performance
- */
-
 template <typename ItemType>
 using CArithType = typename std::enable_if<std::is_arithmetic<ItemType>::value>::type;
 

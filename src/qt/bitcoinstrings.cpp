@@ -354,7 +354,7 @@ QT_TRANSLATE_NOOP("zcoin-core", "Always query for peer addresses via DNS lookup 
 QT_TRANSLATE_NOOP("zcoin-core", "Amount for recipient %1% is too small to pay the fee"),
 QT_TRANSLATE_NOOP("zcoin-core", "Amount for recipient %1% is too small"),
 QT_TRANSLATE_NOOP("zcoin-core", "Amount limit is exceed max money"),
-QT_TRANSLATE_NOOP("zcoin-core", "Anonymous communication with TOR - Quickstart (default: %d)"),
+QT_TRANSLATE_NOOP("zcoin-core", "Anonymous communication - Quickstart (default: %d)"),
 QT_TRANSLATE_NOOP("zcoin-core", "Append comment to the user agent string"),
 QT_TRANSLATE_NOOP("zcoin-core", "Attempt to recover private keys from a corrupt wallet on startup"),
 QT_TRANSLATE_NOOP("zcoin-core", "Automatic backups disabled"),

@@ -126,15 +126,6 @@ UniValue generateBlocks(boost::shared_ptr<CReserveScript> coinbaseScript, int nG
             LOCK(cs_main);
             IncrementExtraNonce(pblock, chainActive.Tip(), nExtraNonce);
         }
-        if (pblock->IsMTP()) {
-            while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount) {
-                pblock->mtpHashValue = mtp::hash(*pblock, Params().GetConsensus().powLimit);
-                if (CheckProofOfWork(pblock->mtpHashValue, pblock->nBits, Params().GetConsensus()))
-                    break;
-                ++pblock->nNonce;
-                --nMaxTries;
-            }
-        }
         else {
             while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetPoWHash(nHeight+1), pblock->nBits, Params().GetConsensus())) {
                 ++pblock->nNonce;
@@ -693,9 +684,6 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     UniValue aRules(UniValue::VARR);
     UniValue vbavailable(UniValue::VOBJ);
     for (int j = 0; j < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; ++j) {
-        // MTP deployment has different set of rules
-        if (j == Consensus::DEPLOYMENT_MTP)
-            continue;
 
         Consensus::DeploymentPos pos = Consensus::DeploymentPos(j);
         ThresholdState state = VersionBitsState(pindexPrev, consensusParams, pos, versionbitscache);

@@ -252,15 +252,6 @@ public:
         consensus.llmqs[Consensus::LLMQ_400_85] = llmq400_85;
         consensus.nLLMQPowTargetSpacing = 5*60;
 
-        consensus.nMTPSwitchTime = SWITCH_TO_MTP_BLOCK_HEADER;
-        consensus.nMTPStartBlock = 117564;
-        consensus.nMTPFiveMinutesStartBlock = SWITCH_TO_MTP_5MIN_BLOCK;
-        consensus.nDifficultyAdjustStartBlock = 0;
-        consensus.nFixedDifficulty = 0x2000ffff;
-        consensus.nPowTargetSpacingMTP = 5*60;
-        consensus.nInitialMTPDifficulty = 0x1c021e57;
-        consensus.nMTPRewardReduction = 2;
-
         consensus.nDisableZerocoinStartBlock = 157000;
 
         nMaxTipAge = 6 * 60 * 60; // ~144 blocks behind -> 2 x fork detection time, was 24 * 60 * 60 in bitcoin
