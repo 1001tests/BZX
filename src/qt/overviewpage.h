@@ -52,7 +52,6 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void transactionClicked(const QModelIndex &index);
-    void enabledTorChanged();
     void outOfSyncWarningClicked();
 #ifdef ENABLE_ELYSIUM
     void elysiumTransactionClicked(const uint256& txid);
@@ -79,7 +78,6 @@ private:
 private Q_SLOTS:
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
-    void handleEnabledTorChanged();
     void updateAlerts(const QString &warnings);
     void updateWatchOnlyLabels(bool showWatchOnly);
     void handleOutOfSyncWarningClicks();

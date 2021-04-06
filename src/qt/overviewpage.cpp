@@ -131,20 +131,6 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
 {
     ui->setupUi(this);
 
-    // read config
-    bool torEnabled;
-    if(IsArgSet("-torsetup")){
-        torEnabled = GetBoolArg("-torsetup", DEFAULT_TOR_SETUP);
-    }else{
-        torEnabled = settings.value("fTorSetup").toBool();
-    }
-
-    if(torEnabled){
-        ui->checkboxEnabledTor->setChecked(true);
-    }else{
-        ui->checkboxEnabledTor->setChecked(false);
-    }
-
     // use a SingleColorIcon for the "out of sync warning" icon
     QIcon icon = platformStyle->SingleColorIcon(":/icons/warning");
     icon.addPixmap(icon.pixmap(QSize(64,64), QIcon::Normal), QIcon::Disabled); // also set the disabled icon because we are using a disabled QPushButton to work around missing HiDPI support of QLabel (https://bugreports.qt.io/browse/QTBUG-42503)
@@ -158,7 +144,6 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     ui->listTransactions->setAttribute(Qt::WA_MacShowFocusRect, false);
 
     connect(ui->listTransactions, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTransactionClicked(QModelIndex)));
-    connect(ui->checkboxEnabledTor, SIGNAL(toggled(bool)), this, SLOT(handleEnabledTorChanged()));
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);

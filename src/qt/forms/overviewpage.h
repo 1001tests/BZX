@@ -59,7 +59,6 @@ public:
     QLabel *labelPendingText;
     QLabel *labelSpendable;
     QSpacerItem *verticalSpacer;
-    QCheckBox *checkboxEnabledTor;
     QVBoxLayout *verticalLayout_3;
     QFrame *frame_2;
     QVBoxLayout *verticalLayout;
@@ -277,14 +276,6 @@ public:
 
         verticalLayout_2->addItem(verticalSpacer);
 
-        checkboxEnabledTor = new QCheckBox(OverviewPage);
-        checkboxEnabledTor->setObjectName(QString::fromUtf8("checkboxEnabledTor"));
-
-        checkboxEnabledTor->setChecked(false);
-
-        verticalLayout_2->addWidget(checkboxEnabledTor);
-
-
         horizontalLayout->addLayout(verticalLayout_2);
 
         verticalLayout_3 = new QVBoxLayout();
@@ -389,7 +380,6 @@ public:
 #endif // QT_NO_TOOLTIP
         labelPendingText->setText(QApplication::translate("OverviewPage", "Pending:", 0, QApplication::UnicodeUTF8));
         labelSpendable->setText(QApplication::translate("OverviewPage", "Spendable:", 0, QApplication::UnicodeUTF8));
-        checkboxEnabledTor->setText(QApplication::translate("OverviewPage", "Anonymous communication with Tor", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("OverviewPage", "Recent transactions", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         labelTransactionsStatus->setToolTip(QApplication::translate("OverviewPage", "The displayed information may be out of date. Your wallet automatically synchronizes with the Zcoin network after a connection is established, but this process has not completed yet.", 0, QApplication::UnicodeUTF8));

@@ -46,7 +46,6 @@ public:
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
         Listen,                 // bool
-        TorSetup,               // bool
         OptionIDRowCount,
     };
 
