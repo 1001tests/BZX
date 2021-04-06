@@ -1,20 +1,20 @@
-// Copyright (c) 2018 The Dash Core developers
+// Copyright (c) 2018-2019 The Dash Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef DASH_CRYPTO_BLS_H
 #define DASH_CRYPTO_BLS_H
 
-#include "hash.h"
-#include "serialize.h"
-#include "uint256.h"
-#include "utilstrencodings.h"
+#include <hash.h>
+#include <serialize.h>
+#include <uint256.h>
+#include <utilstrencodings.h>
 
 #undef ERROR // chia BLS uses relic, which defines ERROR, which in turn causes win32/win64 builds to print many warnings
-#include <bls-signatures/src/bls.hpp>
-#include <bls-signatures/src/privatekey.hpp>
-#include <bls-signatures/src/publickey.hpp>
-#include <bls-signatures/src/signature.hpp>
+#include <chiabls/bls.hpp>
+#include <chiabls/privatekey.hpp>
+#include <chiabls/publickey.hpp>
+#include <chiabls/signature.hpp>
 #undef DOUBLE
 
 #include <array>
