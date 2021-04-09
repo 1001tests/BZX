@@ -576,7 +576,7 @@ libbitcoin_util_a_SOURCES = \
   libzerocoin/AccumulatorProofOfKnowledge.cpp \
   libzerocoin/SpendMetaData.h \
   libzerocoin/SpendMetaData.cpp \
-  libzerocoin/Zerocoin.h
+  libzerocoin/Zerocoin.h \
   $(BITCOIN_CORE_H)
 
 libsigma_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) -Werror
