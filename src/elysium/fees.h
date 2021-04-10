@@ -1,7 +1,7 @@
 #ifndef ELYSIUM_FEES_H
 #define ELYSIUM_FEES_H
 
-#include "leveldb/db.h"
+#include leveldb/db.h"
 
 #include "elysium/log.h"
 #include "elysium/persistence.h"
