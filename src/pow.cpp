@@ -37,22 +37,7 @@ double GetDifficultyHelper(unsigned int nBits) {
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params)
 {
-    if (!pindexLast || pindexLast->nHeight < params.nDifficultyAdjustStartBlock)
-        return params.nFixedDifficulty;
 
-    if (params.IsTestnet()) {
-        // If the new block's timestamp is more than nTargetSpacing*6
-        // then allow mining of a min-difficulty block
-        if (pblock->nTime > pindexLast->nTime + params.nPowTargetTimespan * 1) {
-            return params.nFixedDifficulty;
-        }
-    }
-
-    // 9/29/2016 - Reset to Lyra2(2,block_height,256) due to ASIC KnC Miner Scrypt
-    // 36 block look back, reset to mininmum diff
-    if (params.IsMain() && pindexLast->nHeight + 1 >= HF_LYRA2VAR_HEIGHT && pindexLast->nHeight + 1 <= HF_LYRA2VAR_HEIGHT + 36 - 1) {
-        return params.nFixedDifficulty;
-    }
     // 02/11/2017 - Increase diff to match with new hashrates of Lyra2Z algo
     if (params.IsMain() && pindexLast->nHeight + 1 == HF_LYRA2Z_HEIGHT) {
         CBigNum bnNew;
