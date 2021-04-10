@@ -6,7 +6,7 @@
 // the last "sync". It then checks for data loss errors by purposely dropping
 // file data (or entire files) not protected by a "sync".
 
-#include "../leveldb/db.h"
+#include "leveldb/db.h"
 
 #include <map>
 #include <set>
