@@ -266,7 +266,7 @@ struct Params {
     /** Time between blocks for LLMQ random time purposes. Can be less than actual average distance between blocks */
     int nLLMQPowTargetSpacing;
 	
-    int64_t DifficultyAdjustmentInterval() const { 1 };
+    int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
 
