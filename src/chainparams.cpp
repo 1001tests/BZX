@@ -378,7 +378,7 @@ static CMainParams mainParams;
  */
 class CTestNetParams : public CChainParams {
 public:
-    CTestNetParams() {
+    CTestNetParams() {}
 
 };
 
