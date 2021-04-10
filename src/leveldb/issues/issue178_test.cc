@@ -7,7 +7,7 @@
 #include <sstream>
 #include <cstdlib>
 
-#include "leveldb/db.h"
+#include "../leveldb/db.h"
 #include "leveldb/write_batch.h"
 #include "util/testharness.h"
 

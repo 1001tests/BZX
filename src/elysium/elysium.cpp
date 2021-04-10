@@ -63,7 +63,7 @@
 
 #include <openssl/sha.h>
 
-#include "leveldb/db.h"
+#include "../leveldb/db.h"
 
 #include <assert.h>
 #include <stdint.h>
