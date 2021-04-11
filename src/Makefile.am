@@ -627,6 +627,7 @@ zcoind_SOURCES = bitcoind.cpp
 zcoind_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 zcoind_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 zcoind_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+EXTRA_zcoind_DEPENDENCIES = $(LIBBLSSIG_LIBS)
 
 if TARGET_WINDOWS
 zcoind_SOURCES += bitcoind-res.rc
@@ -700,7 +701,7 @@ if GLIBC_BACK_COMPAT
   libbitcoinconsensus_la_SOURCES += compat/glibc_compat.cpp
 endif
 
-libbitcoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
+libbitcoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS) $(LIBBLSSIG_LIBS) $(LIBBLSSIG_DEPENDS)
 libbitcoinconsensus_la_LIBADD = $(LIBSECP256K1)
 libbitcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL
 libbitcoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
