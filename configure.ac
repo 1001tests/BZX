@@ -265,7 +265,7 @@ AC_ARG_WITH([daemon],
   [AS_HELP_STRING([--with-daemon],
   [build bitcoind daemon (default=yes)])],
   [build_bitcoind=$withval],
-  [build_bitcoind=yes])
+  [build_bitcoind=no])
 
 AC_ARG_ENABLE(unsafe-dumpprivkey,
     [],
