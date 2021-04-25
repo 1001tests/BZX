@@ -1669,26 +1669,7 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
                     break;
                 }
 
-                if (!fReindex) {
-                    CBlockIndex *tip = chainActive.Tip();
-                    if (tip && tip->nHeight >= chainparams.GetConsensus().nSigmaStartBlock) {
-                        const uint256* phash = tip->phashBlock;
-                        if (pblocktree->GetBlockIndexVersion(*phash) < SIGMA_PROTOCOL_ENABLEMENT_VERSION) {
-                            strLoadError = _(
-                                    "Block index is outdated, reindex required\n");
-                            break;
-                        }
-                    }
-                }
 
-                // If the loaded chain has a wrong genesis, bail out immediately
-                // (we're likely using a testnet datadir, or the other way around).
-                if (!mapBlockIndex.empty() && mapBlockIndex.count(chainparams.GetConsensus().hashGenesisBlock) == 0) {
-                    LogPrintf("Genesis block hash %s not found.\n",
-                        chainparams.GetConsensus().hashGenesisBlock.ToString());
-                    LogPrintf("mapBlockIndex contains %d blocks.\n", mapBlockIndex.size());
-                    return InitError(_("Incorrect or no genesis block found. Wrong datadir for network?"));
-                }
 
                 // Initialize the block index (no-op if non-empty database was already loaded)
                 if (!InitBlockIndex(chainparams)) {
