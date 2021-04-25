@@ -3,7 +3,7 @@
 export LC_ALL=C.UTF-8
 
 cd ..
-cd build-ci/BZX-$BUILD_TARGET/src
+cd build-ci/zcoin-$BUILD_TARGET/src
 mkdir -p bin
 ls -lah
 
