@@ -384,6 +384,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts(boost::function<CBlockIndex*(const uint256
                 //pindexNew->lelantusSpentSerials     = diskindex.lelantusSpentSerials;
 
                 //pindexNew->activeDisablingSporks = diskindex.activeDisablingSporks; //xxxx
+                //pindexNew->anonymitySetHash         = diskindex.anonymitySetHash;
 
                 pcursor->Next();
             } else {
