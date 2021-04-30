@@ -41,7 +41,7 @@ public:
 
 protected:
     virtual CAmount GetInputs(std::vector<std::unique_ptr<InputSigner>>& signers, CAmount required) = 0;
-    virtual CAmount GetChanges(std::vector<CTxOut>& outputs, CAmount amount) = 0;
+    virtual CAmount GetChanges(std::vector<CTxOut>& outputs, CAmount amount, CWalletDB& walletdb) = 0;
     virtual CAmount AdjustFee(CAmount needed, unsigned txSize);
 };
 
