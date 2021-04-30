@@ -13,7 +13,7 @@
 #include "serialize.h"
 #include "uint256.h"
 #include "definition.h"
-#include "zerocoin_params.h"
+#include "sigma_params.h"
 
 // Can't include sigma.h
 namespace sigma {
@@ -21,15 +21,10 @@ class CSigmaTxInfo;
 
 } // namespace sigma.
 
-unsigned char GetNfactor(int64_t nTimestamp);
+namespace lelantus {
+class CLelantusTxInfo;
 
-/** Nodes collect new transactions into a block, hash them into a hash tree,
- * and scan through nonce values to make the block's hash satisfy proof-of-work
- * requirements.  When they solve the proof-of-work, they broadcast the block
- * to everyone and the block is added to the block chain.  The first transaction
- * in the block is a special one that creates a new coin owned by the creator
- * of the block.
- */
+} // namespace lelantus
 
 inline int GetZerocoinChainID()
 {
@@ -48,8 +43,6 @@ public:
     uint32_t nNonce;
 
     static const int CURRENT_VERSION = 2;
-
-    mutable uint256 cachedPoWHash;
 
     CBlockHeader()
     {
@@ -110,9 +103,8 @@ public:
     {
         return (int64_t)nTime;
     }
-};
 
-class CZerocoinTxInfo;
+};
 
 class CBlock : public CBlockHeader
 {
@@ -122,30 +114,25 @@ public:
 
     // memory only
     mutable CTxOut txoutZnode; // znode payment
-    mutable std::vector<CTxOut> voutSuperblock; // superblock payment
     mutable bool fChecked;
 
-    // memory only, zerocoin tx info
-    mutable std::shared_ptr<CZerocoinTxInfo> zerocoinTxInfo;
-
-    // memory only, zerocoin tx info after V3-sigma.
+    // memory only, sigma tx info after V3-sigma.
     mutable std::shared_ptr<sigma::CSigmaTxInfo> sigmaTxInfo;
+
+    mutable std::shared_ptr<lelantus::CLelantusTxInfo> lelantusTxInfo;
 
     CBlock()
     {
-        zerocoinTxInfo = NULL;
         SetNull();
     }
 
     CBlock(const CBlockHeader &header)
     {
-        zerocoinTxInfo = NULL;
         SetNull();
         *((CBlockHeader*)this) = header;
     }
 
     ~CBlock() {
-        ZerocoinClean();
     }
 
     ADD_SERIALIZE_METHODS;
@@ -163,11 +150,9 @@ public:
 
     void SetNull()
     {
-        ZerocoinClean();
         CBlockHeader::SetNull();
         vtx.clear();
         txoutZnode = CTxOut();
-        voutSuperblock.clear();
         fChecked = false;
     }
 
@@ -180,12 +165,12 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+
         return block;
     }
 
     std::string ToString() const;
 
-    void ZerocoinClean() const;
 };
 
 /** Describes a place in the block chain to another node such that if the

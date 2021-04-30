@@ -18,7 +18,7 @@
 #include "httpserver.h"
 #include "httprpc.h"
 #include "utilstrencodings.h"
-#include "znodeconfig.h"
+#include "stacktraces.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
@@ -75,6 +75,12 @@ bool AppInit(int argc, char* argv[])
     // If Qt is used, parameters/bitcoin.conf are parsed in qt/bitcoin.cpp's main()
     ParseParameters(argc, argv);
 
+#ifdef ENABLE_CRASH_HOOKS
+     if (IsArgSet("-printcrashinfo")) {
+        std::cout << GetCrashInfoStrFromSerializedStr(GetArg("-printcrashinfo", "")) << std::endl;
+        return true;
+    }
+#endif
     // Process help and version before taking care about datadir
     if (IsArgSet("-?") || IsArgSet("-h") ||  IsArgSet("-help") || IsArgSet("-version"))
     {
@@ -87,7 +93,7 @@ bool AppInit(int argc, char* argv[])
         else
         {
             strUsage += "\n" + _("Usage:") + "\n" +
-                  "  zcoind [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
+                  "  bitcoinzerod [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
         }
@@ -118,23 +124,15 @@ bool AppInit(int argc, char* argv[])
             return false;
         }
 
-        // parse znode.conf
-        std::string strErr;
-        if(!znodeConfig.read(strErr)) {
-            fprintf(stderr,"Error reading znode configuration file: %s\n", strErr.c_str());
-            // TODO: ignore the error after switch to evo znodes
-            return false;
-        }
-
         // Command-line RPC
         bool fCommandLine = false;
         for (int i = 1; i < argc; i++)
-            if (!IsSwitchChar(argv[i][0]) && !boost::algorithm::istarts_with(argv[i], "zcoin:"))
+            if (!IsSwitchChar(argv[i][0]) && !boost::algorithm::istarts_with(argv[i], "BZX:"))
                 fCommandLine = true;
 
         if (fCommandLine)
         {
-            fprintf(stderr, "Error: There is no RPC client functionality in zcoind anymore. Use the zcoin-cli utility instead.\n");
+            fprintf(stderr, "Error: There is no RPC client functionality in bitcoinzerod anymore. Use the bitcoinzero-cli utility instead.\n");
             exit(EXIT_FAILURE);
         }
         // -server defaults to true for bitcoind but not for the GUI so do this here
@@ -160,7 +158,7 @@ bool AppInit(int argc, char* argv[])
         if (GetBoolArg("-daemon", false))
         {
 #if HAVE_DECL_DAEMON
-            fprintf(stdout, "Zcoin server starting\n");
+            fprintf(stdout, "BZX server starting\n");
 
             // Daemonize
             if (daemon(1, 0)) { // don't chdir (1), do close FDs (0)
@@ -175,10 +173,8 @@ bool AppInit(int argc, char* argv[])
 
         fRet = AppInitMain(threadGroup, scheduler);
     }
-    catch (const std::exception& e) {
-        PrintExceptionContinue(&e, "AppInit()");
-    } catch (...) {
-        PrintExceptionContinue(NULL, "AppInit()");
+    catch (...) {
+        PrintExceptionContinue(std::current_exception(), "AppInit()");
     }
 
     if (!fRet)
@@ -197,6 +193,10 @@ bool AppInit(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+#ifdef ENABLE_CRASH_HOOKS
+    RegisterPrettyTerminateHander();
+    RegisterPrettySignalHandlers();
+#endif    
     SetupEnvironment();
 
     // Connect bitcoind signal handlers

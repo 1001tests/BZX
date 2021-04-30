@@ -15,7 +15,8 @@
 #include <secp256k1/include/Scalar.h>
 #include <secp256k1/include/GroupElement.h>
 #include "sigma/coin.h"
-#include "zerocoin_params.h"
+#include "evo/spork.h"
+#include "sigma_params.h"
 #include "util.h"
 #include "chainparams.h"
 #include "coin_containers.h"
@@ -221,13 +222,6 @@ public:
     //! Maps <denomination,id> to vector of public coins
     map<pair<int,int>, vector<CBigNum>> mintedPubCoins;
 
-    //! Accumulator updates. Contains only changes made by mints in this block
-    //! Maps <denomination, id> to <accumulator value (CBigNum), number of such mints in this block>
-    map<pair<int,int>, pair<CBigNum,int>> accumulatorChanges;
-
-	//! Same as accumulatorChanges but for alternative modulus
-	map<pair<int,int>, pair<CBigNum,int>> alternativeAccumulatorChanges;
-
     //! Values of coin serials spent in this block
 	set<CBigNum> spentSerials;
 
@@ -236,9 +230,16 @@ public:
     //! Public coin values of mints in this block, ordered by serialized value of public coin
     //! Maps <denomination,id> to vector of public coins
     std::map<pair<sigma::CoinDenomination, int>, vector<sigma::PublicCoin>> sigmaMintedPubCoins;
+    //! Map id to <public coin, tag>
+    std::map<int, vector<std::pair<lelantus::PublicCoin, uint256>>>  lelantusMintedPubCoins;
 
     //! Values of coin serials spent in this block
     sigma::spend_info_container sigmaSpentSerials;
+    std::unordered_map<Scalar, int> lelantusSpentSerials;
+
+    //! list of disabling sporks active at this block height
+    //! map {feature name} -> {block number when feature is re-enabled again, parameter}
+    ActiveSporkMap activeDisablingSporks;
 
     void SetNull()
     {
@@ -262,11 +263,12 @@ public:
         nBits          = 0;
         nNonce         = 0;
 
-        mintedPubCoins.clear();
+
         sigmaMintedPubCoins.clear();
-        accumulatorChanges.clear();
-        spentSerials.clear();
+        lelantusMintedPubCoins.clear();
         sigmaSpentSerials.clear();
+        lelantusSpentSerials.clear();
+        activeDisablingSporks.clear();
     }
 
     CBlockIndex()
@@ -283,6 +285,7 @@ public:
         nTime          = block.nTime;
         nBits          = block.nBits;
         nNonce         = block.nNonce;
+
     }
 
     CDiskBlockPos GetBlockPos() const {
@@ -314,17 +317,12 @@ public:
         block.nBits          = nBits;
         block.nNonce         = nNonce;
 
-         return block;
+        return block;
     }
 
     uint256 GetBlockHash() const
     {
         return *phashBlock;
-    }
-
-    uint256 GetBlockPoWHash() const
-    {
-        return GetBlockHeader().GetPoWHash(nHeight);
     }
 
     int64_t GetBlockTime() const
@@ -439,6 +437,12 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
+        //READWRITE(lelantusMintedPubCoins);
+        //READWRITE(lelantusSpentSerials); //xxxx
+
+        const auto &params = Params().GetConsensus();
+        if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nEvoSporkStartBlock && nHeight < params.nEvoSporkStopBlock)
+            READWRITE(activeDisablingSporks);
 
         nDiskBlockVersion = nVersion;
     }

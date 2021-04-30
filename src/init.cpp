@@ -19,7 +19,6 @@
 #include "httpserver.h"
 #include "httprpc.h"
 #include "key.h"
-#include "zerocoin.h"
 #include "validation.h"
 #include "miner.h"
 #include "netbase.h"
@@ -40,6 +39,7 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "validation.h"
+#include "batchproof_container.h"
 
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
@@ -48,8 +48,6 @@
 #include "activemasternode.h"
 #include "dsnotificationinterface.h"
 #include "flat-database.h"
-#include "instantx.h"
-#include "masternode-meta.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternode-utils.h"
@@ -79,7 +77,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/function.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
@@ -93,16 +91,8 @@
 #include <event2/util.h>
 #include <event2/event.h>
 #include <event2/thread.h>
-#include "activeznode.h"
-#include "znode-payments.h"
-#include "znode-sync.h"
-#include "znodeman.h"
-#include "znodeconfig.h"
 #include "netfulfilledman.h"
 #include "flat-database.h"
-#include "instantx.h"
-#include "spork.h"
-#include "darksend.h"
 
 #if ENABLE_ZMQ
 #include "zmq/zmqnotificationinterface.h"
@@ -263,40 +253,17 @@ void Shutdown()
     StopHTTPServer();
     llmq::StopLLMQSystem();
 
+    BatchProofContainer::get_instance()->finalize();
+
 #ifdef ENABLE_WALLET
     if (pwalletMain)
         pwalletMain->Flush(false);
-    delete zwalletMain;
-    zwalletMain = NULL;
 #endif
     GenerateBitcoins(false, 0, Params());
-    CFlatDB<CZnodeMan> flatdb1("zncache.dat", "magicZnodeCache");
-    flatdb1.Dump(mnodeman);
-    CFlatDB<CZnodePayments> flatdb2("znpayments.dat", "magicZnodePaymentsCache");
-    flatdb2.Dump(znpayments);
-    
     MapPort(false);
     UnregisterValidationInterface(peerLogic.get());
     peerLogic.reset();
     g_connman.reset();
-
-   if (!fLiteMode) {
-        // STORE DATA CACHES INTO SERIALIZED DAT FILES
-        CFlatDB<CMasternodeMetaMan> flatdb1("evozncache.dat", "magicMasternodeCache");
-        flatdb1.Dump(mmetaman);
-/*        CFlatDB<CGovernanceManager> flatdb3("governance.dat", "magicGovernanceCache");
-        flatdb3.Dump(governance); */
-        CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
-        flatdb4.Dump(netfulfilledman);
-        /*if(fEnableInstantSend)
-        {
-            CFlatDB<CInstantSend> flatdb5("instantsend.dat", "magicInstantSendCache");
-            flatdb5.Dump(instantsend);
-        }
-        CFlatDB<CSporkManager> flatdb6("sporks.dat", "magicSporkCache");
-        flatdb6.Dump(sporkManager);
-        */
-    }
 
     StopTorControl();
     UnregisterNodeSignals(GetNodeSignals());
@@ -343,8 +310,6 @@ void Shutdown()
 #ifdef ENABLE_WALLET
     if (pwalletMain)
         pwalletMain->Flush(true);
-    delete zwalletMain;
-    zwalletMain = NULL;
 #endif
 
 #if ENABLE_ZMQ
@@ -388,7 +353,8 @@ void Shutdown()
 /**
  * Signal handlers are very limited in what they are allowed to do, so:
  */
-void HandleSIGTERM(int)
+#ifndef WIN32
+static void HandleSIGTERM(int)
 {
     fRequestShutdown = true;
 }
@@ -398,6 +364,14 @@ void HandleSIGHUP(int)
     fReopenDebugLog = true;
     fReopenElysiumLog = true;
 }
+#else
+static BOOL WINAPI consoleCtrlHandler(DWORD dwCtrlType)
+{
+    fRequestShutdown = true;
+    Sleep(INFINITE);
+    return true;
+}
+#endif
 
 bool static Bind(CConnman& connman, const CService &addr, unsigned int flags) {
     if (!(flags & BF_EXPLICIT) && IsLimited(addr))
@@ -504,6 +478,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-rpcserialversion", strprintf(_("Sets the serialization of raw transaction or block hex returned in non-verbose mode, non-segwit(0) or segwit(1) (default: %d)"), DEFAULT_RPC_SERIALIZE_VERSION));
     strUsage += HelpMessageOpt("-seednode=<ip>", _("Connect to a node to retrieve peer addresses, and disconnect"));
     strUsage += HelpMessageOpt("-timeout=<n>", strprintf(_("Specify connection timeout in milliseconds (minimum: 1, default: %d)"), DEFAULT_CONNECT_TIMEOUT));
+    strUsage += HelpMessageOpt("-torsetup", strprintf(_("Anonymous communication with TOR - Quickstart (default: %d)"), DEFAULT_TOR_SETUP));
     strUsage += HelpMessageOpt("-torcontrol=<ip>:<port>", strprintf(_("Tor control port to use if onion listening enabled (default: %s)"), DEFAULT_TOR_CONTROL));
     strUsage += HelpMessageOpt("-torpassword=<pass>", _("Tor control port password (default: empty)"));
 #ifdef USE_UPNP
@@ -642,10 +617,17 @@ std::string HelpMessage(HelpMessageMode mode)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/zcoinofficial/zcoin>";
-    const std::string URL_WEBSITE = "<https://zcoin.io/>";
-    // todo: remove urls from translations on next change
-    return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2009, COPYRIGHT_YEAR) + " ") + "\n" +
+    const std::string URL_SOURCE_CODE = "<https://github.com/BZXorg/BZX>";
+    const std::string URL_WEBSITE = "<https://BZX.org/>";
+
+    std::string copyright = CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2016, COPYRIGHT_YEAR) + " ");
+    
+    const std::string bitcoinStr = strprintf("%i-%i The Bitcoin Core", 2016, COPYRIGHT_YEAR);
+    if (copyright.find(bitcoinStr) != std::string::npos) {
+        copyright.replace(copyright.find(bitcoinStr), sizeof("2016") - 1, "2009");
+    }
+
+    return copyright + "\n" +
            "\n" +
            strprintf(_("Please contribute if you find %s useful. "
                        "Visit %s for further information about the software."),
@@ -658,7 +640,9 @@ std::string LicenseInfo()
            _("This is experimental software.") + "\n" +
            strprintf(_("Distributed under the MIT software license, see the accompanying file %s or %s"), "COPYING", "<https://opensource.org/licenses/MIT>") + "\n" +
            "\n" +
-           strprintf(_("This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard."), "<https://www.openssl.org>") +
+           strprintf(_("This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard."), "<https://www.openssl.org>") + "\n" +
+           "\n" +
+           strprintf(_("This product includes Masternodes software developed by the Dash Core developers %s."), "<https://www.dash.org>") +
            "\n";
 }
 
@@ -746,11 +730,11 @@ void CleanupBlockRevFiles()
 void ThreadImport(std::vector <boost::filesystem::path> vImportFiles) {
 
 #ifdef ENABLE_WALLET
-    if (!GetBoolArg("-disablewallet", false) && zwalletMain) {
+    if (!GetBoolArg("-disablewallet", false) && pwalletMain->zwallet) {
         //Load zerocoin mint hashes to memory
         LogPrintf("Loading mints to wallet..\n");
-        zwalletMain->GetTracker().Init();
-        zwalletMain->LoadMintPoolFromDB();
+        pwalletMain->zwallet->GetTracker().Init();
+        pwalletMain->zwallet->LoadMintPoolFromDB();
     }
 #endif
 
@@ -811,7 +795,7 @@ void ThreadImport(std::vector <boost::filesystem::path> vImportFiles) {
     if (!ActivateBestChain(state, chainparams)) {
         LogPrintf("Failed to connect best block");
         StartShutdown();
-    }    
+    }
 
     if (GetBoolArg("-stopafterblockimport", DEFAULT_STOPAFTERBLOCKIMPORT)) {
         LogPrintf("Stopping after block import\n");
@@ -841,12 +825,13 @@ void ThreadImport(std::vector <boost::filesystem::path> vImportFiles) {
     }
 
 #ifdef ENABLE_WALLET
-    if (!GetBoolArg("-disablewallet", false) && zwalletMain) {
-        zwalletMain->SyncWithChain();
+    if (!GetBoolArg("-disablewallet", false) && pwalletMain->zwallet) {
+        pwalletMain->zwallet->SyncWithChain();
     }
     // Need this to restore Sigma spend state
-    if (GetBoolArg("-rescan", false) && zwalletMain) {
-        zwalletMain->GetTracker().ListMints();
+    if (GetBoolArg("-rescan", false) && !GetBoolArg("-disablewallet", false) && pwalletMain->zwallet) {
+        pwalletMain->zwallet->GetTracker().ListMints();
+        pwalletMain->zwallet->GetTracker().ListLelantusMints();
     }
 #endif
     fDumpMempoolLater = !fRequestShutdown;
@@ -898,6 +883,18 @@ void InitParameterInteraction()
     if (IsArgSet("-whitebind")) {
         if (SoftSetBoolArg("-listen", true))
             LogPrintf("%s: parameter interaction: -whitebind set -> setting -listen=1\n", __func__);
+    }
+
+    if (IsArgSet("-znodeblsprivkey")) {
+        // masternodes MUST accept connections from outside
+        ForceSetArg("-listen", "1");
+        LogPrintf("%s: parameter interaction: -znodeblsprivkey=... -> setting -listen=1\n", __func__);
+        if (GetArg("-maxconnections", DEFAULT_MAX_PEER_CONNECTIONS) < DEFAULT_MAX_PEER_CONNECTIONS) {
+            // masternodes MUST be able to handle at least DEFAULT_MAX_PEER_CONNECTIONS connections
+            ForceSetArg("-maxconnections", itostr(DEFAULT_MAX_PEER_CONNECTIONS));
+            LogPrintf("%s: parameter interaction: -znodeblsprivkey=... -> setting -maxconnections=%d instead of specified -maxconnections=%d\n",
+                    __func__, DEFAULT_MAX_PEER_CONNECTIONS, GetArg("-maxconnections", DEFAULT_MAX_PEER_CONNECTIONS));
+        }
     }
 
     if (mapMultiArgs.count("-connect") && mapMultiArgs.at("-connect").size() > 0) {
@@ -986,6 +983,97 @@ static std::string ResolveErrMsg(const char *const optname, const std::string &s
     return strprintf(_("Cannot resolve -%s address: '%s'"), optname, strBind);
 }
 
+void RunTor(){
+	printf("TOR thread started.\n");
+
+	boost::optional < std::string > clientTransportPlugin;
+	struct stat sb;
+	if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR)
+			|| !std::system("which obfs4proxy")) {
+		clientTransportPlugin = "obfs4 exec obfs4proxy";
+	} else if (stat("obfs4proxy.exe", &sb) == 0 && sb.st_mode & S_IXUSR) {
+		clientTransportPlugin = "obfs4 exec obfs4proxy.exe";
+	}
+
+	fs::path tor_dir = GetDataDir() / "tor";
+	fs::create_directory(tor_dir);
+	fs::path log_file = tor_dir / "tor.log";
+
+	std::vector < std::string > argv;
+	argv.push_back("tor");
+	argv.push_back("--Log");
+	argv.push_back("notice file " + log_file.string());
+	argv.push_back("--SocksPort");
+	argv.push_back("9050");
+	argv.push_back("--ignore-missing-torrc");
+	argv.push_back("-f");
+	argv.push_back((tor_dir / "torrc").string());
+	argv.push_back("--HiddenServiceDir");
+	argv.push_back((tor_dir / "onion").string());
+	argv.push_back("--HiddenServicePort");
+	argv.push_back("8168");
+
+	if (clientTransportPlugin) {
+		printf("Using OBFS4.\n");
+		argv.push_back("--ClientTransportPlugin");
+		argv.push_back(*clientTransportPlugin);
+		argv.push_back("--UseBridges");
+		argv.push_back("1");
+	} else {
+		printf("No OBFS4 found, not using it.\n");
+	}
+
+	std::vector<char *> argv_c;
+	std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c),
+			convert_str);
+
+	tor_main(argv_c.size(), &argv_c[0]);
+}
+
+struct event_base *baseTor;
+boost::thread torEnabledThread;
+
+static void TorEnabledThread()
+{
+	RunTor();
+    event_base_dispatch(baseTor);
+}
+
+
+void StartTorEnabled(boost::thread_group& threadGroup, CScheduler& scheduler)
+{
+    assert(!baseTor);
+#ifdef WIN32
+    evthread_use_windows_threads();
+#else
+    evthread_use_pthreads();
+#endif
+    baseTor = event_base_new();
+    if (!baseTor) {
+        LogPrintf("tor: Unable to create event_base\n");
+        return;
+    }
+
+    torEnabledThread = boost::thread(boost::bind(&TraceThread<void (*)()>, "torcontrol", &TorEnabledThread));
+}
+
+void InterruptTorEnabled()
+{
+    if (baseTor) {
+        LogPrintf("tor: Thread interrupt\n");
+        event_base_loopbreak(baseTor);
+    }
+}
+
+void StopTorEnabled()
+{
+    if (baseTor) {
+        torEnabledThread.join();
+        event_base_free(baseTor);
+        baseTor = 0;
+    }
+}
+
 void InitLogging() {
     fPrintToConsole = GetBoolArg("-printtoconsole", false);
     fLogTimestamps = GetBoolArg("-logtimestamps", DEFAULT_LOGTIMESTAMPS);
@@ -993,7 +1081,7 @@ void InitLogging() {
     fLogIPs = GetBoolArg("-logips", DEFAULT_LOGIPS);
 
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("Zcoin version %s\n", FormatFullVersion());
+    LogPrintf("BZX version %s\n", FormatFullVersion());
 }
 
 namespace { // Variables internal to initialization process only
@@ -1070,6 +1158,8 @@ bool AppInitBasicSetup()
 
     // Ignore SIGPIPE, otherwise it will bring the daemon down if the client closes unexpectedly
     signal(SIGPIPE, SIG_IGN);
+#else
+    SetConsoleCtrlHandler(consoleCtrlHandler, true);
 #endif
 
     std::set_new_handler(new_handler_terminate);
@@ -1469,6 +1559,23 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         }
     }
 
+    // start tor
+    bool torEnabled = GetBoolArg("-torsetup", DEFAULT_TOR_SETUP);
+    if(torEnabled){
+    	StartTorEnabled(threadGroup, scheduler);
+        SetLimited(NET_TOR);
+        SetLimited(NET_IPV4);
+        SetLimited(NET_IPV6);
+        proxyType addrProxy = proxyType(LookupNumeric("127.0.0.1", 9050),
+                        true);
+        SetProxy(NET_IPV4, addrProxy);
+        SetProxy(NET_IPV6, addrProxy);
+        SetProxy(NET_TOR, addrProxy);
+        SetLimited(NET_IPV4, false);
+        SetLimited(NET_IPV6, false);
+        SetLimited(NET_TOR, false);
+    }
+
     bool proxyRandomize = GetBoolArg("-proxyrandomize", DEFAULT_PROXYRANDOMIZE);
     // -proxy sets a proxy for all outgoing network traffic
     // -noproxy (or -proxy=0) as well as the empty string can be used to not set a proxy, this is the default
@@ -1633,16 +1740,6 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 
                 pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
 
-                if (!fReindex) {
-                    // Check existing block index database version, reindex if needed
-                    if (pblocktree->GetBlockIndexVersion() < ZC_ADVANCED_INDEX_VERSION) {
-                        LogPrintf("Upgrade to new version of block index required, reindex forced\n");
-                        delete pblocktree;
-                        fReindex = fReset = true;
-                        pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
-                    }
-                }
-
                 evoDb = new CEvoDB(nEvoDbCache, false, fReindex || fReindexChainState);
                 deterministicMNManager = new CDeterministicMNManager(*evoDb);
 
@@ -1669,7 +1766,31 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
                     break;
                 }
 
+                if (!fReindex) {
+                    CBlockIndex *tip = chainActive.Tip();
+                    if (tip) {
+                        int lastBlockIndexVersion = pblocktree->GetBlockIndexVersion(*tip->phashBlock);
+                        if ((tip->nHeight >= chainparams.GetConsensus().nLelantusStartBlock &&
+                                    lastBlockIndexVersion < LELANTUS_PROTOCOL_ENABLEMENT_VERSION) ||
+                            (tip->nHeight >= chainparams.GetConsensus().nEvoSporkStartBlock &&
+                                    lastBlockIndexVersion < EVOSPORK_MIN_VERSION))
+                        {
+                            strLoadError = _(
+                                    "Block index is outdated, reindex required\n");
+                            break;
+                        }
 
+                    }
+                }
+
+                // If the loaded chain has a wrong genesis, bail out immediately
+                // (we're likely using a testnet datadir, or the other way around).
+                if (!mapBlockIndex.empty() && mapBlockIndex.count(chainparams.GetConsensus().hashGenesisBlock) == 0) {
+                    LogPrintf("Genesis block hash %s not found.\n",
+                        chainparams.GetConsensus().hashGenesisBlock.ToString());
+                    LogPrintf("mapBlockIndex contains %d blocks.\n", mapBlockIndex.size());
+                    return InitError(_("Incorrect or no genesis block found. Wrong datadir for network?"));
+                }
 
                 // Initialize the block index (no-op if non-empty database was already loaded)
                 if (!InitBlockIndex(chainparams)) {
@@ -1776,7 +1897,6 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     LogPrintf("Step 8: load wallet ************************************\n");
     if (GetBoolArg("-disablewallet", false)) {
         pwalletMain = NULL;
-        zwalletMain = NULL;
         LogPrintf("Wallet disabled!\n");
     } else {
     CWallet::InitLoadWallet();
@@ -1866,59 +1986,14 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         ForceSetArg("-dandelion", "0");
 
     LogPrintf("fMasternodeMode = %s\n", fMasternodeMode);
-    LogPrintf("znodeConfig.getCount(): %s\n", znodeConfig.getCount());
 
     if(fLiteMode && fMasternodeMode) {
         return InitError(_("You can not start a masternode in lite mode."));
     }
 
-    if ((fMasternodeMode || znodeConfig.getCount() > 0) && !fTxIndex) {
+    if (fMasternodeMode && !fTxIndex) {
         return InitError("Enabling Znode support requires turning on transaction indexing."
                                  "Please add txindex=1 to your configuration and start with -reindex");
-    }
-
-    // Legacy znode system
-    if (fMasternodeMode) {
-        LogPrintf("ZNODE:\n");
-
-        if (!GetArg("-znodeaddr", "").empty()) {
-            // Hot Znode (either local or remote) should get its address in
-            // CActiveZnode::ManageState() automatically and no longer relies on Znodeaddr.
-            return InitError(_("znodeaddr option is deprecated. Please use znode.conf to manage your remote znodes."));
-        }
-
-        std::string strZnodePrivKey = GetArg("-znodeprivkey", "");
-        if (!strZnodePrivKey.empty()) {
-            if (!darkSendSigner.GetKeysFromSecret(strZnodePrivKey, activeZnode.keyZnode,
-                                                  activeZnode.pubKeyZnode))
-                return InitError(_("Invalid znodeprivkey. Please see documentation."));
-
-            LogPrintf("  pubKeyZnode: %s\n", CBitcoinAddress(activeZnode.pubKeyZnode.GetID()).ToString());
-        } else {
-            return InitError(
-                    _("You must specify a znodeprivkey in the configuration. Please see documentation for help."));
-        }
-    }
-
-    LogPrintf("Using Znode config file %s\n", GetZnodeConfigFile().string());
-
-    if (GetBoolArg("-znconflock", true) && pwalletMain && (znodeConfig.getCount() > 0)) {
-        LOCK(pwalletMain->cs_wallet);
-        LogPrintf("Locking Znodes:\n");
-        uint256 mnTxHash;
-        int outputIndex;
-        BOOST_FOREACH(CZnodeConfig::CZnodeEntry mne, znodeConfig.getEntries()) {
-            mnTxHash.SetHex(mne.getTxHash());
-            outputIndex = boost::lexical_cast<unsigned int>(mne.getOutputIndex());
-            COutPoint outpoint = COutPoint(mnTxHash, outputIndex);
-            // don't lock non-spendable outpoint (i.e. it's already spent or it's not from this wallet at all)
-            if (pwalletMain->IsMine(CTxIn(outpoint)) != ISMINE_SPENDABLE) {
-                LogPrintf("  %s %s - IS NOT SPENDABLE, was not locked\n", mne.getTxHash(), mne.getOutputIndex());
-                continue;
-            }
-            pwalletMain->LockCoin(outpoint);
-            LogPrintf("  %s %s - locked successfully\n", mne.getTxHash(), mne.getOutputIndex());
-        }
     }
 
     // evo znode system
@@ -1942,8 +2017,7 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
                 return InitError(_("Invalid znodeblsprivkey. Please see documentation."));
             }
         } else {
-            // TODO: uncomment when switch to evo znodes is done
-            //return InitError(_("You must specify a masternodeblsprivkey in the configuration. Please see documentation for help."));
+            return InitError(_("You must specify a znodeblsprivkey in the configuration. Please see documentation for help."));
         }
 
         // Create and register activeMasternodeManager, will init later in ThreadImport
@@ -1958,104 +2032,12 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         activeMasternodeInfo.blsPubKeyOperator = std::make_unique<CBLSPublicKey>();
     }
 
-    // ********************************************************* Step 10b: PrivateSend (some of its functions are required for legacy znode operation)
-
-    nLiquidityProvider = GetArg("-liquidityprovider", nLiquidityProvider);
-    nLiquidityProvider = std::min(std::max(nLiquidityProvider, 0), 100);
-    darkSendPool.SetMinBlockSpacing(nLiquidityProvider * 15);
-
-    fEnablePrivateSend = false;
-//    fEnablePrivateSend = GetBoolArg("-enableprivatesend", 0);
-//    fPrivateSendMultiSession = GetBoolArg("-privatesendmultisession", DEFAULT_PRIVATESEND_MULTISESSION);
-//    nPrivateSendRounds = GetArg("-privatesendrounds", DEFAULT_PRIVATESEND_ROUNDS);
-//    nPrivateSendRounds = std::min(std::max(nPrivateSendRounds, 2), nLiquidityProvider ? 99999 : 16);
-//    nPrivateSendAmount = GetArg("-privatesendamount", DEFAULT_PRIVATESEND_AMOUNT);
-//    nPrivateSendAmount = std::min(std::max(nPrivateSendAmount, 2), 999999);
-
-    fEnableInstantSend = false;
-//    fEnableInstantSend = GetBoolArg("-enableinstantsend", 1);
-//    nInstantSendDepth = GetArg("-instantsenddepth", DEFAULT_INSTANTSEND_DEPTH);
-//    nInstantSendDepth = std::min(std::max(nInstantSendDepth, 0), 60);
-
-    darkSendPool.InitDenominations();
-
-    // ********************************************************* Step 10c: Load cache data
-
-    // LOAD SERIALIZED DAT FILES INTO DATA CACHES FOR INTERNAL USE
-    bool fIgnoreCacheFiles = !GetBoolArg("-persistentznodestate", true) || fLiteMode || fReindex || fReindexChainState;
-    if (!fIgnoreCacheFiles) {
-        // Legacy znodes cache
-        uiInterface.InitMessage(_("Loading znode cache..."));
-        CFlatDB<CZnodeMan> flatdb1("zncache.dat", "magicZnodeCache");
-        if (!flatdb1.Load(mnodeman)) {
-            return InitError("Failed to load znode cache from zncache.dat");
-        }
-
-        if (mnodeman.size()) {
-            uiInterface.InitMessage(_("Loading Znode payment cache..."));
-            CFlatDB<CZnodePayments> flatdb2("znpayments.dat", "magicZnodePaymentsCache");
-            if (!flatdb2.Load(znpayments)) {
-                return InitError("Failed to load znode payments cache from znpayments.dat");
-            }
-        } else {
-            uiInterface.InitMessage(_("Znode cache is empty, skipping payments cache..."));
-        }
-    }
-
-    if (!fIgnoreCacheFiles) {
-        // Evo znode cache
-        boost::filesystem::path pathDB = GetDataDir();
-        std::string strDBName;
-
-        strDBName = "evozncache.dat";
-        uiInterface.InitMessage(_("Loading znode cache..."));
-        CFlatDB<CMasternodeMetaMan> flatdb1(strDBName, "magicMasternodeCache");
-        if(!flatdb1.Load(mmetaman)) {
-            return InitError(_("Failed to load znode cache from") + "\n" + (pathDB / strDBName).string());
-        }
-
-        /*
-        strDBName = "governance.dat";
-        uiInterface.InitMessage(_("Loading governance cache..."));
-        CFlatDB<CGovernanceManager> flatdb3(strDBName, "magicGovernanceCache");
-        if(!flatdb3.Load(governance)) {
-            return InitError(_("Failed to load governance cache from") + "\n" + (pathDB / strDBName).string());
-        }
-        governance.InitOnLoad();
-        */
-
-        strDBName = "netfulfilled.dat";
-        uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
-        CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
-        if(!flatdb4.Load(netfulfilledman)) {
-            return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
-        }
-
-        /*
-        if(fEnableInstantSend)
-        {
-            strDBName = "instantsend.dat";
-            uiInterface.InitMessage(_("Loading InstantSend data cache..."));
-            CFlatDB<CInstantSend> flatdb5(strDBName, "magicInstantSendCache");
-            if(!flatdb5.Load(instantsend)) {
-                return InitError(_("Failed to load InstantSend data cache from") + "\n" + (pathDB / strDBName).string());
-            }
-        }
-        */
-    }
-
-    // ********************************************************* Step 10d: schedule Dash-specific tasks
+    // ********************************************************* Step 10b: schedule Dash-specific tasks
 
     if (!fLiteMode) {
         scheduler.scheduleEvery(boost::bind(&CNetFulfilledRequestManager::DoMaintenance, boost::ref(netfulfilledman)), 60);
         scheduler.scheduleEvery(boost::bind(&CMasternodeSync::DoMaintenance, boost::ref(masternodeSync), boost::ref(*g_connman)), 1);
         scheduler.scheduleEvery(boost::bind(&CMasternodeUtils::DoMaintenance, boost::ref(*g_connman)), 1);
-
-        /*
-        scheduler.scheduleEvery(boost::bind(&CGovernanceManager::DoMaintenance, boost::ref(governance), boost::ref(*g_connman)), 60 * 5);
-
-        scheduler.scheduleEvery(boost::bind(&CInstantSend::DoMaintenance, boost::ref(instantsend)), 60);
-        */
     }
 
     llmq::StartLLMQSystem();
@@ -2129,76 +2111,7 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     // Generate coins in the background
     GenerateBitcoins(GetBoolArg("-gen", DEFAULT_GENERATE), GetArg("-genproclimit", DEFAULT_GENERATE_THREADS),
                      chainparams);
-
-    // ********************************************************* Step 13a: update block tip in Zcoin modules
-
-    bool fEvoZnodes = chainActive.Height() >= chainparams.GetConsensus().DIP0003EnforcementHeight;
-
-    if (!fEvoZnodes) {
-        // force UpdatedBlockTip to initialize pCurrentBlockIndex for DS, MN payments and budgets
-        // but don't call it directly to prevent triggering of other listeners like zmq etc.
-        // GetMainSignals().UpdatedBlockTip(chainActive.Tip());
-        mnodeman.UpdatedBlockTip(chainActive.Tip());
-        //darkSendPool.UpdatedBlockTip(chainActive.Tip());
-        znpayments.UpdatedBlockTip(chainActive.Tip());
-        znodeSync.UpdatedBlockTip(chainActive.Tip());
-        // governance.UpdatedBlockTip(chainActive.Tip());
-    }
-
-    // ********************************************************* Step 13b: start legacy znodes thread
-
-    // TODO: remove this code after switch to evo is done
-    if (!fEvoZnodes)
-    {
-        threadGroup.create_thread([] {
-
-            RenameThread("znode-tick");
-
-            if (fLiteMode)
-                return;
-
-            unsigned int nTick = 0;
-
-            while (true) {
-                MilliSleep(1000);
-
-                {
-                    LOCK(cs_main);
-                    // shut legacy znode down if past 6 blocks of DIP3 enforcement
-                    if (chainActive.Height()-6 >= Params().GetConsensus().DIP0003EnforcementHeight)
-                        break;
-                }
-                    
-                znodeSync.ProcessTick();
-
-                if (znodeSync.IsBlockchainSynced() && !ShutdownRequested()) {
-                    nTick++;
-
-                    LOCK(cs_main);
-
-                    // make sure to check all znodes first
-                    mnodeman.Check();
-
-                    mnodeman.ProcessPendingMnvRequests(*g_connman);
-
-                    // check if we should activate or ping every few minutes,
-                    // slightly postpone first run to give net thread a chance to connect to some peers
-                    if (nTick % ZNODE_MIN_MNP_SECONDS == 15)
-                        activeZnode.ManageState();
-
-                    if (nTick % 60 == 0) {
-                        mnodeman.ProcessZnodeConnections();
-                        mnodeman.CheckAndRemove();
-                        znpayments.CheckAndRemove();
-                        instantsend.CheckAndRemove();
-                    }
-                    if (fMasternodeMode && (nTick % (60 * 5) == 0)) {
-                        mnodeman.DoFullVerificationStep();
-                    }
-                }
-            }
-        });
-    }
+    // ********************************************************* Step 13: Znode - obsoleted
 
     // ********************************************************* Step 14: finished
 

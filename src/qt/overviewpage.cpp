@@ -2,6 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "../lelantus.h"
+
 #include "overviewpage.h"
 #include "ui_overviewpage.h"
 
@@ -9,6 +11,7 @@
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
+#include "lelantusmodel.h"
 #include "optionsmodel.h"
 #include "platformstyle.h"
 #include "transactionfilterproxy.h"
@@ -131,6 +134,20 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
 {
     ui->setupUi(this);
 
+    // read config
+    bool torEnabled;
+    if(IsArgSet("-torsetup")){
+        torEnabled = GetBoolArg("-torsetup", DEFAULT_TOR_SETUP);
+    }else{
+        torEnabled = settings.value("fTorSetup").toBool();
+    }
+
+    if(torEnabled){
+        ui->checkboxEnabledTor->setChecked(true);
+    }else{
+        ui->checkboxEnabledTor->setChecked(false);
+    }
+
     // use a SingleColorIcon for the "out of sync warning" icon
     QIcon icon = platformStyle->SingleColorIcon(":/icons/warning");
     icon.addPixmap(icon.pixmap(QSize(64,64), QIcon::Normal), QIcon::Disabled); // also set the disabled icon because we are using a disabled QPushButton to work around missing HiDPI support of QLabel (https://bugreports.qt.io/browse/QTBUG-42503)
@@ -144,6 +161,7 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     ui->listTransactions->setAttribute(Qt::WA_MacShowFocusRect, false);
 
     connect(ui->listTransactions, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTransactionClicked(QModelIndex)));
+    connect(ui->checkboxEnabledTor, SIGNAL(toggled(bool)), this, SLOT(handleEnabledTorChanged()));
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
@@ -157,6 +175,20 @@ void OverviewPage::handleTransactionClicked(const QModelIndex &index)
         Q_EMIT transactionClicked(filter->mapToSource(index));
 }
 
+void OverviewPage::handleEnabledTorChanged(){
+
+    QMessageBox msgBox;
+
+    if(ui->checkboxEnabledTor->isChecked()){
+        settings.setValue("fTorSetup", true);
+        msgBox.setText(tr("Please restart the BZX wallet to route your connection through Tor to protect your IP address. <br>Syncing your wallet might be slower with TOR. <br>Note that -torsetup in BZX.conf will always override any changes made here."));
+    }else{
+        settings.setValue("fTorSetup", false);
+        msgBox.setText(tr("Please restart the BZX wallet to disable routing of your connection through Tor to protect your IP address. <br>Note that -torsetup in BZX.conf will always override any changes made here."));
+    }
+    msgBox.exec();
+}
+
 void OverviewPage::handleOutOfSyncWarningClicks()
 {
     Q_EMIT outOfSyncWarningClicked();
@@ -167,7 +199,24 @@ OverviewPage::~OverviewPage()
     delete ui;
 }
 
-void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance)
+void OverviewPage::on_anonymizeButton_clicked()
+{
+    if (!walletModel) {
+        return;
+    }
+
+    auto lelantusModel = walletModel->getLelantusModel();
+    if (!lelantusModel) {
+        return;
+    }
+
+    lelantusModel->mintAll(AutoMintMode::MintAll);
+}
+
+void OverviewPage::setBalance(
+    const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
+    const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance,
+    const CAmount& privateBalance, const CAmount& unconfirmedPrivateBalance, const CAmount& anonymizableBalance)
 {
     int unit = walletModel->getOptionsModel()->getDisplayUnit();
     currentBalance = balance;
@@ -176,14 +225,22 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     currentWatchOnlyBalance = watchOnlyBalance;
     currentWatchUnconfBalance = watchUnconfBalance;
     currentWatchImmatureBalance = watchImmatureBalance;
+    currentPrivateBalance = privateBalance;
+    currentUnconfirmedPrivateBalance = unconfirmedPrivateBalance;
+    currentAnonymizableBalance = anonymizableBalance;
     ui->labelBalance->setText(BitcoinUnits::formatWithUnit(unit, balance, false, BitcoinUnits::separatorAlways));
     ui->labelUnconfirmed->setText(BitcoinUnits::formatWithUnit(unit, unconfirmedBalance, false, BitcoinUnits::separatorAlways));
     ui->labelImmature->setText(BitcoinUnits::formatWithUnit(unit, immatureBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelTotal->setText(BitcoinUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance + currentSigmaBalance + currentSigmaUnconfirmedBalance, false, BitcoinUnits::separatorAlways));
+    ui->labelTotal->setText(BitcoinUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance + currentPrivateBalance + currentUnconfirmedPrivateBalance, false, BitcoinUnits::separatorAlways));
     ui->labelWatchAvailable->setText(BitcoinUnits::formatWithUnit(unit, watchOnlyBalance, false, BitcoinUnits::separatorAlways));
     ui->labelWatchPending->setText(BitcoinUnits::formatWithUnit(unit, watchUnconfBalance, false, BitcoinUnits::separatorAlways));
     ui->labelWatchImmature->setText(BitcoinUnits::formatWithUnit(unit, watchImmatureBalance, false, BitcoinUnits::separatorAlways));
     ui->labelWatchTotal->setText(BitcoinUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance, false, BitcoinUnits::separatorAlways));
+    ui->labelPrivate->setText(BitcoinUnits::formatWithUnit(unit, privateBalance, false, BitcoinUnits::separatorAlways));
+    ui->labelUnconfirmedPrivate->setText(BitcoinUnits::formatWithUnit(unit, unconfirmedPrivateBalance, false, BitcoinUnits::separatorAlways));
+    ui->labelAnonymizable->setText(BitcoinUnits::formatWithUnit(unit, anonymizableBalance, false, BitcoinUnits::separatorAlways));
+
+    ui->anonymizeButton->setEnabled(lelantus::IsLelantusAllowed() && anonymizableBalance > 0);
 
     // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
     // for the non-mining users
@@ -194,38 +251,6 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     ui->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
     ui->labelImmatureText->setVisible(showImmature || showWatchOnlyImmature);
     ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
-}
-
-void OverviewPage::updateCoins(const std::vector<CMintMeta>& spendable, const std::vector<CMintMeta>& pending)
-{
-    CAmount sum(0);
-    int64_t denom;
-    for (const auto& c : spendable) {
-        DenominationToInteger(c.denom, denom);
-        sum += denom;
-    }
-
-    CAmount pendingSum(0);
-    for (const auto& c : pending) {
-        DenominationToInteger(c.denom, denom);
-        pendingSum += denom;
-    }
-
-
-
-    currentSigmaBalance = sum;
-    currentSigmaUnconfirmedBalance = pendingSum;
-    setSigmaBalance();
-}
-
-void OverviewPage::setSigmaBalance()
-{
-    int unit = walletModel->getOptionsModel()->getDisplayUnit();
-
-    ui->labelSigmaBalance->setText(BitcoinUnits::formatWithUnit(unit, currentSigmaBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelSigmaPending->setText(BitcoinUnits::formatWithUnit(unit, currentSigmaUnconfirmedBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelTotal->setText(BitcoinUnits::formatWithUnit(unit, currentBalance + currentUnconfirmedBalance + currentImmatureBalance + currentSigmaBalance + currentSigmaUnconfirmedBalance, false, BitcoinUnits::separatorAlways));
-
 }
 
 // show/hide watch-only labels
@@ -270,12 +295,24 @@ void OverviewPage::setWalletModel(WalletModel *model)
         ui->listTransactions->setModel(filter.get());
         ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
 
+        auto privateBalance = walletModel->getLelantusModel()->getPrivateBalance();
+
         // Keep up to date with wallet
-        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
-                   model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
-        connect(model, SIGNAL(balanceChanged(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)), this, SLOT(setBalance(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)));
-        connect(model, SIGNAL(notifySigmaChanged(const std::vector<CMintMeta>, const std::vector<CMintMeta>)),
-        this, SLOT(updateCoins(const std::vector<CMintMeta>, const std::vector<CMintMeta>)));
+        setBalance(
+                    model->getBalance(),
+                    model->getUnconfirmedBalance(),
+                    model->getImmatureBalance(),
+                    model->getWatchBalance(),
+                    model->getWatchUnconfirmedBalance(),
+                    model->getWatchImmatureBalance(),
+                    privateBalance.first,
+                    privateBalance.second,
+                    model->getAnonymizableBalance());
+        connect(
+            model,
+            SIGNAL(balanceChanged(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)),
+            this,
+            SLOT(setBalance(CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount,CAmount)));
 
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
 
@@ -293,8 +330,8 @@ void OverviewPage::updateDisplayUnit()
     {
         if(currentBalance != -1)
             setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance,
-                       currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance);
-        setSigmaBalance();
+                       currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance,
+                       currentPrivateBalance, currentUnconfirmedPrivateBalance, currentAnonymizableBalance);
 
         // Update txdelegate->unit with the current unit
         txdelegate->unit = walletModel->getOptionsModel()->getDisplayUnit();

@@ -1,5 +1,5 @@
-#ifndef ZCOIN_ELYSIUM_WALLET_H
-#define ZCOIN_ELYSIUM_WALLET_H
+#ifndef BZX_ELYSIUM_WALLET_H
+#define BZX_ELYSIUM_WALLET_H
 
 #include "elysium.h"
 #include "property.h"
@@ -125,4 +125,4 @@ extern Wallet *wallet;
 
 } // namespace elysium
 
-#endif // ZCOIN_ELYSIUM_WALLET_H
+#endif // BZX_ELYSIUM_WALLET_H

@@ -17,7 +17,7 @@
 #include "net.h"
 #include "netbase.h"
 #include "txdb.h" // for -dbcache defaults
-#include "intro.h" 
+#include "intro.h"
 
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
@@ -45,8 +45,6 @@ void OptionsModel::Init(bool resetSettings)
     if (resetSettings)
         Reset();
 
-    checkAndMigrate();
-
     QSettings settings;
 
     // Ensure restart flag is unset on client startup
@@ -59,7 +57,7 @@ void OptionsModel::Init(bool resetSettings)
         settings.setValue("fHideTrayIcon", false);
     fHideTrayIcon = settings.value("fHideTrayIcon").toBool();
     Q_EMIT hideTrayIconChanged(fHideTrayIcon);
-    
+
     if (!settings.contains("fMinimizeToTray"))
         settings.setValue("fMinimizeToTray", false);
     fMinimizeToTray = settings.value("fMinimizeToTray").toBool() && !fHideTrayIcon;
@@ -80,6 +78,15 @@ void OptionsModel::Init(bool resetSettings)
     if (!settings.contains("fCoinControlFeatures"))
         settings.setValue("fCoinControlFeatures", false);
     fCoinControlFeatures = settings.value("fCoinControlFeatures", false).toBool();
+
+    if (!settings.contains("fAutoAnonymize"))
+        settings.setValue("fAutoAnonymize", false);
+    fAutoAnonymize = settings.value("fAutoAnonymize", false).toBool();
+
+    if (!settings.contains("fLelantusPage"))
+        settings.setValue("fLelantusPage", false);
+    fLelantusPage = settings.value("fLelantusPage", false).toBool();
+
 
     // These are shared with the core or have a command-line parameter
     // and we want command-line parameters to overwrite the GUI settings.
@@ -109,9 +116,30 @@ void OptionsModel::Init(bool resetSettings)
         settings.setValue("bSpendZeroConfChange", true);
     if (!SoftSetBoolArg("-spendzeroconfchange", settings.value("bSpendZeroConfChange").toBool()))
         addOverriddenOption("-spendzeroconfchange");
+
+    if (!settings.contains("bReindexLelantus"))
+        settings.setValue("bReindexLelantus", DEFAULT_ZAP_WALLET);
+    bool reindexLelantus = settings.value("bReindexLelantus").toBool();
+    if (reindexLelantus) {
+        if (!SoftSetBoolArg("-zapwalletmints", true))
+            addOverriddenOption("-zapwalletmints");
+        if (!SoftSetBoolArg("-reindex", true))
+            addOverriddenOption("-reindex");
+        if (!SoftSetArg("-zapwallettxes", std::string("1")))
+            addOverriddenOption("-zapwallettxes");
+    }
+
+    // Reset the flag to prevent unneeded reindex,
+    settings.setValue("bReindexLelantus", false);
+
 #endif
 
     // Network
+    if (!settings.contains("fTorSetup"))
+        settings.setValue("fTorSetup", DEFAULT_TOR_SETUP);
+    if (!SoftSetBoolArg("-torsetup", settings.value("fTorSetup").toBool()))
+        addOverriddenOption("-torsetup");
+
     if (!settings.contains("fUseUPnP"))
         settings.setValue("fUseUPnP", DEFAULT_UPNP);
     if (!SoftSetBoolArg("-upnp", settings.value("fUseUPnP").toBool()))
@@ -215,6 +243,9 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return strlIpPort.at(1);
         }
 
+        case TorSetup:
+            return settings.value("fTorSetup", false);
+
         // separate Tor proxy
         case ProxyUseTor:
             return settings.value("fUseSeparateProxyTor", false);
@@ -232,6 +263,9 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
 #ifdef ENABLE_WALLET
         case SpendZeroConfChange:
             return settings.value("bSpendZeroConfChange");
+
+        case ReindexLelantus:
+            return settings.value("bReindexLelantus");
 #endif
         case DisplayUnit:
             return nDisplayUnit;
@@ -241,6 +275,10 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("language");
         case CoinControlFeatures:
             return fCoinControlFeatures;
+        case AutoAnonymize:
+            return fAutoAnonymize;
+        case LelantusPage:
+            return fLelantusPage;
         case DatabaseCache:
             return settings.value("nDatabaseCache");
         case ThreadsScriptVerif:
@@ -355,6 +393,13 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
                 setRestartRequired(true);
             }
             break;
+
+        case ReindexLelantus:
+            if (settings.value("bReindexLelantus") != value) {
+                settings.setValue("bReindexLelantus", value);
+                setRestartRequired(true);
+            }
+            break;
 #endif
         case DisplayUnit:
             setDisplayUnit(value);
@@ -376,6 +421,16 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             fCoinControlFeatures = value.toBool();
             settings.setValue("fCoinControlFeatures", fCoinControlFeatures);
             Q_EMIT coinControlFeaturesChanged(fCoinControlFeatures);
+            break;
+        case AutoAnonymize:
+            fAutoAnonymize = value.toBool();
+            settings.setValue("fAutoAnonymize", fAutoAnonymize);
+            Q_EMIT autoAnonymizeChanged(fAutoAnonymize);
+            break;
+        case LelantusPage:
+            fLelantusPage = value.toBool();
+            settings.setValue("fLelantusPage", fLelantusPage);
+            Q_EMIT lelantusPageChanged(fLelantusPage);
             break;
         case DatabaseCache:
             if (settings.value("nDatabaseCache") != value) {
@@ -445,23 +500,4 @@ bool OptionsModel::isRestartRequired()
 {
     QSettings settings;
     return settings.value("fRestartRequired", false).toBool();
-}
-
-void OptionsModel::checkAndMigrate()
-{
-    // Migration of default values
-    // Check if the QSettings container was already loaded with this client version
-    QSettings settings;
-    static const char strSettingsVersionKey[] = "nSettingsVersion";
-    int settingsVersion = settings.contains(strSettingsVersionKey) ? settings.value(strSettingsVersionKey).toInt() : 0;
-    if (settingsVersion < CLIENT_VERSION)
-    {
-        // -dbcache was bumped from 100 to 300 in 0.13
-        // see https://github.com/bitcoin/bitcoin/pull/8273
-        // force people to upgrade to the new value if they are using 100MB
-        if (settingsVersion < 130000 && settings.contains("nDatabaseCache") && settings.value("nDatabaseCache").toLongLong() == 100)
-            settings.setValue("nDatabaseCache", (qint64)nDefaultDbCache);
-
-        settings.setValue(strSettingsVersionKey, CLIENT_VERSION);
-    }
 }

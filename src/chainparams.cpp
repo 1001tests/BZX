@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2010 Satoshi Nakamoto
+// Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -6,7 +6,7 @@
 #include "chainparams.h"
 #include "consensus/merkle.h"
 #include "consensus/consensus.h"
-#include "zerocoin_params.h"
+#include "sigma_params.h"
 
 #include "tinyformat.h"
 #include "util.h"
@@ -23,7 +23,9 @@
 
 static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesisOutputScript, uint32_t nTime, uint32_t nNonce,
         uint32_t nBits, int32_t nVersion, const CAmount &genesisReward,
-        std::vector<unsigned char> extraNonce) {
+        std::vector<unsigned char> extraNonce)
+{
+
     CMutableTransaction txNew;
     txNew.nVersion = 1;
     txNew.vin.resize(1);
@@ -44,19 +46,9 @@ static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesi
     return genesis;
 }
 
-/**
- * Build the genesis block. Note that the output of its generation
- * transaction cannot be spent since it did not originally exist in the
- * database.
- *
- * CBlock(hash=000000000019d6, ver=1, hashPrevBlock=00000000000000, hashMerkleRoot=4a5e1e, nTime=1231006505, nBits=1d00ffff, nNonce=2083236893, vtx=1)
- *   CTransaction(hash=4a5e1e, ver=1, vin.size=1, vout.size=1, nLockTime=0)
- *     CTxIn(COutPoint(000000, -1), coinbase 04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73)
- *     CTxOut(nValue=50.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
- *   vMerkleTree: 4a5e1e
- */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount &genesisReward,
-                   std::vector<unsigned char> extraNonce) {
+                   std::vector<unsigned char> extraNonce)
+{
     const char *pszTimestamp = "Lets Swap Hexx";
     const CScript genesisOutputScript = CScript();
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward, extraNonce);
@@ -174,23 +166,13 @@ public:
 
         consensus.chainType = Consensus::chainMain;
 
-        consensus.nSubsidyHalvingFirst = 302438;
-        consensus.nSubsidyHalvingInterval = 420000;
-        consensus.nSubsidyHalvingStopBlock = 3646849;
-
+        consensus.nStartBlacklist = INT_MAX;
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;
         consensus.nMajorityWindow = 1000;
-        consensus.nMinNFactor = 10;
-        consensus.nMaxNFactor = 30;
-        consensus.nChainStartTime = 1389306217;
-        consensus.BIP34Height = 227931;
-        consensus.BIP34Hash = uint256S("0x000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8");
-        consensus.BIP65Height = INT_MAX;
-        consensus.BIP66Height = INT_MAX;
-        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 60 * 60; // 60 minutes between retargets
-        consensus.nPowTargetSpacing = 10 * 60; // 10 minute blocks
+        consensus.powLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.nPowTargetTimespan = 150;
+        consensus.nPowTargetSpacing = 150;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
@@ -210,38 +192,16 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1510704000; // November 15th, 2017.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000491245fa44b1b6a");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("50aff78270725ec253a722ec18069deb233f2e57eb7d64479f027141619cdda4 "); //184200
-
-        consensus.nCheckBugFixedAtBlock = ZC_CHECK_BUG_FIXED_AT_BLOCK;
-        consensus.nZnodePaymentsBugFixedAtBlock = ZC_ZNODE_PAYMENT_BUG_FIXED_AT_BLOCK;
-	    consensus.nSpendV15StartBlock = ZC_V1_5_STARTING_BLOCK;
-	    consensus.nSpendV2ID_1 = ZC_V2_SWITCH_ID_1;
-	    consensus.nSpendV2ID_10 = ZC_V2_SWITCH_ID_10;
-	    consensus.nSpendV2ID_25 = ZC_V2_SWITCH_ID_25;
-	    consensus.nSpendV2ID_50 = ZC_V2_SWITCH_ID_50;
-	    consensus.nSpendV2ID_100 = ZC_V2_SWITCH_ID_100;
-	    consensus.nModulusV2StartBlock = ZC_MODULUS_V2_START_BLOCK;
-        consensus.nModulusV1MempoolStopBlock = ZC_MODULUS_V1_MEMPOOL_STOP_BLOCK;
-	    consensus.nModulusV1StopBlock = ZC_MODULUS_V1_STOP_BLOCK;
-        consensus.nMultipleSpendInputsInOneTxStartBlock = ZC_MULTIPLE_SPEND_INPUT_STARTING_BLOCK;
-        consensus.nDontAllowDupTxsStartBlock = 119700;
-
-        // znode params
-        consensus.nZnodePaymentsStartBlock = HF_ZNODE_PAYMENT_START; // not true, but it's ok as long as it's less then nZnodePaymentsIncreaseBlock
-        // consensus.nZnodePaymentsIncreaseBlock = 680000; // actual historical value // not used for now, probably later
-        // consensus.nZnodePaymentsIncreasePeriod = 576*30; // 17280 - actual historical value // not used for now, probably later
-        // consensus.nSuperblockStartBlock = 614820;
-        // consensus.nBudgetPaymentsStartBlock = 328008; // actual historical value
-        // consensus.nBudgetPaymentsCycleBlocks = 16616; // ~(60*24*30)/2.6, actual number of blocks per month is 200700 / 12 = 16725
-        // consensus.nBudgetPaymentsWindowBlocks = 100;
+        consensus.defaultAssumeValid = uint256S("edd5e5bc7ffa040057881baba79178f786926d763dc8671e257f7756a034494e"); //184200
 
         // evo znodes
-        consensus.DIP0003Height = 278300; // Approximately June 22 2020, 12:00 UTC
-        consensus.DIP0003EnforcementHeight = 284400; // Approximately July 13 2020, 12:00 UTC
-        consensus.DIP0008Height = INT_MAX;
+        consensus.DIP0003Height = INT_MAX; // Approximately June 22 2020, 12:00 UTC
+        consensus.DIP0003EnforcementHeight = INT_MAX; // Approximately July 13 2020, 12:00 UTC
+        consensus.DIP0003EnforcementHash = uint256S("0x0");
+        consensus.DIP0008Height = INT_MAX; // Approximately Jan 28 2021, 11:00 UTC
         consensus.nEvoZnodeMinimumConfirmations = 15;
 
         // long living quorum params
@@ -249,37 +209,27 @@ public:
         consensus.llmqs[Consensus::LLMQ_400_60] = llmq400_60;
         consensus.llmqs[Consensus::LLMQ_400_85] = llmq400_85;
         consensus.nLLMQPowTargetSpacing = 5*60;
-
-        consensus.nDisableZerocoinStartBlock = 157000;
+        consensus.llmqChainLocks = Consensus::LLMQ_400_60;
+        consensus.llmqForInstantSend = Consensus::LLMQ_50_60;
 
         nMaxTipAge = 6 * 60 * 60; // ~144 blocks behind -> 2 x fork detection time, was 24 * 60 * 60 in bitcoin
 
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
-        strSporkPubKey = "04549ac134f694c0243f503e8c8a9a986f5de6610049c40b07816809b0d1d06a21b07be27b9bb555931773f62ba6cf35a25fd52f694d4e1106ccd237a7bb899fdd";
-        strZnodePaymentsPubKey = "04549ac134f694c0243f503e8c8a9a986f5de6610049c40b07816809b0d1d06a21b07be27b9bb555931773f62ba6cf35a25fd52f694d4e1106ccd237a7bb899fdd";
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
        `  * a large 32-bit integer with any alignment.
          */
-        //btzc: update zcoin pchMessage
+        //btzc: update BZX pchMessage
         pchMessageStart[0] = { 'b' };
         pchMessageStart[1] = { 'z' };
         pchMessageStart[2] = { 'x' };
         pchMessageStart[3] = { '0' };
-        nDefaultPort = 8168;
+        // magic: 627a7830
+        nDefaultPort = 29301;  //nRPCPort = 29201;
         nPruneAfterHeight = 100000;
-        /**
-         * btzc: zcoin init genesis block
-         * nBits = 0x1e0ffff0
-         * nTime = 1414776286
-         * nNonce = 142392
-         * genesisReward = 0 * COIN
-         * nVersion = 2
-         * extraNonce
-         */
         std::vector<unsigned char> extraNonce(4);
         extraNonce[0] = 0x82;
         extraNonce[1] = 0x3f;
@@ -289,25 +239,19 @@ public:
         genesis = CreateGenesisBlock(1485785935, 2610, 0x1f0fffff, 2, 0 * COIN, extraNonce);
         assert(consensus.hashGenesisBlock == uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f"));
         assert(genesis.hashMerkleRoot == uint256S("0x31f49b23f8a1185f85a6a6972446e72a86d50ca0e3b3ffe217d0c2fea30473db"));
-        vSeeds.push_back(CDNSSeedData("amsterdam.zcoin.io", "amsterdam.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("australia.zcoin.io", "australia.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("chicago.zcoin.io", "chicago.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("london.zcoin.io", "london.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("frankfurt.zcoin.io", "frankfurt.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("newjersey.zcoin.io", "newjersey.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("sanfrancisco.zcoin.io", "sanfrancisco.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("tokyo.zcoin.io", "tokyo.zcoin.io", false));
-        vSeeds.push_back(CDNSSeedData("singapore.zcoin.io", "singapore.zcoin.io", false));
+        vSeeds.push_back(CDNSSeedData("51.77.145.35", "51.77.145.35", false));
+        vSeeds.push_back(CDNSSeedData("51.91.156.249", "51.91.156.249", false));
+        vSeeds.push_back(CDNSSeedData("51.91.156.251", "51.91.156.251", false));
+        vSeeds.push_back(CDNSSeedData("51.91.156.252", "51.91.156.252", false));
         // Note that of those with the service bits flag, most only support a subset of possible options
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 82);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 7);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 75);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 34);
         base58Prefixes[SECRET_KEY] = std::vector < unsigned char > (1, 210);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container < std::vector < unsigned char > > ();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container < std::vector < unsigned char > > ();
-
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
-
-        fMiningRequiresPeers = true;
+//xxxx
+        fMiningRequiresPeers = false;
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
@@ -315,39 +259,27 @@ public:
 
         checkpointData = (CCheckpointData) {
                 boost::assign::map_list_of
-                (0, uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f"))
+                (     0, uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f")),
+
         };
 
         chainTxData = ChainTxData{
                 1485785935, // * UNIX timestamp of last checkpoint block
-                933513,     // * total number of transactions between genesis and last checkpoint
-                            //   (the tx=... number in the SetBestChain debug.log lines)
-                0.014       // * estimated number of transactions per second after checkpoint
+                1,    // * total number of transactions between genesis and last checkpoint
+                          //   (the tx=... number in the SetBestChain debug.log lines)
+                576.0 // * estimated number of transactions per day after checkpoint
         };
-        consensus.nSpendV15StartBlock = ZC_V1_5_STARTING_BLOCK;
-        consensus.nSpendV2ID_1 = ZC_V2_SWITCH_ID_1;
-        consensus.nSpendV2ID_10 = ZC_V2_SWITCH_ID_10;
-        consensus.nSpendV2ID_25 = ZC_V2_SWITCH_ID_25;
-        consensus.nSpendV2ID_50 = ZC_V2_SWITCH_ID_50;
-        consensus.nSpendV2ID_100 = ZC_V2_SWITCH_ID_100;
-        consensus.nModulusV2StartBlock = ZC_MODULUS_V2_START_BLOCK;
-        consensus.nModulusV1MempoolStopBlock = ZC_MODULUS_V1_MEMPOOL_STOP_BLOCK;
-        consensus.nModulusV1StopBlock = ZC_MODULUS_V1_STOP_BLOCK;
 
-        // Sigma related values.
-        consensus.nSigmaStartBlock = ZC_SIGMA_STARTING_BLOCK;
-        consensus.nSigmaPaddingBlock = ZC_SIGMA_PADDING_BLOCK;
-        consensus.nDisableUnpaddedSigmaBlock = ZC_SIGMA_DISABLE_UNPADDED_BLOCK;
-        consensus.nOldSigmaBanBlock = ZC_OLD_SIGMA_BAN_BLOCK;
-        consensus.nZerocoinV2MintMempoolGracefulPeriod = ZC_V2_MINT_GRACEFUL_MEMPOOL_PERIOD;
-        consensus.nZerocoinV2MintGracefulPeriod = ZC_V2_MINT_GRACEFUL_PERIOD;
-        consensus.nZerocoinV2SpendMempoolGracefulPeriod = ZC_V2_SPEND_GRACEFUL_MEMPOOL_PERIOD;
-        consensus.nZerocoinV2SpendGracefulPeriod = ZC_V2_SPEND_GRACEFUL_PERIOD;
-        consensus.nMaxSigmaInputPerBlock = ZC_SIGMA_INPUT_LIMIT_PER_BLOCK;
-        consensus.nMaxValueSigmaSpendPerBlock = ZC_SIGMA_VALUE_SPEND_LIMIT_PER_BLOCK;
-        consensus.nMaxSigmaInputPerTransaction = ZC_SIGMA_INPUT_LIMIT_PER_TRANSACTION;
-        consensus.nMaxValueSigmaSpendPerTransaction = ZC_SIGMA_VALUE_SPEND_LIMIT_PER_TRANSACTION;
-        consensus.nZerocoinToSigmaRemintWindowSize = 50000;
+        consensus.nLelantusStartBlock = INT_MAX; //xxxx
+        consensus.nMaxLelantusInputPerBlock = ZC_LELANTUS_INPUT_LIMIT_PER_BLOCK;
+        consensus.nMaxValueLelantusSpendPerBlock = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_BLOCK;
+        consensus.nMaxLelantusInputPerTransaction = ZC_LELANTUS_INPUT_LIMIT_PER_TRANSACTION;
+        consensus.nMaxValueLelantusSpendPerTransaction = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_TRANSACTION;
+        consensus.nMaxValueLelantusMint = ZC_LELANTUS_MAX_MINT;
+
+        consensus.evoSporkKeyID = "a78fERshquPsTv2TuKMSsxTeKom56uBwLP";
+        consensus.nEvoSporkStartBlock = INT_MAX; //xxxx
+        consensus.nEvoSporkStopBlock = INT_MAX;  // one year after lelantus
 
         // Dandelion related values.
         consensus.nDandelionEmbargoMinimum = DANDELION_EMBARGO_MINIMUM;
@@ -357,7 +289,7 @@ public:
         consensus.nDandelionFluff = DANDELION_FLUFF;
 
         // Bip39
-        consensus.nMnemonicBlock = 222400;
+        consensus.nMnemonicBlock = INT_MAX;
     }
 };
 
@@ -368,8 +300,10 @@ static CMainParams mainParams;
  */
 class CTestNetParams : public CChainParams {
 public:
-    CTestNetParams() {}
+    CTestNetParams() {
+        strNetworkID = "test";
 
+    }
 };
 
 static CTestNetParams testNetParams;
@@ -379,6 +313,10 @@ static CTestNetParams testNetParams;
  */
 class CRegTestParams : public CChainParams {
 public:
+    CRegTestParams() {
+        strNetworkID = "regtest";
+
+    }
 
     void UpdateBIP9Parameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
     {
@@ -417,4 +355,4 @@ void UpdateRegtestBIP9Parameters(Consensus::DeploymentPos d, int64_t nStartTime,
 {
     regTestParams.UpdateBIP9Parameters(d, nStartTime, nTimeout);
 }
- 
+

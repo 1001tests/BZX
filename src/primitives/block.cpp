@@ -6,7 +6,6 @@
 #include "primitives/block.h"
 #include "consensus/consensus.h"
 #include "validation.h"
-#include "zerocoin.h"
 #include "hash.h"
 #include "tinyformat.h"
 #include "utilstrencodings.h"
@@ -21,37 +20,15 @@
 #include <fstream>
 #include <algorithm>
 #include <string>
-#include "precomputed_hash.h"
 
 
-
-unsigned char GetNfactor(int64_t nTimestamp) {
-    int l = 0;
-    if (nTimestamp <= Params().GetConsensus().nChainStartTime)
-        return Params().GetConsensus().nMinNFactor;
-
-    int64_t s = nTimestamp - Params().GetConsensus().nChainStartTime;
-    while ((s >> 1) > 3) {
-        l += 1;
-        s >>= 1;
-    }
-    s &= 3;
-    int n = (l * 158 + s * 28 - 2670) / 100;
-    if (n < 0) n = 0;
-    if (n > 255)
-        LogPrintf("GetNfactor(%d) - something wrong(n == %d)\n", nTimestamp, n);
-
-    unsigned char N = (unsigned char) n;
-
-    return std::min(std::max(N, Params().GetConsensus().nMinNFactor), Params().GetConsensus().nMaxNFactor);
-}
 
 uint256 CBlockHeader::GetHash() const {
     return SerializeHash(*this);
 }
 
-uint256 CBlockHeader::GetPoWHash(int nHeight) const {
-
+uint256 CBlockHeader::GetPoWHash(int nHeight) const
+{
     uint256 powHash;
     if (nHeight >= 1)
     {
@@ -89,8 +66,4 @@ int64_t GetBlockWeight(const CBlock& block)
 //     weight = (stripped_size * 3) + total_size.
 //    return ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * (WITNESS_SCALE_FACTOR - 1) + ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION);
     return ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION);
-}
-
-void CBlock::ZerocoinClean() const {
-    zerocoinTxInfo = nullptr;
 }

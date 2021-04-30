@@ -12,7 +12,7 @@
 /** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
 static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 50000; // 50KB
 /** Dust Soft Limit, allowed with additional fee per output */
-static const int64_t DUST_SOFT_LIMIT = 100000; // 0.001 XZC
+static const int64_t DUST_SOFT_LIMIT = 100000; // 0.001 BZX
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE = 2000000;                      // 2000KB block hard limit
 /** Obsolete: maximum size for mined blocks */
@@ -52,9 +52,9 @@ bool CTxIn::IsSigmaSpend() const
     return (prevout.IsSigmaMintGroup() && scriptSig.size() > 0 && (scriptSig[0] == OP_SIGMASPEND) );
 }
 
-bool CTxIn::IsZerocoinRemint() const
+bool CTxIn::IsLelantusJoinSplit() const
 {
-    return (prevout.IsNull() && scriptSig.size() > 0 && (scriptSig[0] == OP_ZEROCOINTOSIGMAREMINT));
+    return (prevout.IsNull() && scriptSig.size() > 0 && (scriptSig[0] == OP_LELANTUSJOINSPLIT) );
 }
 
 std::string CTxIn::ToString() const
@@ -163,6 +163,15 @@ bool CTransaction::IsSigmaSpend() const
     return false;
 }
 
+bool CTransaction::IsLelantusJoinSplit() const
+{
+    for (const CTxIn &txin: vin) {
+        if (txin.IsLelantusJoinSplit())
+            return true;
+    }
+    return false;
+}
+
 bool CTransaction::IsZerocoinMint() const
 {
     for (const CTxOut &txout: vout) {
@@ -174,11 +183,17 @@ bool CTransaction::IsZerocoinMint() const
 
 bool CTransaction::IsSigmaMint() const
 {
-    if (IsZerocoinRemint())
-        return false;
-        
     for (const CTxOut &txout: vout) {
         if (txout.scriptPubKey.IsSigmaMint())
+            return true;
+    }
+    return false;
+}
+
+bool CTransaction::IsLelantusMint() const
+{
+    for (const CTxOut &txout: vout) {
+        if (txout.scriptPubKey.IsLelantusMint() || txout.scriptPubKey.IsLelantusJMint())
             return true;
     }
     return false;
@@ -191,16 +206,16 @@ bool CTransaction::IsZerocoinTransaction() const
 
 bool CTransaction::IsZerocoinV3SigmaTransaction() const
 {
-    return IsSigmaSpend() || IsSigmaMint() || IsZerocoinRemint();
+    return IsSigmaSpend() || IsSigmaMint();
 }
 
-bool CTransaction::IsZerocoinRemint() const
+bool CTransaction::IsLelantusTransaction() const
 {
-    for (const CTxIn &txin: vin) {
-        if (txin.IsZerocoinRemint())
-            return true;
-    }
-    return false;
+    return IsLelantusMint() || IsLelantusJoinSplit();
+}
+
+bool CTransaction::HasNoRegularInputs() const {
+    return IsZerocoinSpend() || IsSigmaSpend() || IsLelantusJoinSplit();
 }
 
 unsigned int CTransaction::CalculateModifiedSize(unsigned int nTxSize) const

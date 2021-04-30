@@ -15,7 +15,7 @@
 
 static const int SERIALIZE_TRANSACTION_NO_WITNESS = 0x40000000;
 
-static const int WITNESS_SCALE_FACTOR = 4;
+static const int WITNESS_SCALE_FACTOR = 1;
 
 class CBadTxIn : public std::exception
 {
@@ -34,6 +34,7 @@ enum {
     TRANSACTION_PROVIDER_UPDATE_REVOKE = 4,
     TRANSACTION_COINBASE = 5,
     TRANSACTION_QUORUM_COMMITMENT = 6,
+    TRANSACTION_SPORK = 7,
 };
 
 /** An outpoint - a combination of a transaction hash and an index n into its vout */
@@ -156,7 +157,7 @@ public:
     std::string ToString() const;
     bool IsZerocoinSpend() const;
     bool IsSigmaSpend() const;
-    bool IsZerocoinRemint() const;
+    bool IsLelantusJoinSplit() const;
 };
 
 /** An output of a transaction.  It contains the public key that the next input
@@ -238,7 +239,7 @@ public:
     bool IsDust(const CFeeRate &minRelayTxFee) const
     {
 //        return (nValue < GetDustThreshold(minRelayTxFee));
-        //zcoin: disable dust
+        //BZX: disable dust
         return false;
     }
 
@@ -371,7 +372,7 @@ public:
     // adapting relay policy by bumping MAX_STANDARD_VERSION, and then later date
     // bumping the default CURRENT_VERSION at which point both CURRENT_VERSION and
     // MAX_STANDARD_VERSION will be equal.
-    static const int32_t MAX_STANDARD_VERSION=2;
+    static const int32_t MAX_STANDARD_VERSION=3;
 
     // The local variables are made const to prevent unintended modification
     // without updating the cached hash value. However, CTransaction is not
@@ -437,13 +438,18 @@ public:
     // Returns true, if this is a V3 zerocoin mint or spend, made with sigma algorithm.
     bool IsZerocoinV3SigmaTransaction() const;
 
+    bool IsLelantusTransaction() const;
+
     bool IsZerocoinSpend() const;
     bool IsZerocoinMint() const;
 
     bool IsSigmaSpend() const;
     bool IsSigmaMint() const;
 
-    bool IsZerocoinRemint() const;
+    bool IsLelantusJoinSplit() const;
+    bool IsLelantusMint() const;
+
+    bool HasNoRegularInputs() const;
 
     /**
      * Get the total transaction size in bytes, including witness data.
@@ -454,7 +460,9 @@ public:
 
     bool IsCoinBase() const
     {
-        return (vin.size() == 1 && vin[0].prevout.IsNull() && (vin[0].scriptSig.size() == 0 || (vin[0].scriptSig[0] != OP_ZEROCOINSPEND && vin[0].scriptSig[0] != OP_ZEROCOINTOSIGMAREMINT)));
+        return (vin.size() == 1 && vin[0].prevout.IsNull() && (vin[0].scriptSig.size() == 0
+            || (vin[0].scriptSig[0] != OP_ZEROCOINSPEND
+            && vin[0].scriptSig[0] != OP_LELANTUSJOINSPLIT)));
     }
 
     friend bool operator==(const CTransaction& a, const CTransaction& b)
@@ -524,7 +532,7 @@ struct CMutableTransaction
     {
         return !(a == b);
     }
-    
+
     bool HasWitness() const
     {
         for (size_t i = 0; i < vin.size(); i++) {

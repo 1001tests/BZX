@@ -1,5 +1,5 @@
-#ifndef ZCOIN_HDCHAIN_H
-#define ZCOIN_HDCHAIN_H
+#ifndef BZX_HDCHAIN_H
+#define BZX_HDCHAIN_H
 
 #include "support/allocators/secure.h"
 #include "uint256.h"
@@ -46,4 +46,4 @@ public:
     void Set12Words(bool Use12Words = false);
 };
 
-#endif //ZCOIN_HDCHAIN_H
+#endif //BZX_HDCHAIN_H

@@ -19,11 +19,11 @@
 #include "rpc/server.h"
 #include "txmempool.h"
 #include "util.h"
-#include "znodesync-interface.h"
 #include "utilstrencodings.h"
 #include "validationinterface.h"
 
 #include "masternode-payments.h"
+#include "masternode-sync.h"
 
 #include <memory>
 #include <stdint.h>
@@ -126,7 +126,12 @@ UniValue generateBlocks(boost::shared_ptr<CReserveScript> coinbaseScript, int nG
             LOCK(cs_main);
             IncrementExtraNonce(pblock, chainActive.Tip(), nExtraNonce);
         }
-
+        {
+            while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetPoWHash(nHeight+1), pblock->nBits, Params().GetConsensus())) {
+                ++pblock->nNonce;
+                --nMaxTries;
+            }
+        }
         if (nMaxTries == 0) {
             break;
         }
@@ -518,15 +523,15 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
 
     if(!g_connman)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
+//xxxx
+    //if (g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0)
+        //throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "BZX is not connected!");
 
-    if (g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0)
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Zcoin is not connected!");
+    //if (IsInitialBlockDownload())
+        //throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "BZX is downloading blocks...");
 
-    if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Zcoin is downloading blocks...");
-
-    if (Params().GetConsensus().IsMain() && !znodeSyncInterface.IsSynced())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Zcoin Core is syncing with network...");
+    //if (Params().GetConsensus().IsMain() && !masternodeSync.IsSynced())
+        //throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "BZX Core is syncing with network...");
 
     static unsigned int nTransactionsUpdatedLast;
     if (!lpval.isNull())
@@ -678,7 +683,6 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     UniValue aRules(UniValue::VARR);
     UniValue vbavailable(UniValue::VOBJ);
     for (int j = 0; j < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; ++j) {
-
         Consensus::DeploymentPos pos = Consensus::DeploymentPos(j);
         ThresholdState state = VersionBitsState(pindexPrev, consensusParams, pos, versionbitscache);
         switch (state) {
@@ -756,42 +760,27 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
 
-    if (pindexPrev->nHeight+1 >= Params().GetConsensus().DIP0003EnforcementHeight) {
-        // Get expected MN/superblock payees. The call to GetBlockTxOuts might fail on regtest/devnet or when
-        // testnet is reset. This is fine and we ignore failure (blocks will be accepted)
-        std::vector<CTxOut> voutMasternodePayments;
-        mnpayments.GetBlockTxOuts(chainActive.Height() + 1, 0, voutMasternodePayments);
+    // Get expected MN/superblock payees. The call to GetBlockTxOuts might fail on regtest/devnet or when
+    // testnet is reset. This is fine and we ignore failure (blocks will be accepted)
+    std::vector<CTxOut> voutMasternodePayments;
+    mnpayments.GetBlockTxOuts(chainActive.Height() + 1, 0, voutMasternodePayments);
 
-        UniValue masternodeObj(UniValue::VARR);
-        for (const auto& txout : pblocktemplate->voutMasternodePayments) {
-            CTxDestination address1;
-            ExtractDestination(txout.scriptPubKey, address1);
-            CBitcoinAddress address2(address1);
+    UniValue masternodeObj(UniValue::VARR);
+    for (const auto& txout : pblocktemplate->voutMasternodePayments) {
+        CTxDestination address1;
+        ExtractDestination(txout.scriptPubKey, address1);
+        CBitcoinAddress address2(address1);
 
-            UniValue obj(UniValue::VOBJ);
-            obj.push_back(Pair("payee", address2.ToString().c_str()));
-            obj.push_back(Pair("script", HexStr(txout.scriptPubKey)));
-            obj.push_back(Pair("amount", txout.nValue));
-            masternodeObj.push_back(obj);
-        }
-
-        result.push_back(Pair("znode", masternodeObj));
-        result.push_back(Pair("znode_payments_started", true));
-        result.push_back(Pair("znode_payments_enforced", true));
+        UniValue obj(UniValue::VOBJ);
+        obj.push_back(Pair("payee", address2.ToString().c_str()));
+        obj.push_back(Pair("script", HexStr(txout.scriptPubKey)));
+        obj.push_back(Pair("amount", txout.nValue));
+        masternodeObj.push_back(obj);
     }
-    else {
-        UniValue znodeObj(UniValue::VOBJ);
-        if(pblock->txoutZnode != CTxOut()) {
-            CTxDestination address1;
-            ExtractDestination(pblock->txoutZnode.scriptPubKey, address1);
-            CBitcoinAddress address2(address1);
-            znodeObj.push_back(Pair("payee", address2.ToString().c_str()));
-            znodeObj.push_back(Pair("script", HexStr(pblock->txoutZnode.scriptPubKey.begin(), pblock->txoutZnode.scriptPubKey.end())));
-            znodeObj.push_back(Pair("amount", pblock->txoutZnode.nValue));
-        }
-        result.push_back(Pair("znode", znodeObj));
-        result.push_back(Pair("znode_payments_started", pindexPrev->nHeight + 1 > Params().GetConsensus().nZnodePaymentsStartBlock));
-    }
+
+    result.push_back(Pair("znode", masternodeObj));
+    result.push_back(Pair("znode_payments_started", true));
+    result.push_back(Pair("znode_payments_enforced", true));
 
     if (pindexPrev->nHeight+1 >= Params().GetConsensus().DIP0003Height) {
         result.push_back(Pair("coinbase_payload", HexStr(pblock->vtx[0]->vExtraPayload)));

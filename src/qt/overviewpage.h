@@ -44,14 +44,24 @@ public:
     void UpdatePropertyBalance(unsigned int propertyId, uint64_t available, uint64_t reserved);
 
 public Q_SLOTS:
-    void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
-                    const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
-    void setSigmaBalance();
+    void on_anonymizeButton_clicked();
+
+    void setBalance(
+        const CAmount& balance,
+        const CAmount& unconfirmedBalance,
+        const CAmount& immatureBalance,
+        const CAmount& watchOnlyBalance,
+        const CAmount& watchUnconfBalance,
+        const CAmount& watchImmatureBalance,
+        const CAmount& privateBalance,
+        const CAmount& unconfirmedPrivateBalance,
+        const CAmount& anonymizableBalance);
     //void updateElysium();
     //void reinitElysium();
 
 Q_SIGNALS:
     void transactionClicked(const QModelIndex &index);
+    void enabledTorChanged();
     void outOfSyncWarningClicked();
 #ifdef ENABLE_ELYSIUM
     void elysiumTransactionClicked(const uint256& txid);
@@ -67,8 +77,9 @@ private:
     CAmount currentWatchOnlyBalance;
     CAmount currentWatchUnconfBalance;
     CAmount currentWatchImmatureBalance;
-    CAmount currentSigmaBalance;
-    CAmount currentSigmaUnconfirmedBalance;
+    CAmount currentPrivateBalance;
+    CAmount currentUnconfirmedPrivateBalance;
+    CAmount currentAnonymizableBalance;
 
     QSettings settings;
 
@@ -78,10 +89,10 @@ private:
 private Q_SLOTS:
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
+    void handleEnabledTorChanged();
     void updateAlerts(const QString &warnings);
     void updateWatchOnlyLabels(bool showWatchOnly);
     void handleOutOfSyncWarningClicks();
-    void updateCoins(const std::vector<CMintMeta>& spendable, const std::vector<CMintMeta>& pending);
 };
 
 #endif // BITCOIN_QT_OVERVIEWPAGE_H

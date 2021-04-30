@@ -1,5 +1,5 @@
-#ifndef ZCOIN_ELYSIUM_TXPROCESSOR_H
-#define ZCOIN_ELYSIUM_TXPROCESSOR_H
+#ifndef BZX_ELYSIUM_TXPROCESSOR_H
+#define BZX_ELYSIUM_TXPROCESSOR_H
 
 #include "property.h"
 #include "sigmaprimitives.h"
@@ -27,4 +27,4 @@ extern TxProcessor *txProcessor;
 
 }
 
-#endif // ZCOIN_ELYSIUM_TXPROCESSOR_H
+#endif // BZX_ELYSIUM_TXPROCESSOR_H

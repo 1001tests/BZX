@@ -26,6 +26,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/assign/list_of.hpp>
 
+#include "stacktraces.h"
+
 static bool fCreateBlank;
 static std::map<std::string,UniValue> registers;
 static const int CONTINUE_EXECUTION=-1;
@@ -41,6 +43,13 @@ static int AppInitRawTx(int argc, char* argv[])
     //
     ParseParameters(argc, argv);
 
+#ifdef ENABLE_CRASH_HOOKS
+     if (IsArgSet("-printcrashinfo")) {
+        std::cout << GetCrashInfoStrFromSerializedStr(GetArg("-printcrashinfo", "")) << std::endl;
+        return true;
+    }
+#endif
+
     // Check for -testnet or -regtest parameter (Params() calls are only valid after this clause)
     try {
         SelectParams(ChainNameFromCommandLine());
@@ -54,10 +63,10 @@ static int AppInitRawTx(int argc, char* argv[])
     if (argc<2 || IsArgSet("-?") || IsArgSet("-h") || IsArgSet("-help"))
     {
         // First part of help message is specific to this utility
-        std::string strUsage = strprintf(_("%s zcoin-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
+        std::string strUsage = strprintf(_("%s bitcoinzero-tx utility version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n\n" +
             _("Usage:") + "\n" +
-              "  zcoin-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded Zcoin transaction") + "\n" +
-              "  zcoin-tx [options] -create [commands]   " + _("Create hex-encoded Zcoin transaction") + "\n" +
+              "  bitcoinzero-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded BZX transaction") + "\n" +
+              "  bitcoinzero-tx [options] -create [commands]   " + _("Create hex-encoded BZX transaction") + "\n" +
               "\n";
 
         fprintf(stdout, "%s", strUsage.c_str());
@@ -809,7 +818,7 @@ static int CommandLineRawTx(int argc, char* argv[])
         nRet = EXIT_FAILURE;
     }
     catch (...) {
-        PrintExceptionContinue(NULL, "CommandLineRawTx()");
+        PrintExceptionContinue(std::current_exception(), "CommandLineRawTx()");
         throw;
     }
 
@@ -821,6 +830,11 @@ static int CommandLineRawTx(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+#ifdef ENABLE_CRASH_HOOKS
+    RegisterPrettyTerminateHander();
+    RegisterPrettySignalHandlers();
+#endif
+
     SetupEnvironment();
 
     try {
@@ -828,11 +842,8 @@ int main(int argc, char* argv[])
         if (ret != CONTINUE_EXECUTION)
             return ret;
     }
-    catch (const std::exception& e) {
-        PrintExceptionContinue(&e, "AppInitRawTx()");
-        return EXIT_FAILURE;
-    } catch (...) {
-        PrintExceptionContinue(NULL, "AppInitRawTx()");
+    catch (...) {
+        PrintExceptionContinue(std::current_exception(), "AppInitRawTx()");
         return EXIT_FAILURE;
     }
 
@@ -840,10 +851,8 @@ int main(int argc, char* argv[])
     try {
         ret = CommandLineRawTx(argc, argv);
     }
-    catch (const std::exception& e) {
-        PrintExceptionContinue(&e, "CommandLineRawTx()");
-    } catch (...) {
-        PrintExceptionContinue(NULL, "CommandLineRawTx()");
+    catch (...) {
+        PrintExceptionContinue(std::current_exception(), "CommandLineRawTx()");
     }
     return ret;
 }

@@ -22,11 +22,11 @@ namespace zerocoin_tests3_v3 { class zerocoin_mintspend_v3; }
 
 namespace sigma {
 
-// Zerocoin transaction info, added to the CBlock to ensure zerocoin mint/spend transactions got their info stored into
+// Sigma transaction info, added to the CBlock to ensure sigma mint/spend transactions got their info stored into
 // index
 class CSigmaTxInfo {
 public:
-    // all the zerocoin transactions encountered so far
+    // all the sigma transactions encountered so far
     std::set<uint256> zcTransactions;
 
     // Vector of <pubCoin> for all the mints.
@@ -47,7 +47,12 @@ public:
 bool IsSigmaAllowed();
 bool IsSigmaAllowed(int height);
 
-bool IsRemintWindow(int height);
+bool CheckSigmaSpendSerial(
+        CValidationState &state,
+        CSigmaTxInfo *sigmaTxInfo,
+        const Scalar &serial,
+        int nHeight,
+        bool fConnectTip);
 
 secp_primitives::GroupElement ParseSigmaMintScript(const CScript& script);
 std::pair<std::unique_ptr<sigma::CoinSpend>, uint32_t> ParseSigmaSpend(const CTxIn& in);
@@ -63,7 +68,7 @@ bool CheckSigmaTransaction(
 	int nHeight,
   bool isCheckWallet,
   bool fStatefulSigmaCheck,
-  CSigmaTxInfo *zerocoinTxInfo);
+  CSigmaTxInfo *sigmaTxInfo);
 
 void DisconnectTipSigma(CBlock &block, CBlockIndex *pindexDelete);
 
@@ -151,6 +156,12 @@ public:
         int id,
         uint256& blockHash_out,
         std::vector<sigma::PublicCoin>& coins_out);
+
+    void GetAnonymitySet(
+            sigma::CoinDenomination denomination,
+            int coinGroupID,
+            bool fStartSigmaBlacklist,
+            std::vector<GroupElement>& coins_out);
 
     // Return height of mint transaction and id of minted coin
     std::pair<int, int> GetMintedCoinHeightAndId(const sigma::PublicCoin& pubCoin);

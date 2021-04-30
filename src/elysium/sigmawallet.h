@@ -1,9 +1,9 @@
-// Copyright (c) 2019 The Zcoin Core Developers
+// Copyright (c) 2019 The BZX Core Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef ZCOIN_ELYSIUM_SIGMAWALLET_H
-#define ZCOIN_ELYSIUM_SIGMAWALLET_H
+#ifndef BZX_ELYSIUM_SIGMAWALLET_H
+#define BZX_ELYSIUM_SIGMAWALLET_H
 
 #include "property.h"
 #include "sigmaprimitives.h"
@@ -192,4 +192,4 @@ protected:
 
 } // namespace elysium
 
-#endif // ZCOIN_ELYSIUM_SIGMAWALLET_H
+#endif // BZX_ELYSIUM_SIGMAWALLET_H

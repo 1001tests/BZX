@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Zcoin Core Developers
+// Copyright (c) 2020 The BZX Core Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -46,7 +46,7 @@ ECDSASignature SigmaV1SignatureBuilder::Sign(CKey &key) const
         throw std::runtime_error("Fail to sign payload");
     }
 
-    return ECDSASignature::Parse(ECDSAContext::CreateSignContext(), sig.data(), sig.size());
+    return ECDSASignature::ParseDER(ECDSAContext::CreateSignContext(), sig.data(), sig.size());
 }
 
 bool SigmaV1SignatureBuilder::Verify(CPubKey const &pubKey, ECDSASignature const &signature) const

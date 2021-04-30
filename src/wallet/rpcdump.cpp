@@ -86,10 +86,10 @@ UniValue importprivkey(const JSONRPCRequest& request)
 
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 3)
         throw runtime_error(
-            "importprivkey \"zcoinprivkey\" ( \"label\" ) ( rescan )\n"
+            "importprivkey \"privkey\" ( \"label\" ) ( rescan )\n"
             "\nAdds a private key (as returned by dumpprivkey) to your wallet.\n"
             "\nArguments:\n"
-            "1. \"zcoinprivkey\"   (string, required) The private key (see dumpprivkey)\n"
+            "1. \"privkey\"   (string, required) The private key (see dumpprivkey)\n"
             "2. \"label\"            (string, optional, default=\"\") An optional label\n"
             "3. rescan               (boolean, optional, default=true) Rescan the wallet for transactions\n"
             "\nNote: This call can take minutes to complete if rescan is true.\n"
@@ -114,8 +114,9 @@ UniValue importprivkey(const JSONRPCRequest& request)
     const CHDChain& chain = pwallet->GetHDChain();
     if(chain.nVersion == chain.VERSION_WITH_BIP39){
         throw JSONRPCError(RPC_WALLET_ERROR, "Importing wallets and private keys is disabled for mnemonic-enabled wallets."
-                                             "To import your dump file, create a non-mnemonic wallet by setting \"usemnemonic=0\" in your zcoin.conf file, after backing up and removing your existing wallet.");
+                                             "To import your dump file, create a non-mnemonic wallet by setting \"usemnemonic=0\" in your bitcoinzero.conf file, after backing up and removing your existing wallet.");
     }
+
 
     string strSecret = request.params[0].get_str();
     string strLabel = "";
@@ -260,7 +261,7 @@ UniValue importaddress(const JSONRPCRequest& request)
         std::vector<unsigned char> data(ParseHex(request.params[0].get_str()));
         ImportScript(pwallet, CScript(data.begin(), data.end()), strLabel, fP2SH);
     } else {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Zcoin address or script");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid BZX address or script");
     }
 
     if (fRescan)
@@ -463,7 +464,7 @@ UniValue importwallet(const JSONRPCRequest& request)
     const CHDChain& chain = pwallet->GetHDChain();
     if(chain.nVersion == chain.VERSION_WITH_BIP39){
         throw JSONRPCError(RPC_WALLET_ERROR, "Importing wallets and private keys is disabled for mnemonic-enabled wallets."
-                                             "To import your dump file, create a non-mnemonic wallet by setting \"usemnemonic=0\" in your zcoin.conf file, after backing up and removing your existing wallet.");
+                                             "To import your dump file, create a non-mnemonic wallet by setting \"usemnemonic=0\" in your bitcoinzero.conf file, after backing up and removing your existing wallet.");
     }
 
 
@@ -497,91 +498,73 @@ UniValue importwallet(const JSONRPCRequest& request)
         if (vstr.size() < 2)
             continue;
         CBitcoinSecret vchSecret;
-        // begin zerocoin
-        if(vstr[0] == "zerocoin=1"){    
-            CZerocoinEntry zerocoinEntry;
-            zerocoinEntry.value.SetHex(vstr[1]);
-            zerocoinEntry.denomination = stoi(vstr[2]);
-            zerocoinEntry.randomness.SetHex(vstr[3]);
-            zerocoinEntry.serialNumber.SetHex(vstr[4]);
-            zerocoinEntry.IsUsed = stoi(vstr[5]);
-            zerocoinEntry.nHeight = stoi(vstr[6]);
-            zerocoinEntry.id = stoi(vstr[7]);
-            if(vstr.size()==11){ // Including the last "#"
-                zerocoinEntry.ecdsaSecretKey = ParseHex(vstr[8]);
-                zerocoinEntry.IsUsedForRemint = stoi(vstr[9]);
-            }
-            pwallet->NotifyZerocoinChanged(pwallet, zerocoinEntry.value.GetHex(), "New (" + std::to_string(zerocoinEntry.denomination) + " mint)", CT_NEW);
-            walletdb.WriteZerocoinEntry(zerocoinEntry);
+
+        if (!vchSecret.SetString(vstr[0]))
+            continue;
+        CKey key = vchSecret.GetKey();
+        CPubKey pubkey = key.GetPubKey();
+        assert(key.VerifyPubKey(pubkey));
+        CKeyID keyid = pubkey.GetID();
+        if (pwallet->HaveKey(keyid)) {
+            LogPrintf("Skipping import of %s (key already present)\n", CBitcoinAddress(keyid).ToString());
+            continue;
         }
-        else {
-            if (!vchSecret.SetString(vstr[0]))
-                continue;
-            CKey key = vchSecret.GetKey();
-            CPubKey pubkey = key.GetPubKey();
-            assert(key.VerifyPubKey(pubkey));
-            CKeyID keyid = pubkey.GetID();
-            if (pwallet->HaveKey(keyid)) {
-                LogPrintf("Skipping import of %s (key already present)\n", CBitcoinAddress(keyid).ToString());
-                continue;
-            }
-            int64_t nTime = DecodeDumpTime(vstr[1]);
-            std::string strLabel;
-            bool fLabel = true;
-            // CKeyMetadata
-            bool fHd = false;
-            std::string hdKeypath;
-            CKeyID hdMasterKeyID;
+        int64_t nTime = DecodeDumpTime(vstr[1]);
+        std::string strLabel;
+        bool fLabel = true;
+        // CKeyMetadata
+        bool fHd = false;
+        std::string hdKeypath;
+        CKeyID hdMasterKeyID;
 
-            for (unsigned int nStr = 2; nStr < vstr.size(); nStr++) {
-                if (boost::algorithm::starts_with(vstr[nStr], "#"))
-                    break;
-                if (vstr[nStr] == "change=1")
-                    fLabel = false;
-                if (!masterKeyID.IsNull() && vstr[nStr] == "sigma=1")
-                    fLabel = false;
-                if (vstr[nStr] == "reserve=1")
-                    fLabel = false;
-                if (boost::algorithm::starts_with(vstr[nStr], "label=")) {
-                    strLabel = DecodeDumpString(vstr[nStr].substr(6));
-                    fLabel = true;
-                }
-                if(!masterKeyID.IsNull() && boost::algorithm::starts_with(vstr[nStr], "hdKeypath=")){
-                    hdKeypath = vstr[nStr].substr(10);
-                    fHd = true;
-                }
-                if(!masterKeyID.IsNull() && boost::algorithm::starts_with(vstr[nStr], "hdMasterKeyID=")){
-                    hdMasterKeyID.SetHex(vstr[nStr].substr(14));
-                }
+        for (unsigned int nStr = 2; nStr < vstr.size(); nStr++) {
+            if (boost::algorithm::starts_with(vstr[nStr], "#"))
+                break;
+            if (vstr[nStr] == "change=1")
+                fLabel = false;
+            if (!masterKeyID.IsNull() && vstr[nStr] == "sigma=1")
+                fLabel = false;
+            if (vstr[nStr] == "reserve=1")
+                fLabel = false;
+            if (boost::algorithm::starts_with(vstr[nStr], "label=")) {
+                strLabel = DecodeDumpString(vstr[nStr].substr(6));
+                fLabel = true;
             }
-            LogPrintf("Importing %s...\n", CBitcoinAddress(keyid).ToString());
-
-            // Add entry to mapKeyMetadata (Need to populate KeyMetadata before for it to be written to DB in the following call)
-            if(!masterKeyID.IsNull()){
-                pwallet->mapKeyMetadata[keyid].nCreateTime = nTime;
-                if(fHd){
-                    pwallet->mapKeyMetadata[keyid].hdKeypath = hdKeypath;
-                    pwallet->mapKeyMetadata[keyid].hdMasterKeyID = hdMasterKeyID;
-                    pwallet->mapKeyMetadata[keyid].ParseComponents();
-                }
+            if(!masterKeyID.IsNull() && boost::algorithm::starts_with(vstr[nStr], "hdKeypath=")){
+                hdKeypath = vstr[nStr].substr(10);
+                fHd = true;
             }
-
-            if (!pwallet->AddKeyPubKey(key, pubkey)) {
-                fGood = false;
-                continue;
+            if(!masterKeyID.IsNull() && boost::algorithm::starts_with(vstr[nStr], "hdMasterKeyID=")){
+                hdMasterKeyID.SetHex(vstr[nStr].substr(14));
             }
-
-            if(!masterKeyID.IsNull() && fHd){
-                // If change component in HD path is 2, this is a mint seed key. Add to mintpool. (Have to call after key addition)
-                if(pwallet->mapKeyMetadata[keyid].nChange.first==2){
-                    zwalletMain->RegenerateMintPoolEntry(hdMasterKeyID, keyid, pwallet->mapKeyMetadata[keyid].nChild.first);
-                    fMintUpdate = true;
-                }
-            }
-            if (fLabel)
-                pwallet->SetAddressBook(keyid, strLabel, "receive");
-            nTimeBegin = std::min(nTimeBegin, nTime);
         }
+        LogPrintf("Importing %s...\n", CBitcoinAddress(keyid).ToString());
+
+        // Add entry to mapKeyMetadata (Need to populate KeyMetadata before for it to be written to DB in the following call)
+        if(!masterKeyID.IsNull()){
+            pwallet->mapKeyMetadata[keyid].nCreateTime = nTime;
+            if(fHd){
+                pwallet->mapKeyMetadata[keyid].hdKeypath = hdKeypath;
+                pwallet->mapKeyMetadata[keyid].hdMasterKeyID = hdMasterKeyID;
+                pwallet->mapKeyMetadata[keyid].ParseComponents();
+            }
+        }
+
+        if (!pwallet->AddKeyPubKey(key, pubkey)) {
+            fGood = false;
+            continue;
+        }
+
+        if(!masterKeyID.IsNull() && fHd){
+            // If change component in HD path is 2, this is a mint seed key. Add to mintpool. (Have to call after key addition)
+            if(pwallet->mapKeyMetadata[keyid].nChange.first==2){
+                pwallet->zwallet->RegenerateMintPoolEntry(walletdb, hdMasterKeyID, keyid, pwallet->mapKeyMetadata[keyid].nChild.first);
+                fMintUpdate = true;
+            }
+        }
+        if (fLabel)
+            pwallet->SetAddressBook(keyid, strLabel, "receive");
+        nTimeBegin = std::min(nTimeBegin, nTime);
     }
     file.close();
     pwallet->ShowProgress("", 100); // hide progress dialog in GUI
@@ -594,8 +577,8 @@ UniValue importwallet(const JSONRPCRequest& request)
     pwallet->MarkDirty();
 
     if(fMintUpdate){
-        zwalletMain->SyncWithChain();
-        zwalletMain->GetTracker().ListMints(false, false);
+        pwallet->zwallet->SyncWithChain();
+        pwallet->zwallet->GetTracker().ListMints(false, false);
     }
 
     if (!fGood)
@@ -617,7 +600,7 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
             "\nReveals the private key corresponding to 'address'.\n"
             "Then the importprivkey can be used with this output\n"
             "\nArguments:\n"
-            "1. \"address\"   (string, required) The Zcoin address for the private key\n"
+            "1. \"address\"   (string, required) The BZX address for the private key\n"
             "\nResult:\n"
             "\"key\"                (string) The private key\n"
             "\nExamples:\n"
@@ -633,7 +616,7 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
     string strAddress = request.params[0].get_str();
     CBitcoinAddress address;
     if (!address.SetString(strAddress))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Zcoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid BZX address");
     CKeyID keyID;
     if (!address.GetKeyID(keyID))
         throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
@@ -644,16 +627,16 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
     return CBitcoinSecret(vchSecret).ToString();
 }
 
-UniValue dumpprivkey_zcoin(const JSONRPCRequest& request)
+UniValue dumpprivkey_bzx(const JSONRPCRequest& request)
 {
 #ifndef UNSAFE_DUMPPRIVKEY
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
         throw runtime_error(
-            "dumpprivkey \"zcoinaddress\"\n"
-            "\nReveals the private key corresponding to 'zcoinaddress'.\n"
+            "dumpprivkey \"BZX address\"\n"
+            "\nReveals the private key corresponding to 'BZX address'.\n"
             "Then the importprivkey can be used with this output\n"
             "\nArguments:\n"
-            "1. \"zcoinaddress\"   (string, required) The Zcoin address for the private key\n"
+            "1. \"BZX address\"   (string, required) The BZX address for the private key\n"
             "2. \"one-time-auth-code\"   (string, optional) A one time authorization code received from a previous call of dumpprivkey"
             "\nResult:\n"
             "\"key\"                (string) The private key\n"
@@ -671,12 +654,7 @@ UniValue dumpprivkey_zcoin(const JSONRPCRequest& request)
             "WARNING! Your one time authorization code is: " + AuthorizationHelper::inst().generateAuthorizationCode(__FUNCTION__ + request.params[0].get_str()) + "\n"
             "This command exports your wallet private key. Anyone with this key has complete control over your funds. \n"
             "If someone asked you to type in this command, chances are they want to steal your coins. \n"
-            "Zcoin team members will never ask for this command's output and it is not needed for Znode setup or diagnosis!\n"
-            "\n"
-            " Please seek help on one of our public channels. \n"
-            " Telegram: https://t.me/zcoinproject \n"
-            " Discord: https://discordapp.com/invite/4FjnQ2q\n"
-            " Reddit: https://www.reddit.com/r/zcoin/\n"
+            "BZX team members will never ask for this command's output and it is not needed for Znode setup or diagnosis!\n"
             "\n"
             ;
         throw runtime_error(warning);
@@ -733,7 +711,7 @@ UniValue dumpwallet(const JSONRPCRequest& request)
     std::sort(vKeyBirth.begin(), vKeyBirth.end());
 
     // produce output
-    file << strprintf("# Wallet dump created by Zcoin %s\n", CLIENT_BUILD);
+    file << strprintf("# Wallet dump created by BZX %s\n", CLIENT_BUILD);
     file << strprintf("# * Created on %s\n", EncodeDumpTime(GetTime()));
     file << strprintf("# * Best block at time of backup was %i (%s),\n", chainActive.Height(), chainActive.Tip()->GetBlockHash().ToString());
     file << strprintf("#   mined on %s\n", EncodeDumpTime(chainActive.Tip()->GetBlockTime()));
@@ -820,36 +798,13 @@ UniValue dumpwallet(const JSONRPCRequest& request)
         }
     }
 
-    // Begin dump Zerocoins
-    if (!pwallet->strWalletFile.empty()) {
-        list <CZerocoinEntry> listZerocoinEntries;
-        CWalletDB walletdb(pwallet->strWalletFile);
-        walletdb.ListPubCoin(listZerocoinEntries);
-
-        for (auto& zerocoinEntry : listZerocoinEntries) {
-            file << "zerocoin=1 ";
-            file << strprintf("%s ", zerocoinEntry.value.GetHex()); // value
-            file << strprintf("%d ", zerocoinEntry.denomination); // denomination
-            file << strprintf("%s ", zerocoinEntry.randomness.GetHex()); // randomness
-            file << strprintf("%s ", zerocoinEntry.serialNumber.GetHex()); // serialNumber
-            file << strprintf("%d ", zerocoinEntry.IsUsed); // IsUsed
-            file << strprintf("%d ", zerocoinEntry.nHeight); // nHeight
-            file << strprintf("%d ", zerocoinEntry.id); // id
-            if(!zerocoinEntry.ecdsaSecretKey.empty()){
-                file << strprintf("%s ", HexStr(zerocoinEntry.ecdsaSecretKey)); // ecdsaSecretKey
-                file << strprintf("%d ", zerocoinEntry.IsUsedForRemint); // IsUsedForRemint
-            }
-            file << "#\n"; // --
-        }
-    }
-
     file << "\n";
     file << "# End of dump\n";
     file.close();
     return NullUniValue;
 }
 
-UniValue dumpwallet_zcoin(const JSONRPCRequest& request)
+UniValue dumpwallet_bzx(const JSONRPCRequest& request)
 {
 #ifndef UNSAFE_DUMPPRIVKEY
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
@@ -872,12 +827,7 @@ UniValue dumpwallet_zcoin(const JSONRPCRequest& request)
             "WARNING! Your one time authorization code is: " + AuthorizationHelper::inst().generateAuthorizationCode(__FUNCTION__ + request.params[0].get_str()) + "\n"
             "This command exports all your private keys. Anyone with these keys has complete control over your funds. \n"
             "If someone asked you to type in this command, chances are they want to steal your coins. \n"
-            "Zcoin team members will never ask for this command's output and it is not needed for Znode setup or diagnosis!\n"
-            "\n"
-            " Please seek help on one of our public channels. \n"
-            " Telegram: https://t.me/zcoinproject \n"
-            " Discord: https://discordapp.com/invite/4FjnQ2q\n"
-            " Reddit: https://www.reddit.com/r/zcoin/\n"
+            "BZX team members will never ask for this command's output and it is not needed for Znode setup or diagnosis!\n"
             "\n"
             ;
         throw runtime_error(warning);

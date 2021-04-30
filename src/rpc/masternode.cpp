@@ -17,6 +17,7 @@
 
 #include "wallet/wallet.h"
 #include "wallet/rpcwallet.h"
+#include "wallet/coincontrol.h"
 
 #include "evo/specialtx.h"
 #include "evo/deterministicmns.h"
@@ -45,13 +46,13 @@ void masternode_list_help()
             "  json           - Print info in JSON format (can be additionally filtered, partial match)\n"
             "  lastpaidblock  - Print the last block height a node was paid on the network\n"
             "  lastpaidtime   - Print the last time a node was paid on the network\n"
-            "  owneraddress   - Print the znode owner Zcoin address\n"
-            "  payee          - Print the znode payout Zcoin address (can be additionally filtered,\n"
+            "  owneraddress   - Print the znode owner BZX address\n"
+            "  payee          - Print the znode payout BZX address (can be additionally filtered,\n"
             "                   partial match)\n"
             "  pubKeyOperator - Print the znode operator public key\n"
             "  status         - Print znode status: ENABLED / POSE_BANNED\n"
             "                   (can be additionally filtered, partial match)\n"
-            "  votingaddress  - Print the znode voting Zcoin address\n"
+            "  votingaddress  - Print the znode voting BZX address\n"
         );
 }
 
@@ -224,7 +225,9 @@ UniValue masternode_outputs(const JSONRPCRequest& request)
 
     // Find possible candidates
     std::vector<COutput> vPossibleCoins;
-    pwallet->AvailableCoins(vPossibleCoins, true, NULL, false, ONLY_1000);
+    CCoinControl coin_control;
+    coin_control.nCoinType = CoinType::ONLY_1000;
+    pwallet->AvailableCoins(vPossibleCoins, true, &coin_control);
 
     UniValue obj(UniValue::VOBJ);
     for (const auto& out : vPossibleCoins) {
@@ -527,8 +530,10 @@ UniValue masternodelist(const JSONRPCRequest& request)
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         okSafe argNames
   //  --------------------- ------------------------  -----------------------  ------ ----------
-    { "zcoin",               "evoznode",              &masternode,             true,  {} },
-    { "zcoin",               "evoznodelist",          &masternodelist,         true,  {} },
+    { "BZX",               "znode",                 &masternode,             true,  {} },
+    { "BZX",               "znodelist",             &masternodelist,         true,  {} },
+    { "BZX",               "evoznode",              &masternode,             true,  {} },
+    { "BZX",               "evoznodelist",          &masternodelist,         true,  {} },
 };
 
 void RegisterMasternodeRPCCommands(CRPCTable &t)

@@ -19,8 +19,6 @@ class CReserveScript;
 class CTransaction;
 class CValidationInterface;
 class CValidationState;
-class CGovernanceVote;
-class CGovernanceObject;
 class CDeterministicMNList;
 class CDeterministicMNListDiff;
 class uint256;
@@ -42,8 +40,6 @@ protected:
     virtual void SyncTransaction(const CTransaction &tx, const CBlockIndex *pindex, int posInBlock) {}
     virtual void NotifyTransactionLock(const CTransaction &tx) {}
     virtual void NotifyChainLock(const CBlockIndex* pindex) {}
-    virtual void NotifyGovernanceVote(const CGovernanceVote &vote) {}
-    virtual void NotifyGovernanceObject(const CGovernanceObject &object) {}
     virtual void NotifyInstantSendDoubleSpendAttempt(const CTransaction &currentTx, const CTransaction &previousTx) {}
     virtual void NotifyMasternodeListChanged(bool undo, const CDeterministicMNList& oldMNList, const CDeterministicMNListDiff& diff) {}
     virtual void SetBestChain(const CBlockLocator &locator) {}
@@ -82,10 +78,6 @@ struct CMainSignals {
     boost::signals2::signal<void (const CTransaction &)> NotifyTransactionLock;
     /** Notifies listeners of a ChainLock. */
     boost::signals2::signal<void (const CBlockIndex* pindex)> NotifyChainLock;
-    /** Notifies listeners of a new governance vote. */
-    boost::signals2::signal<void (const CGovernanceVote &)> NotifyGovernanceVote;
-    /** Notifies listeners of a new governance object. */
-    boost::signals2::signal<void (const CGovernanceObject &)> NotifyGovernanceObject;
     /** Notifies listeners of a attempted InstantSend double spend*/
     boost::signals2::signal<void(const CTransaction &currentTx, const CTransaction &previousTx)> NotifyInstantSendDoubleSpendAttempt;
     /** Notifies listeners that the MN list changed */

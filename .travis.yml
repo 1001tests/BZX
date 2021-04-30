@@ -80,7 +80,8 @@ deploy:
   file_glob: true
   file:
     - out/**/zip/*
-    - /home/travis/build/909tests/BZX/build-ci/zcoin-$BUILD_TARGET/src/bin/zip/*
+    #- /home/travis/build/909tests/BZX/build-ci/zcoin-$BUILD_TARGET/src/bin/zip/*
+    - /home/travis/build/909tests/BZX/build-ci/BZX-$BUILD_TARGET/src/bin/zip/*
   skip_cleanup: true
   on:
     tags: true

@@ -1,11 +1,16 @@
-#ifndef ZCOIN_SIGMA_COIN_H
-#define ZCOIN_SIGMA_COIN_H
+#ifndef BZX_SIGMA_COIN_H
+#define BZX_SIGMA_COIN_H
 
 #include "params.h"
 #include "sigma_primitives.h"
 
 #include "../consensus/validation.h"
-#include "../libzerocoin/Zerocoin.h"
+#include "../sigma_params.h"
+#include "../uint256.h"
+
+#include <secp256k1.h>
+#include <secp256k1_recovery.h>
+#include <secp256k1_ecdh.h>
 
 #include <cinttypes>
 
@@ -149,4 +154,4 @@ template<> struct hash<sigma::CoinDenomination> {
 
 }// namespace std
 
-#endif // ZCOIN_SIGMA_COIN_H
+#endif // BZX_SIGMA_COIN_H

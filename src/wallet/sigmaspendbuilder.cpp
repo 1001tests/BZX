@@ -70,12 +70,8 @@ static std::unique_ptr<SigmaSpendSigner> CreateSigner(const CSigmaEntry& coin)
         throw std::runtime_error(_("One of the minted coin is invalid"));
     }
 
-    int version;
-    {
-        LOCK(cs_main);
-        version = chainActive.Height() >= ::Params().GetConsensus().nSigmaPaddingBlock ? ZEROCOIN_TX_VERSION_3_1
-                                                                                       : ZEROCOIN_TX_VERSION_3;
-    }
+    int version =  ZEROCOIN_TX_VERSION_3_1;
+
     // construct private part of the mint
     sigma::PrivateCoin priv(params, denom, version);
 
@@ -92,7 +88,7 @@ static std::unique_ptr<SigmaSpendSigner> CreateSigner(const CSigmaEntry& coin)
     std::tie(std::ignore, groupId) = state->GetMintedCoinHeightAndId(pub);
 
     if (groupId < 0) {
-        throw std::runtime_error(_("One of minted coin does not found in the chain"));
+        throw std::runtime_error(_("One of the sigma coins has not been found in the chain!"));
     }
 
     signer->output.n = static_cast<uint32_t>(groupId);
@@ -100,16 +96,13 @@ static std::unique_ptr<SigmaSpendSigner> CreateSigner(const CSigmaEntry& coin)
 
     if (state->GetCoinSetForSpend(
         &chainActive,
-        chainActive.Height() - (ZC_MINT_CONFIRMATIONS - 1), // required 6 confirmation for mint to spend
+        chainActive.Height() - (ZC_MINT_CONFIRMATIONS - 1), // required 2 confirmation for mint to spend
         denom,
         groupId,
         signer->lastBlockOfGroup,
         signer->group) < 2) {
         throw std::runtime_error(_("Has to have at least two mint coins with at least 6 confirmation in order to spend a coin"));
     }
-
-    if(version < ZEROCOIN_TX_VERSION_3_1)
-        signer->fPadding = false;
 
     return signer;
 }
@@ -143,10 +136,8 @@ CAmount SigmaSpendBuilder::GetInputs(std::vector<std::unique_ptr<InputSigner>>& 
     selected.clear();
     denomChanges.clear();
 
-    auto& consensusParams = Params().GetConsensus();
-
     if (!wallet.GetCoinsToSpend(required, selected, denomChanges,
-        consensusParams.nMaxSigmaInputPerTransaction, consensusParams.nMaxValueSigmaSpendPerTransaction, coinControl)) {
+        0, 0, coinControl)) {
         throw InsufficientFunds();
     }
 
@@ -172,9 +163,8 @@ CAmount SigmaSpendBuilder::GetChanges(std::vector<CTxOut>& outputs, CAmount amou
         CAmount denominationValue;
         sigma::DenominationToInteger(denomination, denominationValue);
 
-        sigma::PrivateCoin newCoin(params, denomination, ZEROCOIN_TX_VERSION_3);
+        sigma::PrivateCoin newCoin(params, denomination, ZEROCOIN_TX_VERSION_3_1);
         hdMint.SetNull();
-        mintWallet.GenerateMint(denomination, newCoin, hdMint, boost::none, true);
         auto& pubCoin = newCoin.getPublicCoin();
 
         if (!pubCoin.validate()) {

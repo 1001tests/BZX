@@ -170,6 +170,13 @@ private:
     CAmount nSigmaSpendAmount;
     size_t nSigmaSpendInputs;
 
+    // lelantus spend limits
+    CAmount nLelantusSpendAmount;
+    size_t nLelantusSpendInputs;
+
+    // transactions we cannot include in this block
+    CTxMemPool::setEntries txBlackList;
+
 public:
     BlockAssembler(const CChainParams& chainparams);
     /** Construct a new block template with coinbase to scriptPubKeyIn */
@@ -216,14 +223,20 @@ private:
       * of updated descendants. */
     int UpdatePackagesForAdded(const CTxMemPool::setEntries& alreadyAdded, indexed_modified_transaction_set &mapModifiedTx);
 
-    /** Zcoin: fill in founders' reward and znode payout outputs */
+    /** BZX: fill in founders' reward and znode payout outputs */
     void FillFoundersReward(CMutableTransaction &coinbaseTx);
+
+    /** Fill txBlackList set */
+    void FillBlackListForBlockTemplate();
 };
 
 /** Modify the extranonce in a block */
 void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev);
+void UpdateDiff(CBlockHeader* block, const CBlockIndex* pindexPrev);
 /** Run the miner threads */
 void GenerateBitcoins(bool fGenerate, int nThreads, const CChainParams& chainparams);
+extern double dHashesPerSec;
+extern int64_t nHPSTimerStart;
 
 #endif // BITCOIN_MINER_H

@@ -52,7 +52,7 @@
     </message>
     </context>
 <context>
-    <name>ZcoinGUI</name>
+    <name>BitcoinGUI</name>
     <message>
         <source>&amp;Overview</source>
         <translation>&amp;கண்ணோட்டம்</translation>
@@ -90,8 +90,8 @@
         <translation>&amp;செய்தியை சரிசெய்...</translation>
     </message>
     <message>
-        <source>Zcoin</source>
-        <translation>Zcoin</translation>
+        <source>BZX</source>
+        <translation>BZX</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -706,10 +706,10 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>zcoin-core</name>
+    <name>BZX-core</name>
     <message>
-        <source>Zcoin Core</source>
-        <translation>Zcoin மையம்</translation>
+        <source>BZX Core</source>
+        <translation>BZX மையம்</translation>
     </message>
     <message>
         <source>(default: %u)</source>
