@@ -7,7 +7,6 @@
 #define BITCOIN_WALLET_WALLET_H
 
 #include "amount.h"
-#include "../libzerocoin/bitcoin_bignum/bignum.h"
 #include "../sigma/coin.h"
 #include "../liblelantus/coin.h"
 #include "streams.h"
@@ -943,19 +942,19 @@ public:
         CAmount required,
         std::vector<CSigmaEntry>& coinsToSpend_out,
         std::vector<sigma::CoinDenomination>& coinsToMint_out,
+        std::list<CSigmaEntry>& coins,
         const size_t coinsLimit = SIZE_MAX,
         const CAmount amountLimit = MAX_MONEY,
-        const CCoinControl *coinControl = NULL,
-        bool forEstimation = false) const;
+        const CCoinControl *coinControl = NULL) const;
 
     bool GetCoinsToJoinSplit(
             CAmount required,
             std::vector<CLelantusEntry>& coinsToSpend_out,
             CAmount& changeToMint,
+            std::list<CLelantusEntry> coins,
             const size_t coinsToSpendLimit = SIZE_MAX,
             const CAmount amountToSpendLimit = MAX_MONEY,
-            const CCoinControl *coinControl = NULL,
-            bool forEstimation = false) const;
+            const CCoinControl *coinControl = NULL) const;
 
     /**
      * Insert additional inputs into the transaction by
@@ -972,7 +971,7 @@ public:
                            std::string& strFailReason, const CCoinControl *coinControl = NULL, bool sign = true, int nExtraPayloadSize = 0);
 
     /**
-     * Add Mint and Spend function
+     * Add Mint and Spend functions
      */
     void ListAvailableSigmaMintCoins(vector <COutput> &vCoins, bool fOnlyConfirmed) const;
     void ListAvailableLelantusMintCoins(vector<COutput> &vCoins, bool fOnlyConfirmed) const;
