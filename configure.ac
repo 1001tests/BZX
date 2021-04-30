@@ -1,6 +1,6 @@
 dnl require autoconf 2.60 (AS_ECHO/AS_ECHO_N)
 AC_PREREQ([2.60])
-define(_CLIENT_VERSION_MAJOR, 5)
+define(_CLIENT_VERSION_MAJOR, 14)
 define(_CLIENT_VERSION_MINOR, 0)
 define(_CLIENT_VERSION_REVISION, 3)
 define(_CLIENT_VERSION_BUILD, 8)
@@ -1279,8 +1279,6 @@ fi
 
 AX_SUBDIRS_CONFIGURE([src/secp256k1], [[--disable-shared], [--with-pic], [--with-bignum=no], [--enable-module-recovery], [--enable-experimental], [--enable-module-ecdh], [--enable-endomorphism]])
 AX_SUBDIRS_CONFIGURE([src/tor], [[--disable-system-torrc], [--disable-gcc-hardening],[--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--disable-libscrypt]])
-
-AC_CONFIG_SUBDIRS([src/bls-signatures])
 
 AC_OUTPUT
 
