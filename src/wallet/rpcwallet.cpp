@@ -1520,13 +1520,18 @@ void ListTransactions(CWallet * const pwallet, const CWalletTx& wtx, const strin
                     //compare address of payee to addr.
 
                     bool its_znode_payment = false;
-                    for(CTxOut const & out : voutMasternodePaymentsRet) {
-                        CTxDestination payeeDest;
-                        ExtractDestination(out.scriptPubKey, payeeDest);
-                        CBitcoinAddress payeeAddr(payeeDest);
+                    if (!fSkipMnpayoutCheck) {
+                        std::vector<CTxOut> voutMasternodePaymentsRet;
+                        mnpayments.GetBlockTxOuts(txHeight, CAmount(), voutMasternodePaymentsRet);
+                        //compare address of payee to addr.
+                        for(CTxOut const & out : voutMasternodePaymentsRet) {
+                            CTxDestination payeeDest;
+                            ExtractDestination(out.scriptPubKey, payeeDest);
+                            CBitcoinAddress payeeAddr(payeeDest);
 
-                        if(addr.ToString() == payeeAddr.ToString()) {
-                            its_znode_payment = true;
+                            if(addr.ToString() == payeeAddr.ToString()) {
+                                its_znode_payment = true;
+                            }
                         }
                     }
                     if(its_znode_payment){
