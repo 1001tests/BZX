@@ -101,7 +101,7 @@ static std::unique_ptr<SigmaSpendSigner> CreateSigner(const CSigmaEntry& coin)
         groupId,
         signer->lastBlockOfGroup,
         signer->group) < 2) {
-        throw std::runtime_error(_("Has to have at least two mint coins with at least 6 confirmation in order to spend a coin"));
+        throw std::runtime_error(_("Has to have at least two mint coins with at least 2 confirmation in order to spend a coin"));
     }
 
     return signer;
@@ -136,8 +136,11 @@ CAmount SigmaSpendBuilder::GetInputs(std::vector<std::unique_ptr<InputSigner>>& 
     selected.clear();
     denomChanges.clear();
 
-    if (!wallet.GetCoinsToSpend(required, selected, denomChanges,
-        0, 0, coinControl)) {
+    auto& consensusParams = Params().GetConsensus();
+    std::list<CSigmaEntry> sigmaCoins = pwalletMain->GetAvailableCoins(coinControl);
+
+    if (!wallet.GetCoinsToSpend(required, selected, denomChanges, sigmaCoins,
+        consensusParams.nMaxSigmaInputPerTransaction, consensusParams.nMaxValueSigmaSpendPerTransaction, coinControl)) {
         throw InsufficientFunds();
     }
 
@@ -151,7 +154,7 @@ CAmount SigmaSpendBuilder::GetInputs(std::vector<std::unique_ptr<InputSigner>>& 
     return total;
 }
 
-CAmount SigmaSpendBuilder::GetChanges(std::vector<CTxOut>& outputs, CAmount amount)
+CAmount SigmaSpendBuilder::GetChanges(std::vector<CTxOut>& outputs, CAmount amount, CWalletDB& walletdb)
 {
     outputs.clear();
     changes.clear();
@@ -165,6 +168,7 @@ CAmount SigmaSpendBuilder::GetChanges(std::vector<CTxOut>& outputs, CAmount amou
 
         sigma::PrivateCoin newCoin(params, denomination, ZEROCOIN_TX_VERSION_3_1);
         hdMint.SetNull();
+        mintWallet.GenerateMint(walletdb, denomination, newCoin, hdMint, boost::none, true);
         auto& pubCoin = newCoin.getPublicCoin();
 
         if (!pubCoin.validate()) {
