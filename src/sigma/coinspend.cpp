@@ -1,7 +1,7 @@
 #include "coinspend.h"
 #include "openssl_context.h"
-#include "util.h"
 #include "hash.h"
+#include "util.h"
 
 namespace sigma {
 
