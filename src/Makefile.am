@@ -613,11 +613,11 @@ libbitcoin_util_a_SOURCES = \
   utiltime.cpp \
   crypto/scrypt.cpp \
   primitives/block.cpp \
-  libzerocoin/bitcoin_bignum/allocators.h \
-  libzerocoin/bitcoin_bignum/bignum.h \
-  libzerocoin/bitcoin_bignum/compat.h \
-  libzerocoin/bitcoin_bignum/netbase.h \
-  libzerocoin/bitcoin_bignum/serialize.h \
+  bitcoin_bignum/allocators.h \
+  bitcoin_bignum/bignum.h \
+  bitcoin_bignum/compat.h \
+  bitcoin_bignum/netbase.h \
+  bitcoin_bignum/serialize.h \
   $(BITCOIN_CORE_H)
 
 liblelantus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)

@@ -13,7 +13,7 @@
 #include <iostream>
 #include "util.h"
 #include "chainparams.h"
-#include "libzerocoin/bitcoin_bignum/bignum.h"
+#include "bitcoin_bignum/bignum.h"
 #include "fixed.h"
 
 static CBigNum bnProofOfWorkLimit(~arith_uint256(0) >> 12);

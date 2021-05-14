@@ -11,7 +11,7 @@
 #include "pow.h"
 #include "tinyformat.h"
 #include "uint256.h"
-#include "libzerocoin/bitcoin_bignum/bignum.h"
+#include "bitcoin_bignum/bignum.h"
 #include <secp256k1/include/Scalar.h>
 #include <secp256k1/include/GroupElement.h>
 #include "sigma/coin.h"
