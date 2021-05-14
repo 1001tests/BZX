@@ -2136,28 +2136,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             BOOST_FOREACH(uint256 hash, vEraseQueue)
                 EraseOrphanTx(hash);
         }
-        else if (!AlreadyHave(inv) && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit() && AcceptToMemoryPool(mempool, state, ptx, true, &fMissingInputsSigma, nullptr, false, 0, true)) {
-            // Changes to mempool should also be made to Dandelion stempool
-            AcceptToMemoryPool(
-                txpools.getStemTxPool(),
-                dummyState,
-                ptx,
-                true, /* fLimitFree */
-                &fMissingInputsSigma,  /* pfMissingInputs */
-                nullptr,
-                false, /* fOverrideMempoolLimit */
-                0, /* nAbsurdFee */
-                true, /* isCheckWalletTransaction */
-                false /* markBZXSpendTransactionSerial */
-            );
-            if (CNode::isTxDandelionEmbargoed(tx.GetHash())) {
-                CNode::removeDandelionEmbargo(tx.GetHash());
-            }
-            // Changes to mempool should also be made to Dandelion stempool
-            txpools.getStemTxPool().check(pcoinsTip);
-
-            connman.RelayTransaction(tx);
-        }
         else if (fMissingInputs)
         {
             bool fRejectedParents = false; // It may be the case that the orphans parents have all been rejected
@@ -3129,12 +3107,12 @@ bool ProcessMessages(CNode* pfrom, CConnman& connman, const std::atomic<bool>& i
                 // Allow exceptions from under-length message on vRecv
                 LogPrintf("%s(%s, %u bytes): Exception '%s' caught, normally caused by a message being shorter than its stated length\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
             }
-            if (strstr(e.what(), "size too large"))
+            else if (strstr(e.what(), "size too large"))
             {
                 // Allow exceptions from over-long size
                 LogPrintf("%s(%s, %u bytes): Exception '%s' caught\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
             }
-            if (strstr(e.what(), "non-canonical ReadCompactSize()"))
+            else if (strstr(e.what(), "non-canonical ReadCompactSize()"))
             {
                 // Allow exceptions from non-canonical encoding
                 LogPrintf("%s(%s, %u bytes): Exception '%s' caught\n", __func__, SanitizeString(strCommand), nMessageSize, e.what());
@@ -3148,8 +3126,7 @@ bool ProcessMessages(CNode* pfrom, CConnman& connman, const std::atomic<bool>& i
             PrintExceptionContinue(std::current_exception(), "ProcessMessages()");
         }
 
-        if (!fRet)
-        {
+        if (!fRet) {
             LogPrintf("%s(%s, %u bytes) FAILED peer=%d\n", __func__, SanitizeString(strCommand), nMessageSize, pfrom->id);
         }
 
