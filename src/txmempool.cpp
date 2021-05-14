@@ -518,7 +518,7 @@ void CTxMemPool::removeUnchecked(txiter it, MemPoolRemovalReason reason)
     NotifyEntryRemoved(it->GetSharedTx(), reason);
     const uint256 hash = it->GetTx().GetHash();
     if (!it->GetTx().IsSigmaSpend() && !it->GetTx().IsLelantusJoinSplit()) {
-            LogPrintf("removeUnchecked txHash=%s, IsSpend()=%s\n", hash.ToString(), it->GetTx().IsSigmaSpend() || it->GetTx().IsLelantusJoinSplit());
+        LogPrintf("removeUnchecked txHash=%s, IsSpend()=%s\n", hash.ToString(), it->GetTx().IsSigmaSpend() || it->GetTx().IsLelantusJoinSplit());
         BOOST_FOREACH(const CTxIn& txin, it->GetTx().vin)
             mapNextTx.erase(txin.prevout);
     }
