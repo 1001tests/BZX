@@ -233,6 +233,9 @@ public:
     //! Map id to <public coin, tag>
     std::map<int, vector<std::pair<lelantus::PublicCoin, uint256>>>  lelantusMintedPubCoins;
 
+    //! Map id to <hash of the set>
+    std::map<int, vector<unsigned char>> anonymitySetHash;
+
     //! Values of coin serials spent in this block
     sigma::spend_info_container sigmaSpentSerials;
     std::unordered_map<Scalar, int> lelantusSpentSerials;
@@ -266,6 +269,7 @@ public:
 
         sigmaMintedPubCoins.clear();
         lelantusMintedPubCoins.clear();
+        anonymitySetHash.clear();
         sigmaSpentSerials.clear();
         lelantusSpentSerials.clear();
         activeDisablingSporks.clear();
@@ -439,7 +443,7 @@ public:
         READWRITE(nNonce);
         //READWRITE(lelantusMintedPubCoins);
         //READWRITE(lelantusSpentSerials); //xxxx
-
+        //READWRITE(anonymitySetHash);
         const auto &params = Params().GetConsensus();
         if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nEvoSporkStartBlock && nHeight < params.nEvoSporkStopBlock)
             READWRITE(activeDisablingSporks);
