@@ -1515,10 +1515,6 @@ void ListTransactions(CWallet * const pwallet, const CWalletTx& wtx, const strin
                 {
                     int txHeight = chainActive.Height() - wtx.GetDepthInMainChain();
 
-                    std::vector<CTxOut> voutMasternodePaymentsRet;
-                    mnpayments.GetBlockTxOuts(txHeight, CAmount(), voutMasternodePaymentsRet);
-                    //compare address of payee to addr.
-
                     bool its_znode_payment = false;
                     if (!fSkipMnpayoutCheck) {
                         std::vector<CTxOut> voutMasternodePaymentsRet;
@@ -2922,12 +2918,12 @@ UniValue regeneratemintpool(const JSONRPCRequest& request) {
     }
 
     if(reindexRequired)
-        throw JSONRPCError(RPC_INTERNAL_ERROR, "Mintpool issue corrected. Please shutdown client and restart with -reindex flag.");
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "Mintpool issue corrected. Please shutdown BZX and restart with -reindex flag.");
 
     return true;
 }
 
-//sigma/lelantus section
+//[BZX]: sigma/lelantus section
 
 UniValue listunspentsigmamints(const JSONRPCRequest& request) {
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
@@ -3911,6 +3907,7 @@ UniValue listsigmaspends(const JSONRPCRequest& request) {
 
         entry.push_back(Pair("spends", spends));
         ret.push_back(entry);
+
         if (count > 0 && (int)ret.size() >= count)
             break;
     }
@@ -4061,11 +4058,11 @@ UniValue removetxwallet(const JSONRPCRequest& request) {
 
 
 
-extern UniValue dumpprivkey(const JSONRPCRequest& request); // in rpcdump.cpp
+extern UniValue dumpprivkey_BZX(const JSONRPCRequest& request); // in rpcdump.cpp
 extern UniValue importprivkey(const JSONRPCRequest& request);
 extern UniValue importaddress(const JSONRPCRequest& request);
 extern UniValue importpubkey(const JSONRPCRequest& request);
-extern UniValue dumpwallet_bzx(const JSONRPCRequest& request);
+extern UniValue dumpwallet_BZX(const JSONRPCRequest& request);
 extern UniValue importwallet(const JSONRPCRequest& request);
 extern UniValue importprunedfunds(const JSONRPCRequest& request);
 extern UniValue removeprunedfunds(const JSONRPCRequest& request);
@@ -4408,8 +4405,8 @@ static const CRPCCommand commands[] =
     { "wallet",             "addwitnessaddress",        &addwitnessaddress,        true,   {"address"} },
     { "wallet",             "backupwallet",             &backupwallet,             true,   {"destination"} },
     { "wallet",             "bumpfee",                  &bumpfee,                  true,   {"txid", "options"} },
-    { "wallet",             "dumpprivkey",              &dumpprivkey,              true,   {"address"}  },
-    { "wallet",             "dumpwallet",               &dumpwallet_bzx,               true,   {"filename"} },
+    { "wallet",             "dumpprivkey",              &dumpprivkey_BZX,        true,   {"address"}  },
+    { "wallet",             "dumpwallet",               &dumpwallet_BZX,         true,   {"filename"} },
     { "wallet",             "encryptwallet",            &encryptwallet,            true,   {"passphrase"} },
     { "wallet",             "getaccountaddress",        &getaccountaddress,        true,   {"account"} },
     { "wallet",             "getaccount",               &getaccount,               true,   {"address"} },
