@@ -538,6 +538,7 @@ bool CHDMintWallet::SetLelantusMintSeedSeen(CWalletDB& walletdb, std::pair<uint2
     GroupElement bnValue;
     uint256 hashSerial;
     // Can regenerate if unlocked (cheaper)
+    Scalar serial;
     if(!pwalletMain->IsLocked()) {
         LogPrintf("%s: Wallet not locked, creating mind seed..\n", __func__);
         uint512 mintSeed;
@@ -547,6 +548,7 @@ bool CHDMintWallet::SetLelantusMintSeedSeen(CWalletDB& walletdb, std::pair<uint2
             return false;
         hashSerial = primitives::GetSerialHash(coin.getSerialNumber());
         bnValue = coin.getPublicCoin().getValue();
+        serial = coin.getSerialNumber();
     } else {
         LogPrintf("%s: Wallet locked, retrieving mind seed..\n", __func__);
         // Get serial and pubcoin data from the db
@@ -585,6 +587,7 @@ bool CHDMintWallet::SetLelantusMintSeedSeen(CWalletDB& walletdb, std::pair<uint2
     int nHeightTx;
     uint256 txidSpend;
     CTransactionRef txSpend;
+    bool used = false;
     if (IsLelantusSerialInBlockchain(hashSerial, nHeightTx, txidSpend, txSpend)) {
         //Find transaction details and make a wallettx and add to wallet
         LogPrintf("%s: Mint object is spent. Setting used..\n", __func__);
@@ -597,12 +600,28 @@ bool CHDMintWallet::SetLelantusMintSeedSeen(CWalletDB& walletdb, std::pair<uint2
 
         wtx.nTimeReceived = pindex->nTime;
         pwalletMain->AddToWallet(wtx, false);
+        used = true;
     } else {
         lelantus::CLelantusState *lelantusState = lelantus::CLelantusState::GetState();
         // this is for some edge cases, when mint is used but the serial is not at map
         Scalar s;
         if (lelantusState->IsUsedCoinSerialHash(s, hashSerial)) {
             dMint.SetUsed(true);
+            serial = s;
+            used = true;
+        }
+    }
+
+    // Adding spend entry into db,
+    if(used && (serial != uint64_t(0))) {
+        CLelantusSpendEntry spend;
+        spend.coinSerial = serial;
+        spend.pubCoin = bnValue;
+        spend.id = id;
+        spend.amount = amount;
+
+        if (!walletdb.WriteLelantusSpendSerialEntry(spend)) {
+            throw std::runtime_error(_("Failed to write coin serial number into wallet"));
         }
     }
 
@@ -616,7 +635,7 @@ bool CHDMintWallet::SetLelantusMintSeedSeen(CWalletDB& walletdb, std::pair<uint2
 /**
  * Convert a 512-bit mint seed into a mint.
  *
- * See https://github.com/BZXorg/BZX/pull/392 for specification on mint generation.
+ * See https://github.com/XXXX/XX/pull/392 for specification on mint generation.
  *
  * @param mintSeed uint512 object of seed for mint
  * @param commit reference to public coin. Is set in this function
@@ -655,7 +674,7 @@ bool CHDMintWallet::SeedToMint(const uint512& mintSeed, GroupElement& commit, si
 /**
  * Convert a 512-bit mint seed into a mint.
  *
- * See https://github.com/BZXorg/BZX/pull/392 for specification on mint generation.
+ * See https://github.com/XXXX/XX/pull/392 for specification on mint generation.
  *
  * @param mintSeed uint512 object of seed for mint
  * @param coin reference to private coin. Is set in this function
@@ -697,7 +716,7 @@ bool CHDMintWallet::SeedToLelantusMint(const uint512& mintSeed, lelantus::Privat
 /**
  * Get seed ID for the key used in mint generation.
  *
- * See https://github.com/BZXorg/BZX/pull/392 for specification on mint generation.
+ * See https://github.com/XXXX/XX/pull/392 for specification on mint generation.
  * Looks to the mintpool first - if mint doesn't exist, generates new mints in the mintpool.
  *
  * @param nCount count in the HD Chain of the mint to use.
@@ -723,7 +742,7 @@ CKeyID CHDMintWallet::GetMintSeedID(CWalletDB& walletdb, int32_t nCount){
 /**
  * Create the mint seed for the count passed.
  *
- * See https://github.com/BZXorg/BZX/pull/392 for specification on mint generation.
+ * See https://github.com/XXXX/XX/pull/392 for specification on mint generation.
  * We check if the key for the count passed exists. if so retrieve it's seed ID. if not, generate a new key.
  * If seedId is passed, use that seedId and ignore key generation section.
  * Following that, get the key, and use it to generate the mint seed according to the specification.
