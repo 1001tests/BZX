@@ -94,11 +94,7 @@ std::string GetRequiredPaymentsString(int nBlockHeight, const CDeterministicMNCP
             assert(false);
         strPayee = CBitcoinAddress(dest).ToString();
     }
-    /*
-    if (CSuperblockManager::IsSuperblockTriggered(nBlockHeight)) {
-        strPayee += ", " + CSuperblockManager::GetRequiredPaymentsString(nBlockHeight);
-    }
-    */
+
     return strPayee;
 }
 
@@ -200,14 +196,6 @@ bool CMasternodePayments::GetBlockTxOuts(int nBlockHeight, CAmount blockReward, 
     return true;
 }
 
-bool CMasternodePayments::GetBlockTxOutsWipeCache(int nBlockHeight, CAmount blockReward, std::vector<CTxOut>& voutMasternodePaymentsRet) const
-{
-    bool result = GetBlockTxOuts(nBlockHeight, blockReward, voutMasternodePaymentsRet);
-    AssertLockHeld(cs_main);
-    deterministicMNManager->CleanupCache(chainActive.Height());
-    return result;
-}
-
 // Is this masternode scheduled to get paid soon?
 // -- Only look ahead up to 8 blocks to allow for propagation of the latest 2 blocks of votes
 bool CMasternodePayments::IsScheduled(const CDeterministicMNCPtr& dmnIn, int nNotBlockHeight) const
@@ -247,7 +235,7 @@ bool CMasternodePayments::IsTransactionValid(const CTransaction& txNew, int nBlo
             if (!ExtractDestination(txout.scriptPubKey, dest))
                 assert(false);
             LogPrintf("CMasternodePayments::%s -- ERROR failed to find expected payee %s in block at height %s\n", __func__, CBitcoinAddress(dest).ToString(), nBlockHeight);
-            //return false; //xxxx
+            //return false;//XXXX
         }
     }
     return true;
