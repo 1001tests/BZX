@@ -52,6 +52,6 @@ static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 BZX mininput
 #define DANDELION_FLUFF 10
 
 // Versions of mint/spend transactions
-#define LELANTUS_TX_VERSION_4_5               41
+#define LELANTUS_TX_VERSION_4_5               45
 
 #endif
