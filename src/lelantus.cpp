@@ -499,27 +499,12 @@ bool CheckLelantusJoinSplitTransaction(
                                  error("CheckLelantusJoinSplitTransaction: sized of serials and group ids don't match."));
             }
 
-            if (joinsplit->isSigmaToLelantus()) {
-                if (sigmaTxInfo && !sigmaTxInfo->fInfoIsComplete) {
-                    for (size_t i = 0; i < serials.size(); i++) {
-                        int coinGroupId = ids[i] % (CENT / 1000);
-                        int64_t intDenom = (ids[i] - coinGroupId);
-                        intDenom *= 1000;
-                        sigma::CoinDenomination denomination;
-                        if(!sigma::IntegerToDenomination(intDenom, denomination) && lelantusTxInfo && !lelantusTxInfo->fInfoIsComplete)
-                            lelantusTxInfo->spentSerials.insert(std::make_pair(serials[i], ids[i]));
-                        else
-                            sigmaTxInfo->spentSerials.insert(std::make_pair(
-                                    serials[i], sigma::CSpendCoinInfo::make(denomination, coinGroupId)));
-                    }
-                }
-            } else {
                 if (lelantusTxInfo && !lelantusTxInfo->fInfoIsComplete) {
                     for (size_t i = 0; i < serials.size(); i++) {
                         lelantusTxInfo->spentSerials.insert(std::make_pair(serials[i], ids[i]));
                     }
                 }
-            }
+
         }
     }
     else {
