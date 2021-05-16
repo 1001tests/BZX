@@ -70,7 +70,7 @@ static std::unique_ptr<SigmaSpendSigner> CreateSigner(const CSigmaEntry& coin)
         throw std::runtime_error(_("One of the minted coin is invalid"));
     }
 
-    int version =  ZEROCOIN_TX_VERSION_3_1;
+    int version =  0;
 
     // construct private part of the mint
     sigma::PrivateCoin priv(params, denom, version);
@@ -166,7 +166,7 @@ CAmount SigmaSpendBuilder::GetChanges(std::vector<CTxOut>& outputs, CAmount amou
         CAmount denominationValue;
         sigma::DenominationToInteger(denomination, denominationValue);
 
-        sigma::PrivateCoin newCoin(params, denomination, ZEROCOIN_TX_VERSION_3_1);
+        sigma::PrivateCoin newCoin(params, denomination, 0);
         hdMint.SetNull();
         mintWallet.GenerateMint(walletdb, denomination, newCoin, hdMint, boost::none, true);
         auto& pubCoin = newCoin.getPublicCoin();

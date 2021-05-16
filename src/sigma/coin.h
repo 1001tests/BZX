@@ -91,7 +91,7 @@ public:
 
     PrivateCoin(const Params* p,
         CoinDenomination denomination,
-        int version = ZEROCOIN_TX_VERSION_3);
+        int version = 0);
 
     const Params * getParams() const;
     const PublicCoin& getPublicCoin() const;

@@ -36,8 +36,6 @@ public:
 
     CWallet& wallet;
     const CCoinControl *coinControl;
-
-    bool isSigmaToLelantusJoinSplit = false;
     CAmount fee = 0;
 
 private:
