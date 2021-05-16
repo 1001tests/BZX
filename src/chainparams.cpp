@@ -19,6 +19,7 @@
 
 #include "chainparamsseeds.h"
 #include "arith_uint256.h"
+#include "blacklists.h"
 
 
 static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesisOutputScript, uint32_t nTime, uint32_t nNonce,
@@ -276,6 +277,12 @@ public:
         consensus.nMaxLelantusInputPerTransaction = ZC_LELANTUS_INPUT_LIMIT_PER_TRANSACTION;
         consensus.nMaxValueLelantusSpendPerTransaction = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_TRANSACTION;
         consensus.nMaxValueLelantusMint = ZC_LELANTUS_MAX_MINT;
+
+        for (const auto& str : lelantus::lelantus_blacklist) {
+            GroupElement coin;
+            coin.deserialize(ParseHex(str).data());
+            consensus.lelantusBlacklist.insert(coin);
+        }
 
         consensus.evoSporkKeyID = "a78fERshquPsTv2TuKMSsxTeKom56uBwLP";
         consensus.nEvoSporkStartBlock = INT_MAX; //xxxx
