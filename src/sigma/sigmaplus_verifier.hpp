@@ -17,7 +17,7 @@ SigmaPlusVerifier<Exponent, GroupElement>::SigmaPlusVerifier(
 template<class Exponent, class GroupElement>
 bool SigmaPlusVerifier<Exponent, GroupElement>::verify(
         const std::vector<GroupElement>& commits,
-        const SigmaPlusProof<Exponent, GroupElement>& proof{
+        const SigmaPlusProof<Exponent, GroupElement>& proof) {
 
     R1ProofVerifier<Exponent, GroupElement> r1ProofVerifier(g_, h_, proof.B_, n, m);
     std::vector<Exponent> f;
