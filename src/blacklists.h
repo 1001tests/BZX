@@ -14,4 +14,8 @@ std::set<std::string> const lelantus_blacklist {
 
 };
 
+std::set<std::string> const txid_blacklist {
+
+};
+
 }
