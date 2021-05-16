@@ -3130,19 +3130,7 @@ bool static DisconnectTip(CValidationState& state, const CChainParams& chainpara
                     continue;
                 }
 
-                if (joinsplit->getVersion() == SIGMA_TO_LELANTUS_JOINSPLIT) {
-                    for (size_t i = 0; i < serials.size(); i++) {
-                        int coinGroupId = ids[i] % (CENT / 1000);
-                        int64_t intDenom = (ids[i] - coinGroupId);
-                        intDenom *= 1000;
-                        sigma::CoinDenomination denomination;
-                        if (!sigma::IntegerToDenomination(intDenom, denomination))
-                            lelantusSerialsToRemove.insert(std::make_pair(serials[i], ids[i]));
-                        else
-                            sigmaSerialsToRemove.insert(std::make_pair(
-                                    serials[i], sigma::CSpendCoinInfo::make(denomination, coinGroupId)));
-                    }
-                } else {
+                if {
                     for (size_t i = 0; i < serials.size(); i++) {
                         lelantusSerialsToRemove.insert(std::make_pair(serials[i], ids[i]));
                     }
