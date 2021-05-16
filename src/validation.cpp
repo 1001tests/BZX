@@ -3130,11 +3130,10 @@ bool static DisconnectTip(CValidationState& state, const CChainParams& chainpara
                     continue;
                 }
 
-                if {
                     for (size_t i = 0; i < serials.size(); i++) {
                         lelantusSerialsToRemove.insert(std::make_pair(serials[i], ids[i]));
                     }
-                }
+
             } else if (tx->IsSigmaSpend()) {
                 for (const CTxIn &txin : tx->vin) {
                     std::unique_ptr<sigma::CoinSpend> spend;

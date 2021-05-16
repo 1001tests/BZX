@@ -504,14 +504,12 @@ bool CheckLelantusJoinSplitTransaction(
                                  error("CheckLelantusJoinSplitTransaction: sized of serials and group ids don't match."));
             }
 
-            if
-            {
-                if (lelantusTxInfo && !lelantusTxInfo->fInfoIsComplete) {
+                if (lelantusTxInfo && !lelantusTxInfo->fInfoIsComplete)
+                {
                     for (size_t i = 0; i < serials.size(); i++) {
                         lelantusTxInfo->spentSerials.insert(std::make_pair(serials[i], ids[i]));
                     }
                 }
-            }
         }
     }
     else {
