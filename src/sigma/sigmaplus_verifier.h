@@ -14,7 +14,7 @@ public:
                       int n, int m_);
 
     bool verify(const std::vector<GroupElement>& commits,
-                const SigmaPlusProof<Exponent, GroupElement>& proof;
+                const SigmaPlusProof<Exponent, GroupElement>& proof);
 
     bool batch_verify(const std::vector<GroupElement>& commits,
                       const std::vector<Exponent>& serials,
