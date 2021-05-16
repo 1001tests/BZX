@@ -378,8 +378,8 @@ bool CheckLelantusJoinSplitTransaction(
 
     txHashForMetadata = txTemp.GetHash();
 
-    LogPrintf("CheckLelantusJoinSplitTransaction: tx version=%d, tx metadata hash=%s\n",
-              jSplitVersion, txHashForMetadata.ToString());
+    LogPrintf("CheckLelantusJoinSplitTransaction: tx metadata hash=%s\n",
+              txHashForMetadata.ToString());
 
     if (!fStatefulSigmaCheck) {
         return true;
@@ -409,8 +409,6 @@ bool CheckLelantusJoinSplitTransaction(
         int64_t intDenom = (idAndHash.first - coinGroupId);
         intDenom *= 1000;
 
-        if
-        {
             CLelantusState::LelantusCoinGroupInfo coinGroup;
             if (!lelantusState.GetCoinGroupInfo(idAndHash.first, coinGroup))
                 return state.DoS(100, false, NO_MINT_ZEROCOIN,
