@@ -1362,7 +1362,7 @@ void CLelantusState::GetAnonymitySet(
     LelantusCoinGroupInfo &coinGroup = coinGroups[coinGroupID];
     auto params = ::Params().GetConsensus();
     LOCK(cs_main);
-    int maxHeight = true ? (chainActive.Height() - (ZC_MINT_CONFIRMATIONS - 1)) : (params.nLelantusFixesStartBlock - 1);
+    int maxHeight = true ? (chainActive.Height() - (ZC_MINT_CONFIRMATIONS - 1)) : (params.nLelantusStartBlock - 1);
 
     for (CBlockIndex *block = coinGroup.lastBlock;; block = block->pprev) {
 
