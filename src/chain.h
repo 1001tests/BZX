@@ -441,9 +441,9 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
-        //READWRITE(lelantusMintedPubCoins);
-        //READWRITE(lelantusSpentSerials); //xxxx
-        //READWRITE(anonymitySetHash);
+        READWRITE(lelantusMintedPubCoins);
+        READWRITE(lelantusSpentSerials); //xxxx
+        READWRITE(anonymitySetHash);
         const auto &params = Params().GetConsensus();
         if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nEvoSporkStartBlock && nHeight < params.nEvoSporkStopBlock)
             READWRITE(activeDisablingSporks);
