@@ -4058,11 +4058,11 @@ UniValue removetxwallet(const JSONRPCRequest& request) {
 
 
 
-extern UniValue dumpprivkey_BZX(const JSONRPCRequest& request); // in rpcdump.cpp
+extern UniValue dumpprivkey_bzx(const JSONRPCRequest& request); // in rpcdump.cpp
 extern UniValue importprivkey(const JSONRPCRequest& request);
 extern UniValue importaddress(const JSONRPCRequest& request);
 extern UniValue importpubkey(const JSONRPCRequest& request);
-extern UniValue dumpwallet_BZX(const JSONRPCRequest& request);
+extern UniValue dumpwallet_bzx(const JSONRPCRequest& request);
 extern UniValue importwallet(const JSONRPCRequest& request);
 extern UniValue importprunedfunds(const JSONRPCRequest& request);
 extern UniValue removeprunedfunds(const JSONRPCRequest& request);
