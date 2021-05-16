@@ -368,15 +368,7 @@ bool CheckLelantusJoinSplitTransaction(
             "CheckLelantusJoinSplitTransaction: invalid joinsplit transaction");
     }
 
-    int jSplitVersion = joinsplit->getVersion();
 
-    if (jSplitVersion < LELANTUS_TX_VERSION_4 ||
-        (!isVerifyDB && nHeight >= params.nLelantusFixesStartBlock && jSplitVersion != LELANTUS_TX_VERSION_4_5 && jSplitVersion != SIGMA_TO_LELANTUS_JOINSPLIT_FIXED)) {
-        return state.DoS(100,
-                         false,
-                         NSEQUENCE_INCORRECT,
-                         "CTransaction::CheckLelantusJoinSplitTransaction() : Error: incorrect joinsplit transaction verion");
-    }
 
     uint256 txHashForMetadata;
 
@@ -417,42 +409,8 @@ bool CheckLelantusJoinSplitTransaction(
         int64_t intDenom = (idAndHash.first - coinGroupId);
         intDenom *= 1000;
 
-        sigma::CoinDenomination denomination;
-        if (joinsplit->isSigmaToLelantus() && sigma::IntegerToDenomination(intDenom, denomination)) {
-
-            sigma::CSigmaState::SigmaCoinGroupInfo coinGroup;
-            sigma::CSigmaState *sigmaState = sigma::CSigmaState::GetState();
-            if (!sigmaState->GetCoinGroupInfo(denomination, coinGroupId, coinGroup))
-                return state.DoS(100, false, NO_MINT_ZEROCOIN,
-                                 "CheckSigmaSpendTransaction: Error: no coins were minted with such parameters");
-
-            CBlockIndex *index = coinGroup.lastBlock;
-
-            // find index for block with hash of accumulatorBlockHash or set index to the coinGroup.firstBlock if not found
-            while (index != coinGroup.firstBlock && index->GetBlockHash() != idAndHash.second)
-                index = index->pprev;
-
-            pair<sigma::CoinDenomination, int> denominationAndId = std::make_pair(denomination, coinGroupId);
-
-            auto lelantusParams = lelantus::Params::get_default();
-            while (true) {
-                if (index->sigmaMintedPubCoins.count(denominationAndId) > 0) {
-                    BOOST_FOREACH(
-                    const sigma::PublicCoin &pubCoinValue,
-                    index->sigmaMintedPubCoins[denominationAndId]) {
-                        std::vector<unsigned char> vch = pubCoinValue.getValue().getvch();
-                        if (sigma::sigma_blacklist.count(HexStr(vch.begin(), vch.end())) > 0) {
-                            continue;
-                        }
-                        lelantus::PublicCoin publicCoin(pubCoinValue.getValue() + lelantusParams->get_h1() * intDenom);
-                        anonymity_set.push_back(publicCoin);
-                    }
-                }
-                if (index == coinGroup.firstBlock)
-                    break;
-                index = index->pprev;
-            }
-        } else {
+        if
+        {
             CLelantusState::LelantusCoinGroupInfo coinGroup;
             if (!lelantusState.GetCoinGroupInfo(idAndHash.first, coinGroup))
                 return state.DoS(100, false, NO_MINT_ZEROCOIN,
@@ -466,7 +424,7 @@ bool CheckLelantusJoinSplitTransaction(
                 index = index->pprev;
 
             // take the hash from last block of anonymity set, it is used at challenge generation if nLelantusFixesStartBlock is passed
-            if (nHeight >= params.nLelantusFixesStartBlock) {
+            if (true) {
                 std::vector<unsigned char> set_hash = GetAnonymitySetHash(index, idAndHash.first);
                 if (!set_hash.empty())
                     anonymity_set_hashes.push_back(set_hash);
@@ -546,21 +504,8 @@ bool CheckLelantusJoinSplitTransaction(
                                  error("CheckLelantusJoinSplitTransaction: sized of serials and group ids don't match."));
             }
 
-            if (joinsplit->isSigmaToLelantus()) {
-                if (sigmaTxInfo && !sigmaTxInfo->fInfoIsComplete) {
-                    for (size_t i = 0; i < serials.size(); i++) {
-                        int coinGroupId = ids[i] % (CENT / 1000);
-                        int64_t intDenom = (ids[i] - coinGroupId);
-                        intDenom *= 1000;
-                        sigma::CoinDenomination denomination;
-                        if(!sigma::IntegerToDenomination(intDenom, denomination) && lelantusTxInfo && !lelantusTxInfo->fInfoIsComplete)
-                            lelantusTxInfo->spentSerials.insert(std::make_pair(serials[i], ids[i]));
-                        else
-                            sigmaTxInfo->spentSerials.insert(std::make_pair(
-                                    serials[i], sigma::CSpendCoinInfo::make(denomination, coinGroupId)));
-                    }
-                }
-            } else {
+            if
+            {
                 if (lelantusTxInfo && !lelantusTxInfo->fInfoIsComplete) {
                     for (size_t i = 0; i < serials.size(); i++) {
                         lelantusTxInfo->spentSerials.insert(std::make_pair(serials[i], ids[i]));

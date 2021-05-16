@@ -708,7 +708,7 @@ bool CHDMintWallet::SeedToLelantusMint(const uint512& mintSeed, lelantus::Privat
         coin.getV(),
         randomness,
         seckey,
-        LELANTUS_TX_VERSION_4);
+        LELANTUS_TX_VERSION_4_5);
 
     return true;
 }

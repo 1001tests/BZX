@@ -211,13 +211,6 @@ bool CheckSigmaSpendTransaction(
                 "CheckSigmaSpendTransaction: invalid spend transaction");
         }
 
-        if (spend->getVersion() != ZEROCOIN_TX_VERSION_3 && spend->getVersion() != ZEROCOIN_TX_VERSION_3_1) {
-            return state.DoS(100,
-                             false,
-                             NSEQUENCE_INCORRECT,
-                             "CTransaction::CheckTransaction() : Error: incorrect spend transaction verion");
-        }
-
         uint256 txHashForMetadata;
 
         // Obtain the hash of the transaction sans the zerocoin part
@@ -279,12 +272,6 @@ bool CheckSigmaSpendTransaction(
             if (index == coinGroup.firstBlock)
                 break;
             index = index->pprev;
-        }
-
-        bool fPadding = spend->getVersion() >= ZEROCOIN_TX_VERSION_3_1;
-        if (!isVerifyDB) {
-            if (fPadding != true)
-                return state.DoS(1, error("Incorrect sigma spend transaction version"));
         }
 
         BatchProofContainer* batchProofContainer = BatchProofContainer::get_instance();

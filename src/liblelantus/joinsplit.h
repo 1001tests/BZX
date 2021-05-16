@@ -68,8 +68,6 @@ public:
 
     bool HasValidSerials() const;
 
-    bool isSigmaToLelantus() const;
-
     ADD_SERIALIZE_METHODS;
     template <typename Stream, typename Operation>
     void SerializationOp(Stream& s, Operation ser_action)
@@ -104,9 +102,7 @@ public:
         READWRITE(coinGroupIdAndBlockHash);
         READWRITE(fee);
         READWRITE(version);
-
-        if (version >= LELANTUS_TX_VERSION_4_5)
-            READWRITE(qkSchnorrProof);
+        READWRITE(qkSchnorrProof);
 
         if (ser_action.ForRead()) {
             serialNumbers.resize(coinNum);

@@ -296,7 +296,7 @@ Scalar PrivateCoin::serialNumberFromSerializedPublicKey(
         throw std::runtime_error("Unable to compute public key hash with secp256k1_ecdh.");
     }
 
-	std::string zpts(ZEROCOIN_PUBLICKEY_TO_SERIALNUMBER);
+    std::string zpts(0);
 	std::vector<unsigned char> pre(zpts.begin(), zpts.end());
     std::copy(pubkey_hash.begin(), pubkey_hash.end(), std::back_inserter(pre));
 
