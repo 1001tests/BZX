@@ -17,8 +17,7 @@ bool VerifySigmaSpend(
     SigmaMintGroup group,
     size_t groupSize,
     const SigmaProof& proof,
-    const secp_primitives::Scalar& serial,
-    bool fPadding)
+    const secp_primitives::Scalar& serial)
 {
     std::vector<SigmaPublicKey> anonimitySet; // Don't preallocate the vector due to it will allow attacker to crash all client.
 
@@ -32,7 +31,7 @@ bool VerifySigmaSpend(
         return false;
     }
 
-    return proof.Verify(serial, anonimitySet.begin(), anonimitySet.end(), fPadding);
+    return proof.Verify(serial, anonimitySet.begin(), anonimitySet.end());
 }
 
 } // namespace elysium

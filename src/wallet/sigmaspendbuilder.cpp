@@ -24,23 +24,21 @@ public:
     const sigma::PrivateCoin coin;
     std::vector<sigma::PublicCoin> group;
     uint256 lastBlockOfGroup;
-    bool fPadding;
 
 public:
     SigmaSpendSigner(const sigma::PrivateCoin& coin) : coin(coin)
     {
-        fPadding = true;
     }
 
     CScript Sign(const CMutableTransaction& tx, const uint256& sig) override
     {
         // construct spend
         sigma::SpendMetaData meta(output.n, lastBlockOfGroup, sig);
-        sigma::CoinSpend spend(coin.getParams(), coin, group, meta, fPadding);
+        sigma::CoinSpend spend(coin.getParams(), coin, group, meta);
 
         spend.setVersion(coin.getVersion());
 
-        if (!spend.Verify(group, meta, fPadding)) {
+        if (!spend.Verify(group, meta)) {
             throw std::runtime_error(_("The spend coin transaction failed to verify"));
         }
 

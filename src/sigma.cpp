@@ -276,11 +276,11 @@ bool CheckSigmaSpendTransaction(
 
         BatchProofContainer* batchProofContainer = BatchProofContainer::get_instance();
         // if we are collecting proofs, skip verification and collect proofs
-        passVerify = spend->Verify(anonymity_set, newMetaData, fPadding, batchProofContainer->fCollectProofs);
+        passVerify = spend->Verify(anonymity_set, newMetaData, batchProofContainer->fCollectProofs);
 
         // add proofs into container
         if(batchProofContainer->fCollectProofs) {
-            batchProofContainer->add(spend.get(), fPadding, coinGroupId, anonymity_set.size(), true);
+            batchProofContainer->add(spend.get(), coinGroupId, anonymity_set.size(), true);
         }
 
         if (passVerify) {

@@ -54,8 +54,8 @@ public:
 
     void ClearAllChainState();
 
-    SigmaSpend CreateSigmaSpendV0(PropertyId property, SigmaDenomination denomination, bool fPadding);
-    SigmaSpend CreateSigmaSpendV1(PropertyId property, SigmaDenomination denomination, bool fPadding);
+    SigmaSpend CreateSigmaSpendV0(PropertyId property, SigmaDenomination denomination);
+    SigmaSpend CreateSigmaSpendV1(PropertyId property, SigmaDenomination denomination);
 
     void DeleteUnconfirmedSigmaMint(SigmaMintId const &id);
 
@@ -90,7 +90,7 @@ protected:
     boost::optional<SigmaMintVersion> GetSigmaMintVersion(const SigmaMintId& id);
     boost::optional<SigmaMintVersion> GetSigmaMintVersion(const secp_primitives::Scalar &scalar);
 
-    SigmaSpend CreateSigmaSpend(PropertyId property, SigmaDenomination denomination, bool fPadding, SigmaMintVersion version);
+    SigmaSpend CreateSigmaSpend(PropertyId property, SigmaDenomination denomination, SigmaMintVersion version);
 
 private:
     void OnSpendAdded(

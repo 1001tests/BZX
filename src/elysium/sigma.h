@@ -14,8 +14,7 @@ bool VerifySigmaSpend(
     SigmaMintGroup group,
     size_t groupSize,
     const SigmaProof& proof,
-    const secp_primitives::Scalar& serial,
-    bool fPadding);
+    const secp_primitives::Scalar& serial;
 
 } // namespace elysium
 

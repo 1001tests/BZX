@@ -37,13 +37,12 @@ void BatchProofContainer::finalize() {
 }
 
 void BatchProofContainer::add(sigma::CoinSpend* spend,
-                              bool fPadding,
                               int group_id,
                               size_t setSize,
                               bool fStartSigmaBlacklist) {
     std::pair<sigma::CoinDenomination,  std::pair<int, bool>> denominationAndId = std::make_pair(
             spend->getDenomination(), std::make_pair(group_id, fStartSigmaBlacklist));
-    tempSigmaProofs[denominationAndId].push_back(SigmaProofData(spend->getProof(), spend->getCoinSerialNumber(), fPadding, setSize));
+    tempSigmaProofs[denominationAndId].push_back(SigmaProofData(spend->getProof(), spend->getCoinSerialNumber(), setSize));
 }
 
 void BatchProofContainer::add(lelantus::JoinSplit* joinSplit,
@@ -139,8 +138,6 @@ void BatchProofContainer::batch_sigma() {
         size_t m = itr.second.size();
         std::vector<Scalar> serials;
         serials.reserve(m);
-        vector<bool> fPadding;
-        fPadding.reserve(m);
         std::vector<size_t> setSizes;
         setSizes.reserve(m);
         vector<sigma::SigmaPlusProof<Scalar, GroupElement>> proofs;
@@ -148,7 +145,6 @@ void BatchProofContainer::batch_sigma() {
 
         for (auto& proofData : itr.second) {
             serials.emplace_back(proofData.coinSerialNumber);
-            fPadding.emplace_back(proofData.fPadding);
             setSizes.emplace_back(proofData.anonymitySetSize);
             proofs.emplace_back(proofData.sigmaProof);
         }
@@ -156,7 +152,7 @@ void BatchProofContainer::batch_sigma() {
         auto params = sigma::Params::get_default();
         sigma::SigmaPlusVerifier<Scalar, GroupElement> sigmaVerifier(params->get_g(), params->get_h(), params->get_n(), params->get_m());
 
-        if (!sigmaVerifier.batch_verify(anonymity_set, serials, fPadding, setSizes, proofs)) {
+        if (!sigmaVerifier.batch_verify(anonymity_set, serials, setSizes, proofs)) {
             LogPrintf("Sigma batch verification failed.");
             throw std::invalid_argument("Sigma batch verification failed, please run client with -reindex -batching=0");
         }

@@ -25,8 +25,7 @@ public:
     CoinSpend(const Params* p,
               const PrivateCoin& coin,
               const std::vector<sigma::PublicCoin>& anonymity_set,
-              const SpendMetaData& m,
-              bool fPadding);
+              const SpendMetaData& m);
 
     void updateMetaData(const PrivateCoin& coin, const SpendMetaData& m);
 
@@ -55,7 +54,6 @@ public:
     bool Verify(
             const std::vector<sigma::PublicCoin>& anonymity_set,
             const SpendMetaData &m,
-            bool fPadding,
             bool fSkipVerification = false) const;
 
     ADD_SERIALIZE_METHODS;

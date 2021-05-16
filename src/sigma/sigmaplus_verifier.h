@@ -14,12 +14,10 @@ public:
                       int n, int m_);
 
     bool verify(const std::vector<GroupElement>& commits,
-                const SigmaPlusProof<Exponent, GroupElement>& proof,
-                bool fPadding) const;
+                const SigmaPlusProof<Exponent, GroupElement>& proof;
 
     bool batch_verify(const std::vector<GroupElement>& commits,
                       const std::vector<Exponent>& serials,
-                      const vector<bool>& fPadding,
                       const std::vector<size_t>& setSizes,
                       const vector<SigmaPlusProof<Exponent, GroupElement>>& proofs) const;
 
