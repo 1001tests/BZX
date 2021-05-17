@@ -10,7 +10,7 @@
 #include "innerproduct_proof.h"
 #include "range_proof.h"
 #include "challenge_generator.h"
-#include "../sigma_params.h"
+#include "../priv_params.h"
 
 #include "serialize.h"
 
