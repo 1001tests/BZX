@@ -2,7 +2,7 @@
 #define BZX_LIBLELANTUS_COIN_H
 
 #include "params.h"
-#include "../sigma_params.h"
+#include "../priv_params.h"
 #include "../uint256.h"
 #include "../sigma/openssl_context.h"
 #include "../uint256.h"
