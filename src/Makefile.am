@@ -289,7 +289,7 @@ BITCOIN_CORE_H = \
   lelantus.h \
   blacklists.h \
   coin_containers.h \
-  sigma_params.h \
+  priv_params.h \
   addresstype.h \
   messagesigner.h \
   masternode-payments.h \
@@ -488,6 +488,7 @@ libbitcoin_wallet_a_SOURCES = \
   wallet/authhelper.cpp \
   hdmint/tracker.cpp \
   policy/rbf.cpp \
+  primitives/mint_spend.cpp \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library
@@ -836,7 +837,6 @@ clean-local:
 	-rm -f config.h
 	-rm -rf test/__pycache__
 	-rm -rf *.dSYM test/*.dSYM bench/*.dSYM qt/*.dSYM qt/test/*.dSYM
-
 
 .rc.o:
 	@test -f $(WINDRES)
