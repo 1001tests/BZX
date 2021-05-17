@@ -24,21 +24,23 @@ public:
     const sigma::PrivateCoin coin;
     std::vector<sigma::PublicCoin> group;
     uint256 lastBlockOfGroup;
+    bool fPadding;
 
 public:
     SigmaSpendSigner(const sigma::PrivateCoin& coin) : coin(coin)
     {
+        fPadding = true;
     }
 
     CScript Sign(const CMutableTransaction& tx, const uint256& sig) override
     {
         // construct spend
         sigma::SpendMetaData meta(output.n, lastBlockOfGroup, sig);
-        sigma::CoinSpend spend(coin.getParams(), coin, group, meta);
+        sigma::CoinSpend spend(coin.getParams(), coin, group, meta, fPadding);
 
         spend.setVersion(coin.getVersion());
 
-        if (!spend.Verify(group, meta)) {
+        if (!spend.Verify(group, meta, fPadding)) {
             throw std::runtime_error(_("The spend coin transaction failed to verify"));
         }
 
@@ -68,7 +70,7 @@ static std::unique_ptr<SigmaSpendSigner> CreateSigner(const CSigmaEntry& coin)
         throw std::runtime_error(_("One of the minted coin is invalid"));
     }
 
-    int version =  0;
+    int version =  ZEROCOIN_TX_VERSION_3_1;
 
     // construct private part of the mint
     sigma::PrivateCoin priv(params, denom, version);
@@ -137,7 +139,10 @@ CAmount SigmaSpendBuilder::GetInputs(std::vector<std::unique_ptr<InputSigner>>& 
     auto& consensusParams = Params().GetConsensus();
     std::list<CSigmaEntry> sigmaCoins = pwalletMain->GetAvailableCoins(coinControl);
 
-
+    if (!wallet.GetCoinsToSpend(required, selected, denomChanges, sigmaCoins,
+        consensusParams.nMaxSigmaInputPerTransaction, consensusParams.nMaxValueSigmaSpendPerTransaction, coinControl)) {
+        throw InsufficientFunds();
+    }
 
     // construct signers
     CAmount total = 0;
@@ -161,7 +166,7 @@ CAmount SigmaSpendBuilder::GetChanges(std::vector<CTxOut>& outputs, CAmount amou
         CAmount denominationValue;
         sigma::DenominationToInteger(denomination, denominationValue);
 
-        sigma::PrivateCoin newCoin(params, denomination, 0);
+        sigma::PrivateCoin newCoin(params, denomination, ZEROCOIN_TX_VERSION_3_1);
         hdMint.SetNull();
         mintWallet.GenerateMint(walletdb, denomination, newCoin, hdMint, boost::none, true);
         auto& pubCoin = newCoin.getPublicCoin();
