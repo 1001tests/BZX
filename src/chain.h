@@ -16,7 +16,7 @@
 #include <secp256k1/include/GroupElement.h>
 #include "sigma/coin.h"
 #include "evo/spork.h"
-#include "sigma_params.h"
+#include "priv_params.h"
 #include "util.h"
 #include "chainparams.h"
 #include "coin_containers.h"
@@ -232,7 +232,6 @@ public:
     std::map<pair<sigma::CoinDenomination, int>, vector<sigma::PublicCoin>> sigmaMintedPubCoins;
     //! Map id to <public coin, tag>
     std::map<int, vector<std::pair<lelantus::PublicCoin, uint256>>>  lelantusMintedPubCoins;
-
     //! Map id to <hash of the set>
     std::map<int, vector<unsigned char>> anonymitySetHash;
 
@@ -441,10 +440,34 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
-        READWRITE(lelantusMintedPubCoins);
-        READWRITE(lelantusSpentSerials); //xxxx
-        READWRITE(anonymitySetHash);
+
         const auto &params = Params().GetConsensus();
+
+        if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nSigmaStartBlock) {
+            READWRITE(sigmaMintedPubCoins);
+            READWRITE(sigmaSpentSerials);
+        }
+
+        if (!(s.GetType() & SER_GETHASH)
+                && nHeight >= params.nLelantusStartBlock
+                && nVersion >= LELANTUS_PROTOCOL_ENABLEMENT_VERSION) {
+            if(nVersion == LELANTUS_PROTOCOL_ENABLEMENT_VERSION) {
+                std::map<int, vector<lelantus::PublicCoin>>  lelantusPubCoins;
+                READWRITE(lelantusPubCoins);
+                for(auto& itr : lelantusPubCoins) {
+                    if(!itr.second.empty()) {
+                        for(auto& coin : itr.second)
+                        lelantusMintedPubCoins[itr.first].push_back(std::make_pair(coin, uint256()));
+                    }
+                }
+            } else
+                READWRITE(lelantusMintedPubCoins);
+                READWRITE(lelantusSpentSerials);
+
+            if (nHeight >= params.nLelantusStartBlock)
+                READWRITE(anonymitySetHash);
+        }
+
         if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nEvoSporkStartBlock && nHeight < params.nEvoSporkStopBlock)
             READWRITE(activeDisablingSporks);
 
