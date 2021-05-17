@@ -1754,7 +1754,9 @@ UniValue elysium_sendspend(const JSONRPCRequest& request)
 
     try {
 
-        auto spend = wallet->CreateSigmaSpendV1(propertyId, denomination);
+        bool fPadding = true;
+
+        auto spend = wallet->CreateSigmaSpendV1(propertyId, denomination, fPadding);
         auto key = wallet->GetSigmaSignatureKey(spend.mint);
         auto pubkey = key.GetPubKey();
 
