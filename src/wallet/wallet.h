@@ -21,7 +21,7 @@
 #include "wallet/rpcwallet.h"
 #include "wallet/mnemoniccontainer.h"
 #include "../base58.h"
-#include "sigma_params.h"
+#include "priv_params.h"
 #include "univalue.h"
 
 #include "hdmint/tracker.h"
