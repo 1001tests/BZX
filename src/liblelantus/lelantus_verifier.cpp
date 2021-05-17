@@ -149,7 +149,7 @@ bool LelantusVerifier::verify_sigma(
     }
 
     // verify schnorr proof to verify that Q_k is generated honestly;
-    if (true) {
+    if (version >= LELANTUS_TX_VERSION_4_5) {
         Scalar q_k_x;
         challengeGenerator->get_challenge(q_k_x);
 
@@ -169,7 +169,7 @@ bool LelantusVerifier::verify_sigma(
             }
         }
 
-        SchnorrVerifier schnorrVerifier(params->get_h1(), params->get_h0(), true);
+        SchnorrVerifier schnorrVerifier(params->get_h1(), params->get_h0(), version >= LELANTUS_TX_VERSION_4_5);
         if (!schnorrVerifier.verify(Gk_sum, Qks, qkSchnorrProof)) {
             LogPrintf("Lelantus verification failed due to Qk schnorr proof verification failed.");
             return false;
@@ -258,7 +258,7 @@ bool LelantusVerifier::verify_schnorrproof(
         Comm += Comm_t;
     }
     B += Comm;
-    SchnorrVerifier schnorrVerifier(params->get_g(), params->get_h0(), true);
+    SchnorrVerifier schnorrVerifier(params->get_g(), params->get_h0(), version >= LELANTUS_TX_VERSION_4_5);
     const SchnorrProof& schnorrProof = proof.schnorrProof;
     GroupElement Y = A + B * (Scalar(uint64_t(1)).negate());
     // after LELANTUS_TX_VERSION_4_5 we are getting challengeGenerator with filled data from sigma,
