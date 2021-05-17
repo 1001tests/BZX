@@ -13,7 +13,8 @@
 #include "serialize.h"
 #include "uint256.h"
 #include "definition.h"
-#include "sigma_params.h"
+
+#include "priv_params.h"
 
 // Can't include sigma.h
 namespace sigma {
@@ -26,10 +27,14 @@ class CLelantusTxInfo;
 
 } // namespace lelantus
 
-inline int GetZerocoinChainID()
-{
-    return 0x0001; // We are the first :)
-}
+/** Nodes collect new transactions into a block, hash them into a hash tree,
+ * and scan through nonce values to make the block's hash satisfy proof-of-work
+ * requirements.  When they solve the proof-of-work, they broadcast the block
+ * to everyone and the block is added to the block chain.  The first transaction
+ * in the block is a special one that creates a new coin owned by the creator
+ * of the block.
+ */
+
 
 class CBlockHeader
 {
@@ -77,17 +82,12 @@ public:
 
     void SetNull()
     {
-        nVersion = CBlockHeader::CURRENT_VERSION | (GetZerocoinChainID() * BLOCK_VERSION_CHAIN_START);
+        nVersion = CBlockHeader::CURRENT_VERSION;
         hashPrevBlock.SetNull();
         hashMerkleRoot.SetNull();
         nTime = 0;
         nBits = 0;
         nNonce = 0;
-    }
-
-    int GetChainID() const
-    {
-        return nVersion / BLOCK_VERSION_CHAIN_START;
     }
 
     bool IsNull() const
@@ -116,7 +116,7 @@ public:
     mutable CTxOut txoutZnode; // znode payment
     mutable bool fChecked;
 
-    // memory only, sigma tx info after V3-sigma.
+    // memory only, sigma tx info
     mutable std::shared_ptr<sigma::CSigmaTxInfo> sigmaTxInfo;
 
     mutable std::shared_ptr<lelantus::CLelantusTxInfo> lelantusTxInfo;
