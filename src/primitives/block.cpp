@@ -6,6 +6,7 @@
 #include "primitives/block.h"
 #include "consensus/consensus.h"
 #include "validation.h"
+#include "mint_spend.h"
 #include "hash.h"
 #include "tinyformat.h"
 #include "utilstrencodings.h"
@@ -22,18 +23,14 @@
 #include <string>
 
 
-
 uint256 CBlockHeader::GetHash() const {
     return SerializeHash(*this);
 }
 
-uint256 CBlockHeader::GetPoWHash(int nHeight) const
-{
-    uint256 powHash;
-    {
-    LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, 330, 256);
-    }
+uint256 CBlockHeader::GetPoWHash(int nHeight) const {
 
+    uint256 powHash;
+    LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, 330, 256);
     return powHash;
 }
 
