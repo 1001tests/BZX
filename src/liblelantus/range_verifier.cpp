@@ -28,7 +28,7 @@ bool RangeVerifier::verify_batch(const std::vector<GroupElement>& V, const std::
     //computing challenges
     Scalar x, x_u, y, z;
     unique_ptr<ChallengeGenerator> challengeGenerator;
-    if (true) {
+    if (version >= LELANTUS_TX_VERSION_4_5) {
         challengeGenerator = std::make_unique<ChallengeGeneratorImpl<CHash256>>(1);
         // add domain separator and transaction version into transcript
         std::string domain_separator = "RANGE_PROOF" + std::to_string(version);
@@ -55,7 +55,7 @@ bool RangeVerifier::verify_batch(const std::vector<GroupElement>& V, const std::
     x_j.resize(log_n);
     x_j_inv.reserve(log_n);
 
-    if (true) {
+    if (version >= LELANTUS_TX_VERSION_4_5) {
         // add domain separator in each step
         std::string domain_separator = "INNER_PRODUCT";
         std::vector<unsigned char> pre(domain_separator.begin(), domain_separator.end());
@@ -68,7 +68,7 @@ bool RangeVerifier::verify_batch(const std::vector<GroupElement>& V, const std::
 
         // if(version >= LELANTUS_TX_VERSION_4_5) we should be using CHash256,
         // we want to link transcripts from range proof and from previous iteration in each step, so we are not restarting in that case,
-        if (true) {
+        if (version < LELANTUS_TX_VERSION_4_5) {
             challengeGenerator.reset(new ChallengeGeneratorImpl<CSHA256>(0));
         }
 
