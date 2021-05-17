@@ -17,6 +17,7 @@ public:
     void finalize();
 
     void add(sigma::CoinSpend* spend,
+             bool fPadding,
              int group_id,
              size_t setSize,
              bool fStartSigmaBlacklist);
@@ -33,16 +34,19 @@ public:
     void batch_lelantus();
 
     struct SigmaProofData {
-        SigmaProofData() : sigmaProof(0, 0), coinSerialNumber(uint64_t(0)), anonymitySetSize(0) {}
+        SigmaProofData() : sigmaProof(0, 0), coinSerialNumber(uint64_t(0)), fPadding(0), anonymitySetSize(0) {}
         SigmaProofData(const sigma::SigmaPlusProof<Scalar, GroupElement>& sigmaProof_,
                        const Scalar& coinSerialNumber_,
+                       bool fPadding_,
                        size_t anonymitySetSize_)
                        : sigmaProof(sigmaProof_),
                        coinSerialNumber(coinSerialNumber_),
+                       fPadding(fPadding_),
                        anonymitySetSize(anonymitySetSize_) {}
 
         sigma::SigmaPlusProof<Scalar, GroupElement> sigmaProof;
         Scalar coinSerialNumber;
+        bool fPadding;
         size_t anonymitySetSize;
     };
 
