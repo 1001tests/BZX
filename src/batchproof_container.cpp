@@ -37,12 +37,13 @@ void BatchProofContainer::finalize() {
 }
 
 void BatchProofContainer::add(sigma::CoinSpend* spend,
+                              bool fPadding,
                               int group_id,
                               size_t setSize,
                               bool fStartSigmaBlacklist) {
     std::pair<sigma::CoinDenomination,  std::pair<int, bool>> denominationAndId = std::make_pair(
             spend->getDenomination(), std::make_pair(group_id, fStartSigmaBlacklist));
-    tempSigmaProofs[denominationAndId].push_back(SigmaProofData(spend->getProof(), spend->getCoinSerialNumber(), setSize));
+    tempSigmaProofs[denominationAndId].push_back(SigmaProofData(spend->getProof(), spend->getCoinSerialNumber(), fPadding, setSize));
 }
 
 void BatchProofContainer::add(lelantus::JoinSplit* joinSplit,
@@ -59,7 +60,8 @@ void BatchProofContainer::add(lelantus::JoinSplit* joinSplit,
         intDenom *= 1000;
 
         sigma::CoinDenomination denomination;
-        bool isSigma = false;
+        bool isSigma = sigma::IntegerToDenomination(intDenom, denomination) && joinSplit->isSigmaToLelantus();
+        // pair(pair(set id, fAfterFixes), isSigmaToLelantus)
         std::pair<std::pair<uint32_t, bool>, bool> idAndFlag = std::make_pair(std::make_pair(groupIds[i], fStartLelantusBlacklist), isSigma);
         tempLelantusSigmaProofs[idAndFlag].push_back(LelantusSigmaProofData(sigma_proofs[i], serials[i], challenge, setSizes.at(groupIds[i])));
     }
@@ -138,6 +140,8 @@ void BatchProofContainer::batch_sigma() {
         size_t m = itr.second.size();
         std::vector<Scalar> serials;
         serials.reserve(m);
+        vector<bool> fPadding;
+        fPadding.reserve(m);
         std::vector<size_t> setSizes;
         setSizes.reserve(m);
         vector<sigma::SigmaPlusProof<Scalar, GroupElement>> proofs;
@@ -145,6 +149,7 @@ void BatchProofContainer::batch_sigma() {
 
         for (auto& proofData : itr.second) {
             serials.emplace_back(proofData.coinSerialNumber);
+            fPadding.emplace_back(proofData.fPadding);
             setSizes.emplace_back(proofData.anonymitySetSize);
             proofs.emplace_back(proofData.sigmaProof);
         }
@@ -152,9 +157,9 @@ void BatchProofContainer::batch_sigma() {
         auto params = sigma::Params::get_default();
         sigma::SigmaPlusVerifier<Scalar, GroupElement> sigmaVerifier(params->get_g(), params->get_h(), params->get_n(), params->get_m());
 
-        if (!sigmaVerifier.batch_verify(anonymity_set, serials, setSizes, proofs)) {
+        if (!sigmaVerifier.batch_verify(anonymity_set, serials, fPadding, setSizes, proofs)) {
             LogPrintf("Sigma batch verification failed.");
-            throw std::invalid_argument("Sigma batch verification failed, please run client with -reindex -batching=0");
+            throw std::invalid_argument("Sigma batch verification failed, please run BZX with -reindex -batching=0");
         }
     }
     sigmaProofs.clear();
@@ -226,7 +231,7 @@ void BatchProofContainer::batch_lelantus() {
 
         if (isFail) {
             LogPrintf("Lelantus batch verification failed.");
-            throw std::invalid_argument("Lelantus batch verification failed, please run client with -reindex -batching=0");
+            throw std::invalid_argument("Lelantus batch verification failed, please run BZX with -reindex -batching=0");
         }
     }
 
