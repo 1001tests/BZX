@@ -206,6 +206,7 @@ CWalletTx LelantusJoinSplitBuilder::Build(
 
                 required -= inputFromSigma;
 
+                isSigmaToLelantusJoinSplit = true;
             }
         } catch (std::runtime_error const &) {
         }
@@ -344,7 +345,7 @@ void LelantusJoinSplitBuilder::GenerateMints(const std::vector<CAmount>& newMint
         while (true) {
             hdMint.SetNull();
             lelantus::PrivateCoin newCoin(params, mintVal);
-            newCoin.setVersion(LELANTUS_TX_VERSION_4_5);
+            newCoin.setVersion(LELANTUS_TX_VERSION_4);
             CWalletDB walletdb(pwalletMain->strWalletFile);
 
             uint160 seedID;
@@ -405,7 +406,19 @@ void LelantusJoinSplitBuilder::CreateJoinSplit(
     std::map<uint32_t, std::vector<lelantus::PublicCoin>> anonymity_sets;
     std::map<uint32_t, uint256> groupBlockHashes;
     int version = 0;
-    version = LELANTUS_TX_VERSION_4_5;
+
+    // after nLelantusFixesStartBlock set new transaction version,
+    if(!isSigmaToLelantusJoinSplit) {
+        if (chainActive.Height() >= Params().GetConsensus().nLelantusFixesStartBlock)
+            version = LELANTUS_TX_VERSION_4_5;
+        else
+            version = LELANTUS_TX_VERSION_4;
+    } else {
+        if (chainActive.Height() >= Params().GetConsensus().nLelantusFixesStartBlock)
+            version = SIGMA_TO_LELANTUS_JOINSPLIT_FIXED;
+        else
+            version = SIGMA_TO_LELANTUS_JOINSPLIT;
+    }
 
     std::vector<std::vector<unsigned char>> anonymity_set_hashes;
     for (const auto &spend : spendCoins) {
