@@ -67,7 +67,7 @@ void LelantusProver::proof(
     // also we are getting challengeGenerator with filled data from sigma,
     GroupElement B = params->get_h1() * Vi + params->get_h0() * Ri;
     GroupElement Y = A + B.inverse();
-    SchnorrProver schnorrProver(params->get_g(), params->get_h0(), true);
+    SchnorrProver schnorrProver(params->get_g(), params->get_h0(), version >= LELANTUS_TX_VERSION_4_5);
     schnorrProver.proof(X_, Y_, Y, A, B, challengeGenerator, proof_out.schnorrProof);
 }
 
@@ -164,7 +164,7 @@ void LelantusProver::generate_sigma_proofs(
     }
 
     // generate schnorr proof to prove that Q_k is generated honestly;
-    if (true) {
+    if (version >= LELANTUS_TX_VERSION_4_5) {
         Scalar q_k_x;
         challengeGenerator->get_challenge(q_k_x);
         NthPower qk_x_n(q_k_x);
