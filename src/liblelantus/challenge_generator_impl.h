@@ -1,5 +1,5 @@
-#ifndef FIRO_LELANTUS_CHALLENGE_GENERATOR_IMPL_H
-#define FIRO_LELANTUS_CHALLENGE_GENERATOR_IMPL_H
+#ifndef BZX_LELANTUS_CHALLENGE_GENERATOR_IMPL_H
+#define BZX_LELANTUS_CHALLENGE_GENERATOR_IMPL_H
 
 #include <secp256k1/include/Scalar.h>
 #include <secp256k1/include/GroupElement.h>
@@ -76,4 +76,4 @@ private:
 
 }// namespace lelantus
 
-#endif //FIRO_LELANTUS_CHALLENGE_GENERATOR_IMPL_H
+#endif //BZX_LELANTUS_CHALLENGE_GENERATOR_IMPL_H
