@@ -12,7 +12,7 @@
 #include "key.h"
 #include "sigma/coin.h"
 #include "serialize.h"
-#include "sigma_params.h"
+#include "priv_params.h"
 
 //struct that is safe to store essential mint data, without holding any information that allows for actual spending (serial, randomness, private key)
 struct MintMeta
@@ -43,6 +43,7 @@ struct CLelantusMintMeta : MintMeta
 {
     uint64_t amount;
 };
+
 
 class CSigmaEntry
 {
