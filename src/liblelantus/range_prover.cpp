@@ -63,7 +63,7 @@ void RangeProver::batch_proof(
 
     Scalar y, z;
     unique_ptr<ChallengeGenerator> challengeGenerator;
-    if (true) {
+    if (version >= LELANTUS_TX_VERSION_4_5) {
         challengeGenerator = std::make_unique<ChallengeGeneratorImpl<CHash256>>(1);
         // add domain separator and transaction version into transcript
         std::string domain_separator = "RANGE_PROOF" + std::to_string(version);
@@ -161,14 +161,14 @@ void RangeProver::batch_proof(
         y_i_inv.go_next();
     }
 
-    int inner_product_version = version >= 2;
+    int inner_product_version = version >= LELANTUS_TX_VERSION_4_5 ? 2 : 1;
     InnerProductProofGenerator InnerProductProofGenerator(g_, h_prime, g, inner_product_version);
     //t^ is calculated inside inner product proof generation with name c
     Scalar x_u;
     challengeGenerator->add({proof_out.T_x1, proof_out.T_x2, proof_out.u});
     challengeGenerator->get_challenge(x_u);
 
-    if (true) {
+    if (version >= LELANTUS_TX_VERSION_4_5) {
         // add domain separator in each step
         std::string domain_separator = "INNER_PRODUCT";
         std::vector<unsigned char> pre(domain_separator.begin(), domain_separator.end());
