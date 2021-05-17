@@ -3078,12 +3078,6 @@ UniValue mint(const JSONRPCRequest& request)
     EnsureWalletIsUnlocked(pwallet);
     EnsureSigmaWalletIsAvailable();
 
-    // Ensure Sigma mints is already accepted by network so users will not lost their coins
-    // due to other nodes will treat it as garbage data.
-    if (!sigma::IsSigmaAllowed()) {
-        throw JSONRPCError(RPC_WALLET_ERROR, "Sigma is not active");
-    }
-
     CAmount nAmount = AmountFromValue(request.params[0]);
     LogPrintf("rpcWallet.mint() denomination = %s, nAmount = %d \n", request.params[0].getValStr(), nAmount);
 
@@ -3241,10 +3235,6 @@ UniValue spendmany(const JSONRPCRequest& request) {
                 "\nSend two amounts to two different addresses and subtract fee from amount:\n"
                 + HelpExampleCli("spendmany", "\"\" \"{\\\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\\\":0.01,\\\"1353tsE8YMTA4EuV7dgUXGjNFf9KpVvKHz\\\":0.02}\" 6 \"testing\" \"[\\\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\\\",\\\"1353tsE8YMTA4EuV7dgUXGjNFf9KpVvKHz\\\"]\"")
         );
-
-    if (!sigma::IsSigmaAllowed()) {
-        throw JSONRPCError(RPC_WALLET_ERROR, "Sigma is not active");
-    }
 
     EnsureSigmaWalletIsAvailable();
 
