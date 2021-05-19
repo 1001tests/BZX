@@ -53,22 +53,6 @@ bool CheckSigmaSpendSerial(
     return true;
 }
 
-bool IsSigmaAllowed()
-{
-    LOCK(cs_main);
-    return IsSigmaAllowed(chainActive.Height());
-}
-
-bool IsSigmaAllowed(int height)
-{
-    if (height > 450000)
-    {
-        LogPrintf("IsSigmaAllowed: no\n");
-         return false;
-    }
-
-}
-
 secp_primitives::GroupElement ParseSigmaMintScript(const CScript& script)
 {
     if (script.size() < 1) {
@@ -144,25 +128,14 @@ bool CheckSigmaBlock(CValidationState &state, const CBlock& block) {
         size_t txSpendsAmount = 0;
 
         for (const auto& in : tx->vin) {
-            if (in.IsSigmaSpend()) {
+            if (in.IsSigmaSpend() {
                 txSpendsAmount++;
             }
-        }
-
-        if (txSpendsAmount > 0) {
-            return state.DoS(100, false, REJECT_INVALID,
-                "bad-txns-spend-invalid");
-        }
-
-        if (txSpendsValue > 0) {
-            return state.DoS(100, false, REJECT_INVALID,
-                "bad-txns-spend-invalid");
         }
 
         blockSpendsAmount += txSpendsAmount;
         blockSpendsValue += txSpendsValue;
     }
-
 
     return true;
 }
@@ -186,10 +159,6 @@ bool CheckSigmaSpendTransaction(
 
     Consensus::Params const & params = ::Params().GetConsensus();
 
-    if(!isVerifyDB && !isCheckWallet) {
-             return state.DoS(100, error("Sigma is disabled at this period."));
-    }
-
     for (const CTxIn &txin : tx.vin)
     {
         std::unique_ptr<sigma::CoinSpend> spend;
@@ -210,7 +179,6 @@ bool CheckSigmaSpendTransaction(
                 REJECT_MALFORMED,
                 "CheckSigmaSpendTransaction: invalid spend transaction");
         }
-
         uint256 txHashForMetadata;
 
         // Obtain the hash of the transaction sans the zerocoin part
@@ -274,13 +242,20 @@ bool CheckSigmaSpendTransaction(
             index = index->pprev;
         }
 
+        bool fPadding = true;
+        if (!isVerifyDB) {
+            bool fShouldPad = nHeight >= params.nSigmaPaddingBlock;
+            if (fPadding != fShouldPad)
+                return state.DoS(1, error("Incorrect sigma spend transaction version"));
+        }
+
         BatchProofContainer* batchProofContainer = BatchProofContainer::get_instance();
         // if we are collecting proofs, skip verification and collect proofs
-        passVerify = spend->Verify(anonymity_set, newMetaData, batchProofContainer->fCollectProofs);
+        passVerify = spend->Verify(anonymity_set, newMetaData, fPadding, batchProofContainer->fCollectProofs);
 
         // add proofs into container
         if(batchProofContainer->fCollectProofs) {
-            batchProofContainer->add(spend.get(), coinGroupId, anonymity_set.size(), true);
+            batchProofContainer->add(spend.get(), fPadding, coinGroupId, anonymity_set.size(), true);
         }
 
         if (passVerify) {
@@ -416,12 +391,7 @@ bool CheckSigmaTransaction(
         realHeight = chainActive.Height();
     }
 
-    // accept sigma tx into 5 more blocks, to allow mempool cleared
-    if (!isVerifyDB)
-        return state.DoS(100, false,
-                         REJECT_INVALID,
-                         "Sigma already is not available, start using Lelantus.");
-    bool const allowSigma = true;
+    bool const allowSigma = false;
 
     if (!isVerifyDB && !isCheckWallet) {
         if (allowSigma && sigmaState.IsSurgeConditionDetected()) {
@@ -443,13 +413,6 @@ bool CheckSigmaTransaction(
 
     // Check Sigma Spend Transaction
     if(tx.IsSigmaSpend()) {
-        // First check number of inputs does not exceed transaction limit
-        if (tx.vin.size() > 0) {
-            return state.DoS(100, false,
-                REJECT_INVALID,
-                "bad-txns-spend-invalid");
-        }
-
 
         vector<sigma::CoinDenomination> denominations;
         uint64_t totalValue = 0;
@@ -722,7 +685,7 @@ bool BuildSigmaStateFromIndex(CChain *chain) {
     return true;
 }
 
-// sigmaTxInfo
+// CSigmaTxInfo
 
 void CSigmaTxInfo::Complete() {
     // We need to sort mints lexicographically by serialized value of pubCoin. That's the way old code
