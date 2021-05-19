@@ -127,14 +127,14 @@ struct Params {
     ChainType chainType;
 
     uint256 hashGenesisBlock;
-
-    int nStartBlacklist;
-
     /** Used to check majorities for block version upgrade */
     int nMajorityEnforceBlockUpgrade;
     int nMajorityRejectBlockOutdated;
     int nMajorityWindow;
-
+    /** Block height at which BIP65 becomes active */
+    int BIP65Height;
+    /** Block height at which BIP66 becomes active */
+    int BIP66Height;
     /**
      * Minimum blocks including miner confirmation of the total of 2016 blocks in a retargeting period,
      * (nPowTargetTimespan / nPowTargetSpacing) which is also used for BIP9 deployments.
@@ -149,6 +149,7 @@ struct Params {
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     int64_t nPowTargetTimespan;
+    int nZnodePaymentsStartBlock;
 
     int nInstantSendConfirmationsRequired; // in blocks
     int nInstantSendKeepLock; // in blocks
@@ -172,6 +173,13 @@ struct Params {
     // Probability (percentage) that a Dandelion transaction enters fluff phase.
     uint32_t nDandelionFluff;
 
+    // Values for sigma implementation.
+
+    // The block number after which sigma are accepted.
+    int nSigmaStartBlock;
+
+    int nSigmaPaddingBlock;
+
     // The block number after which lelantus is accepted.
     int nLelantusStartBlock;
 
@@ -187,7 +195,7 @@ struct Params {
     // Key to sign spork txs
     std::string evoSporkKeyID;
 
-    // The block number when Bip39 was implemented
+    // The block number when Bip39 was implemented in Zcoin
     int nMnemonicBlock;
 
     // Amount of maximum lelantus spend per block.
@@ -205,6 +213,9 @@ struct Params {
     // Value of maximum lelantus mint.
     int64_t nMaxValueLelantusMint;
 
+    /** block number to disable zerocoin on consensus level */
+    int nDisableZerocoinStartBlock;
+
     /** block to start accepting pro reg txs for evo znodes */
     int DIP0003Height;
 
@@ -215,6 +226,11 @@ struct Params {
     /** block to start using chainlocks */
     int DIP0008Height;
 
+    /** maximum reorg depth */
+    int nMaxReorgDepth;
+    /** block to start reorg depth enforcement */
+    int nMaxReorgDepthEnforcementBlock;
+
     int nEvoZnodeMinimumConfirmations;
 
     std::map<LLMQType, LLMQParams> llmqs;
@@ -224,7 +240,7 @@ struct Params {
     /** Time between blocks for LLMQ random time purposes. Can be less than actual average distance between blocks */
     int nLLMQPowTargetSpacing;
 
-    int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / (nPowTargetSpacing); }
+    int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan /  nPowTargetSpacing); }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
 
