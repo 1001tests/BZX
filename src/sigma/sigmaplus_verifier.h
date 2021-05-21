@@ -1,4 +1,4 @@
-z#ifndef BZX_SIGMA_SIGMAPLUS_VERIFIER_H
+#ifndef BZX_SIGMA_SIGMAPLUS_VERIFIER_H
 #define BZX_SIGMA_SIGMAPLUS_VERIFIER_H
 
 #include "r1_proof_verifier.h"
