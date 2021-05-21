@@ -99,7 +99,7 @@ void GenerateMintSchnorrProof(const lelantus::PrivateCoin& coin, CDataStream&  s
     SchnorrProof schnorrProof;
 
     // start to pass whole data to transcript
-    bool afterFixes = true
+    bool afterFixes = true;
     SchnorrProver schnorrProver(params->get_g(), params->get_h0(), afterFixes);
     Scalar v = coin.getVScalar();
     secp_primitives::GroupElement commit = coin.getPublicCoin().getValue();

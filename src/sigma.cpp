@@ -118,24 +118,6 @@ CAmount GetSpendAmount(const CTransaction& tx) {
 }
 
 bool CheckSigmaBlock(CValidationState &state, const CBlock& block) {
-    auto& consensus = ::Params().GetConsensus();
-
-    size_t blockSpendsAmount = 0;
-    CAmount blockSpendsValue(0);
-
-    for (const auto& tx : block.vtx) {
-        auto txSpendsValue = GetSpendAmount(*tx);
-        size_t txSpendsAmount = 0;
-
-        for (const auto& in : tx->vin) {
-            if (in.IsSigmaSpend() {
-                txSpendsAmount++;
-            }
-        }
-
-        blockSpendsAmount += txSpendsAmount;
-        blockSpendsValue += txSpendsValue;
-    }
 
     return true;
 }
