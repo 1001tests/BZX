@@ -22,28 +22,6 @@
 #include <algorithm>
 #include <string>
 
-
-unsigned char GetNfactor(int64_t nTimestamp) {
-    int l = 0;
-    if (nTimestamp <= 1389306217)
-        return 10;
-
-    int64_t s = nTimestamp - 1389306217;
-    while ((s >> 1) > 3) {
-        l += 1;
-        s >>= 1;
-    }
-    s &= 3;
-    int n = (l * 158 + s * 28 - 2670) / 100;
-    if (n < 0) n = 0;
-    if (n > 255)
-        LogPrintf("GetNfactor(%d) - something wrong(n == %d)\n", nTimestamp, n);
-
-    unsigned char N = (unsigned char) n;
-
-    return std::min(std::max(N, 10), 20);
-}
-
 uint256 CBlockHeader::GetHash() const {
     return SerializeHash(*this);
 }
@@ -52,8 +30,9 @@ uint256 CBlockHeader::GetPoWHash(int nHeight) const {
 
     if (nHeight == 0)
     {
+        uint256 powHash;
         // genesis block
-        scrypt_N_1_1_256(BEGIN(nVersion), BEGIN(powHash), GetNfactor(nTime));
+        scrypt_N_1_1_256(BEGIN(nVersion), BEGIN(powHash), 10);
     }
 
     else
