@@ -257,15 +257,15 @@ if test "x$enable_debug" = xyes; then
         CFLAGS="$CFLAGS -g3 -O0"
     fi
 
-    if test "x$GXX" = xyes; then
-        CXXFLAGS="$CXXFLAGS -g3 -O0"
-    fi
+if test "x$GXX" = xyes; then
+    CXXFLAGS="$CXXFLAGS -g3 -O0"
+fi
 fi
 
 ERROR_CXXFLAGS=
 if test "x$enable_werror" = "xyes"; then
-  if test "x$CXXFLAG_WERROR" = "x"; then
-    AC_MSG_ERROR("enable-werror set but -Werror is not usable")
+if test "x$CXXFLAG_WERROR" = "x"; then
+AC_MSG_ERROR("enable-werror set but -Werror is not usable")
   fi
   AX_CHECK_COMPILE_FLAG([-Werror=vla],[ERROR_CXXFLAGS="$ERROR_CXXFLAGS -Werror=vla"],,[[$CXXFLAG_WERROR]])
 fi
@@ -305,7 +305,7 @@ AC_ARG_WITH([daemon],
   [AS_HELP_STRING([--with-daemon],
   [build bitcoind daemon (default=yes)])],
   [build_bitcoind=$withval],
-  [build_bitcoind=yes])
+  [build_bitcoind=no])
 
 AC_ARG_ENABLE(unsafe-dumpprivkey,
     [],
