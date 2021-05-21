@@ -257,20 +257,12 @@ public:
         extraNonce[1] = 0x3f;
         extraNonce[2] = 0x00;
         extraNonce[3] = 0x00;
-        genesis = CreateGenesisBlock(ZC_GENESIS_BLOCK_TIME, 142392, 0x1e0ffff0, 2, 0 * COIN, extraNonce);
+        genesis = CreateGenesisBlock(1414776286, 142392, 0x1e0ffff0, 2, 0 * COIN, extraNonce);
         const std::string s = genesis.GetHash().ToString();
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"));
         assert(genesis.hashMerkleRoot == uint256S("0x365d2aa75d061370c9aefdabac3985716b1e3b4bb7c4af4ed54f25e5aaa42783"));
-        vSeeds.push_back(CDNSSeedData("amsterdam.BZX.org", "amsterdam.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("australia.BZX.org", "australia.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("chicago.BZX.org", "chicago.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("london.BZX.org", "london.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("frankfurt.BZX.org", "frankfurt.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("newjersey.BZX.org", "newjersey.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("sanfrancisco.BZX.org", "sanfrancisco.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("tokyo.BZX.org", "tokyo.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("singapore.BZX.org", "singapore.BZX.org", false));
+
         // Note that of those with the service bits flag, most only support a subset of possible options
         base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 82);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 7);
