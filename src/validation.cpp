@@ -4187,7 +4187,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
     }
 
 
-    else if (!CheckZerocoinFoundersInputs()) {
+    if (!CheckZerocoinFoundersInputs()) {
         return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(), "Founders' reward check failed");
     }
 
