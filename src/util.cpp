@@ -518,7 +518,7 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/bitcoinzero;
+    return pathRet / "Library/Application Support/bitcoinzero";
 #else
     // Unix
     return pathRet / ".bitcoinzero";
