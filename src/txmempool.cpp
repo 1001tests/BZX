@@ -38,7 +38,7 @@ CTxMemPoolEntry::CTxMemPoolEntry(const CTransactionRef& _tx, const CAmount& _nFe
     nSizeWithDescendants = GetTxSize();
     nModFeesWithDescendants = nFee;
     CAmount nValueIn = tx->GetValueOut()+nFee;
-    if (!tx->IsZerocoinSpend() && !tx->IsSigmaSpend() && !tx->IsZerocoinRemint() && !tx->IsLelantusJoinSplit()) {
+    if (!tx->IsZerocoinSpend() && !tx->IsSigmaSpend() && !tx->IsLelantusJoinSplit()) {
         assert(inChainInputValue <= nValueIn);
     }
 
