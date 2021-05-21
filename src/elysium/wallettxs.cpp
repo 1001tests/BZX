@@ -282,7 +282,7 @@ int64_t SelectCoins(const std::string& fromAddress, CCoinControl& coinControl, i
         std::vector<sigma::CoinDenomination> remints;
         try {
             std::list<CSigmaEntry> sigmaCoins = pwalletMain->GetAvailableCoins();
-            pwalletMain->GetCoinsToSpend(nMax, coinsToSpend, sigmaCoins);
+            pwalletMain->GetCoinsToSpend(nMax, coinsToSpend, remints, sigmaCoins);
         } catch (std::exception const &err) {
             LogPrintf("SelectCoins() fail to get coin to spend: %s\n", err.what());
             return nTotal;

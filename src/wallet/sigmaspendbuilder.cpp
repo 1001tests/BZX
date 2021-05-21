@@ -139,7 +139,8 @@ CAmount SigmaSpendBuilder::GetInputs(std::vector<std::unique_ptr<InputSigner>>& 
     auto& consensusParams = Params().GetConsensus();
     std::list<CSigmaEntry> sigmaCoins = pwalletMain->GetAvailableCoins(coinControl);
 
-    if (!wallet.GetCoinsToSpend(required, selected, denomChanges, sigmaCoins, coinControl)) {
+    if (!wallet.GetCoinsToSpend(required, selected, denomChanges, sigmaCoins,
+        consensusParams.nMaxSigmaInputPerTransaction, consensusParams.nMaxValueSigmaSpendPerTransaction, coinControl)) {
         throw InsufficientFunds();
     }
 

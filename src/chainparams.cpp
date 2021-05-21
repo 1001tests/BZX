@@ -307,11 +307,13 @@ public:
         consensus.nSigmaStartBlock = 50000;
         consensus.nSigmaPaddingBlock = 50001;
         consensus.nLelantusStartBlock = 50002;
-        consensus.nMaxLelantusInputPerBlock = ZC_LELANTUS_INPUT_LIMIT_PER_BLOCK;
-        consensus.nMaxValueLelantusSpendPerBlock = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_BLOCK;
-        consensus.nMaxLelantusInputPerTransaction = ZC_LELANTUS_INPUT_LIMIT_PER_TRANSACTION;
-        consensus.nMaxValueLelantusSpendPerTransaction = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_TRANSACTION;
-        consensus.nMaxValueLelantusMint = ZC_LELANTUS_MAX_MINT;
+        consensus.nMaxSigmaInputPerTransaction = 35;
+        consensus.nMaxValueSigmaSpendPerTransaction = (500 * COIN);
+        consensus.nMaxLelantusInputPerBlock = 100;
+        consensus.nMaxValueLelantusSpendPerBlock = (5101 * COIN);
+        consensus.nMaxLelantusInputPerTransaction = 50;
+        consensus.nMaxValueLelantusSpendPerTransaction = (5101 * COIN);
+        consensus.nMaxValueLelantusMint = (5001 * COIN);
 
         for (const auto& str : lelantus::lelantus_blacklist) {
             GroupElement coin;
@@ -320,8 +322,8 @@ public:
         }
 
         consensus.evoSporkKeyID = "a78fERshquPsTv2TuKMSsxTeKom56uBwLP";
-        consensus.nEvoSporkStartBlock = ZC_LELANTUS_STARTING_BLOCK;
-        consensus.nEvoSporkStopBlock = ZC_LELANTUS_STARTING_BLOCK + 24*12*365;  // one year after lelantus
+        consensus.nEvoSporkStartBlock = INT_MAX;
+        consensus.nEvoSporkStopBlock = INT_MAX;
 
         // reorg
         consensus.nMaxReorgDepth = 5;

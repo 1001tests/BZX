@@ -198,6 +198,12 @@ struct Params {
     // The block number when Bip39 was implemented in Zcoin
     int nMnemonicBlock;
 
+    // Amount of maximum sigma spend per transaction.
+    unsigned nMaxSigmaInputPerTransaction;
+
+    // Value of maximum sigma spend per transaction.
+    int64_t nMaxValueSigmaSpendPerTransaction;
+
     // Amount of maximum lelantus spend per block.
     unsigned nMaxLelantusInputPerBlock;
 
