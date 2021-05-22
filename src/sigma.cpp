@@ -64,11 +64,6 @@ bool IsSigmaAllowed(int height)
 	return height >= ::Params().GetConsensus().nSigmaStartBlock && height < ::Params().GetConsensus().nLelantusStartBlock;
 }
 
-bool IsRemintWindow(int height) {
-    const Consensus::Params& params = ::Params().GetConsensus();
-    return IsSigmaAllowed(height) && height < params.nSigmaStartBlock + params.nZerocoinToSigmaRemintWindowSize;
-}
-
 secp_primitives::GroupElement ParseSigmaMintScript(const CScript& script)
 {
     if (script.size() < 1) {
