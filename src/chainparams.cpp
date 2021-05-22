@@ -180,8 +180,6 @@ public:
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;
         consensus.nMajorityWindow = 1000;
-        consensus.BIP65Height = INT_MAX;
-        consensus.BIP66Height = INT_MAX;
         consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 60 * 60; // 60 minutes between retargets
         consensus.nPowTargetSpacing = 10 * 60; // 10 minute blocks
@@ -262,7 +260,15 @@ public:
         consensus.hashGenesisBlock = genesis.GetHash();
         assert(consensus.hashGenesisBlock == uint256S("0x4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"));
         assert(genesis.hashMerkleRoot == uint256S("0x365d2aa75d061370c9aefdabac3985716b1e3b4bb7c4af4ed54f25e5aaa42783"));
-
+        vSeeds.push_back(CDNSSeedData("amsterdam.firo.org", "amsterdam.firo.org", false));
+        vSeeds.push_back(CDNSSeedData("australia.firo.org", "australia.firo.org", false));
+        vSeeds.push_back(CDNSSeedData("chicago.firo.org", "chicago.firo.org", false));
+        vSeeds.push_back(CDNSSeedData("london.firo.org", "london.firo.org", false));
+        vSeeds.push_back(CDNSSeedData("frankfurt.firo.org", "frankfurt.firo.org", false));
+        vSeeds.push_back(CDNSSeedData("newjersey.firo.org", "newjersey.firo.org", false));
+        vSeeds.push_back(CDNSSeedData("sanfrancisco.firo.org", "sanfrancisco.firo.org", false));
+        vSeeds.push_back(CDNSSeedData("tokyo.firo.org", "tokyo.firo.org", false));
+        vSeeds.push_back(CDNSSeedData("singapore.firo.org", "singapore.firo.org", false));
         // Note that of those with the service bits flag, most only support a subset of possible options
         base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 82);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 7);
