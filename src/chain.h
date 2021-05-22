@@ -222,10 +222,6 @@ public:
     //! Maps <denomination,id> to vector of public coins
     map<pair<int,int>, vector<CBigNum>> mintedPubCoins;
 
-    //! Accumulator updates. Contains only changes made by mints in this block
-    //! Maps <denomination, id> to <accumulator value (CBigNum), number of such mints in this block>
-    map<pair<int,int>, pair<CBigNum,int>> accumulatorChanges;
-
     //! Values of coin serials spent in this block
 	set<CBigNum> spentSerials;
 
@@ -447,7 +443,6 @@ public:
 
         if (!(s.GetType() & SER_GETHASH) && nVersion >= ZC_ADVANCED_INDEX_VERSION) {
             READWRITE(mintedPubCoins);
-		    READWRITE(accumulatorChanges);
             READWRITE(spentSerials);
 	    }
 
