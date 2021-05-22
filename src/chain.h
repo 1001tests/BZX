@@ -265,6 +265,7 @@ public:
         nBits          = 0;
         nNonce         = 0;
 
+
         sigmaMintedPubCoins.clear();
         lelantusMintedPubCoins.clear();
         anonymitySetHash.clear();
@@ -287,6 +288,7 @@ public:
         nTime          = block.nTime;
         nBits          = block.nBits;
         nNonce         = block.nNonce;
+
     }
 
     CDiskBlockPos GetBlockPos() const {
@@ -441,11 +443,6 @@ public:
 
         const auto &params = Params().GetConsensus();
 
-        if (!(s.GetType() & SER_GETHASH) && nVersion >= ZC_ADVANCED_INDEX_VERSION) {
-            READWRITE(mintedPubCoins);
-            READWRITE(spentSerials);
-	    }
-
         if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nSigmaStartBlock) {
             READWRITE(sigmaMintedPubCoins);
             READWRITE(sigmaSpentSerials);
@@ -465,9 +462,9 @@ public:
                 }
             } else
                 READWRITE(lelantusMintedPubCoins);
-            READWRITE(lelantusSpentSerials);
+                READWRITE(lelantusSpentSerials);
 
-            if (nHeight >= params.nLelantusFixesStartBlock)
+            if (nHeight >= params.nLelantusStartBlock)
                 READWRITE(anonymitySetHash);
         }
 
