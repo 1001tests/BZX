@@ -1232,7 +1232,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlockIndex
         AssertLockHeld(cs_wallet);
 
         if (posInBlock != -1) {
-            if(!(tx.IsCoinBase() || tx.IsSigmaSpend() || tx.IsZerocoinRemint() || tx.IsZerocoinSpend()) || tx.IsLelantusJoinSplit()) {
+            if(!(tx.IsCoinBase() || tx.IsSigmaSpend() || tx.IsZerocoinSpend()) || tx.IsLelantusJoinSplit()) {
                 BOOST_FOREACH(const CTxIn& txin, tx.vin) {
                     std::pair<TxSpends::const_iterator, TxSpends::const_iterator> range = mapTxSpends.equal_range(txin.prevout);
                     while (range.first != range.second) {
@@ -1525,10 +1525,7 @@ isminetype CWallet::IsMine(const CTxIn &txin) const
         if (db.HasLelantusSpendSerialEntry(joinsplit->getCoinSerialNumbers()[0]) || db.HasCoinSpendSerialEntry(joinsplit->getCoinSerialNumbers()[0])) {
             return ISMINE_SPENDABLE;
         }
-    } else if (txin.IsZerocoinRemint()) {
-        return ISMINE_NO;
-    }
-    else {
+    } else {
         map<uint256, CWalletTx>::const_iterator mi = mapWallet.find(txin.prevout.hash);
         if (mi != mapWallet.end())
         {
@@ -1567,8 +1564,6 @@ CAmount CWallet::GetDebit(const CTxIn &txin, const isminefilter& filter) const
         if (db.HasCoinSpendSerialEntry(spend->getCoinSerialNumber())) {
             return spend->getIntDenomination();
         }
-    } else if (txin.IsZerocoinRemint()) {
-        return 0;
     } else if (txin.IsLelantusJoinSplit()) {
         if (!(filter & ISMINE_SPENDABLE)) {
             goto end;
@@ -2407,7 +2402,7 @@ bool CWalletTx::IsTrusted() const
     // Trusted if all inputs are from us and are in the mempool:
     BOOST_FOREACH(const CTxIn& txin, tx->vin)
     {
-        if (txin.IsZerocoinSpend() || txin.IsSigmaSpend() || txin.IsZerocoinRemint() || txin.IsLelantusJoinSplit()) {
+        if (txin.IsZerocoinSpend() || txin.IsSigmaSpend() || txin.IsLelantusJoinSplit()) {
             if (!(pwallet->IsMine(txin) & ISMINE_SPENDABLE)) {
                 return false;
             }
@@ -3333,13 +3328,11 @@ void CWallet::AvailableCoins(vector <COutput> &vCoins, bool fOnlyConfirmed, cons
                     found = !(pcoin->tx->vout[i].scriptPubKey.IsZerocoinMint()
                             || pcoin->tx->vout[i].scriptPubKey.IsSigmaMint()
                             || pcoin->tx->vout[i].scriptPubKey.IsLelantusMint()
-                            || pcoin->tx->vout[i].scriptPubKey.IsLelantusJMint())
-                            || pcoin->tx->vout[i].scriptPubKey.IsZerocoinRemint();
+                            || pcoin->tx->vout[i].scriptPubKey.IsLelantusJMint());
                 } else if(nCoinType == CoinType::ONLY_MINTS){
                     // Do not consider anything other than mints
                     found = (pcoin->tx->vout[i].scriptPubKey.IsZerocoinMint()
                             || pcoin->tx->vout[i].scriptPubKey.IsSigmaMint()
-                            || pcoin->tx->vout[i].scriptPubKey.IsZerocoinRemint()
                             || pcoin->tx->vout[i].scriptPubKey.IsLelantusMint()
                             || pcoin->tx->vout[i].scriptPubKey.IsLelantusJMint());
                 } else if (nCoinType == CoinType::ONLY_NOT1000IFMN) {
@@ -5996,7 +5989,7 @@ set< set<CTxDestination> > CWallet::GetAddressGroupings()
         CWalletTx *pcoin = &walletEntry.second;
 
         if (pcoin->tx->vin.size() > 0 &&
-            !(pcoin->tx->IsZerocoinSpend() || pcoin->tx->IsSigmaSpend() || pcoin->tx->IsZerocoinRemint()) || pcoin->tx->IsLelantusJoinSplit()) { /* Spends have no standard input */
+            !(pcoin->tx->IsZerocoinSpend() || pcoin->tx->IsSigmaSpend() || pcoin->tx->IsLelantusJoinSplit())) { /* Spends have no standard input */
             bool any_mine = false;
             // group all input addresses with each other
             BOOST_FOREACH(CTxIn txin, pcoin->tx->vin)
