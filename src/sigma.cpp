@@ -25,7 +25,7 @@
 
 #include <ios>
 
-int64_t nMinimumInputValue = DUST_HARD_LIMIT;
+int64_t nMinimumInputValue = 1000; //DUST_HARD_LIMIT
 
 namespace sigma {
 
