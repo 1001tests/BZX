@@ -4031,6 +4031,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         // while still invalidating it.
         if (mutated)
             return state.DoS(100, false, REJECT_INVALID, "bad-txns-duplicate", true, "duplicate transaction");
+    }
 
     // All potential-corruption validation must be done before we do any
     // transaction validation, as otherwise we may mark the header as invalid
