@@ -21,28 +21,23 @@
 #include <fstream>
 #include <algorithm>
 #include <string>
-#include "precomputed_hash.h"
-
 
 uint256 CBlockHeader::GetHash() const {
     return SerializeHash(*this);
 }
 
-
 uint256 CBlockHeader::GetPoWHash(int nHeight) const {
+
+    uint256 powHash;
 
     if (nHeight == 0)
     {
-        uint256 powHash;
-        // genesis block
-        scrypt_N_1_1_256(BEGIN(nVersion), BEGIN(powHash), 10);
+    scrypt_N_1_1_256(BEGIN(nVersion), BEGIN(powHash), 10);
     }
 
     else
     {
-    uint256 powHash;
     LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, 330, 256);
-    return powHash;
     }
 
     return powHash;
