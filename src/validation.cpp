@@ -4244,7 +4244,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
         }
     }
 
-    if (!CheckZerocoinFoundersInputs()
+    if (!CheckZerocoinFoundersInputs())
     {
         return true; //xxxx
     }
