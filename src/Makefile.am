@@ -150,11 +150,11 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += bitcoinzerod
+  bin_PROGRAMS += bitcoinzero_testd
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += bitcoinzero-cli bitcoinzero-tx
+  bin_PROGRAMS += bitcoinzero_test-cli bitcoinzero_test-tx
 endif
 
 .PHONY: FORCE check-symbols check-security
@@ -373,7 +373,7 @@ obj/build.h: FORCE
 	  $(abs_top_srcdir)
 libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
-# server: shared between bitcoinzerod and bitcoinzero-qt
+# server: shared between BZXd and BZX-qt
 libbitcoin_server_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libbitcoin_server_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_server_a_SOURCES = \
@@ -461,7 +461,7 @@ libbitcoin_zmq_a_SOURCES = \
 endif
 
 
-# wallet: shared between bitcoinzerod and bitcoinzero-qt, but only linked
+# wallet: shared between BZXd and BZX-qt, but only linked
 # when wallet enabled
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -560,7 +560,7 @@ libbitcoin_consensus_a_SOURCES = \
   crypto/Lyra2Z/Sponge.c \
   crypto/Lyra2Z/Sponge.h
 
-# common: shared between bitcoinzerod, and bitcoinzero-qt and non-server tools
+# common: shared between BZXd, and BZX-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_common_a_SOURCES = \
@@ -697,7 +697,7 @@ libbitcoin_util_a_SOURCES += stacktraces.cpp
 libbitcoin_consensus_a_SOURCES += stacktraces.h
 endif
 
-# cli: shared between bitcoinzero-cli and bitcoinzero-qt
+# cli: shared between BZX-cli and BZX-qt
 libbitcoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_cli_a_SOURCES = \
@@ -708,17 +708,17 @@ nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
 # bitcoind binary #
-bitcoinzerod_SOURCES = bitcoind.cpp
-bitcoinzerod_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-bitcoinzerod_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bitcoinzerod_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
-EXTRA_bitcoinzerod_DEPENDENCIES = $(LIBBLSSIG_LIBS)
+BZXd_SOURCES = bitcoind.cpp
+BZXd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+BZXd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+BZXd_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+EXTRA_BZXd_DEPENDENCIES = $(LIBBLSSIG_LIBS)
 
 if TARGET_WINDOWS
-bitcoinzerod_SOURCES += bitcoind-res.rc
+BZXd_SOURCES += bitcoind-res.rc
 endif
 
-bitcoinzerod_LDADD = \
+BZXd_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBUNIVALUE) \
@@ -735,38 +735,38 @@ bitcoinzerod_LDADD = \
   $(LIBSECP256K1) \
   $(LIBBLSSIG_LIBS)
 
-bitcoinzerod_LDADD += $(BACKTRACE_LIB) $(TOR_LIBS) $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(LIBBLSSIG_DEPENDS) $(BLS_LIBS) -lz
+BZXd_LDADD += $(BACKTRACE_LIB) $(TOR_LIBS) $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(LIBBLSSIG_DEPENDS) $(BLS_LIBS) -lz
 
 # bitcoin-cli binary #
-bitcoinzero_cli_SOURCES = bitcoin-cli.cpp
-bitcoinzero_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-bitcoinzero_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bitcoinzero_cli_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+BZX_cli_SOURCES = bitcoin-cli.cpp
+BZX_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+BZX_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+BZX_cli_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-bitcoinzero_cli_SOURCES += bitcoin-cli-res.rc
+BZX_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
-bitcoinzero_cli_LDADD = \
+BZX_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CRYPTO)
 
-bitcoinzero_cli_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
+BZX_cli_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
 #
 
 # bitcoin-tx binary #
-bitcoinzero_tx_SOURCES = bitcoin-tx.cpp
-bitcoinzero_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-bitcoinzero_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bitcoinzero_tx_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+BZX_tx_SOURCES = bitcoin-tx.cpp
+BZX_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+BZX_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+BZX_tx_LDFLAGS = $(LDFLAGS_WRAP_EXCEPTIONS) $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-bitcoinzero_tx_SOURCES += bitcoin-tx-res.rc
+BZX_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
-bitcoinzero_tx_LDADD = \
+BZX_tx_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
@@ -774,7 +774,7 @@ bitcoinzero_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-bitcoinzero_tx_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(CRYPTO_LIBS) $(BLS_LIBS)
+BZX_tx_LDADD += $(BACKTRACE_LIB) $(BOOST_LIBS) $(CRYPTO_LIBS) $(BLS_LIBS)
 #
 
 # bitcoinconsensus library #

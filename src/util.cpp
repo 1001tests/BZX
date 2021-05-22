@@ -111,8 +111,8 @@ bool fMasternodeMode = false;
 bool fLiteMode = false;
 int nWalletBackups = 10;
 
-const char * const BITCOIN_CONF_FILENAME = "bitcoinzero.conf";
-const char * const BITCOIN_PID_FILENAME = "bitcoinzero.pid";
+const char * const BITCOIN_CONF_FILENAME = "bitcoinzero_test.conf";
+const char * const BITCOIN_PID_FILENAME = "bitcoinzero_test.pid";
 
 CCriticalSection cs_args;
 map<string, string> mapArgs;
@@ -508,7 +508,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Unix: ~/.BZX
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "bitcoinzero";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "bitcoinzero_test";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -518,10 +518,10 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/bitcoinzero";
+    return pathRet / "Library/Application Support/bitcoinzero_test";
 #else
     // Unix
-    return pathRet / ".bitcoinzero";
+    return pathRet / ".bitcoinzero_test";
 #endif
 #endif
 }
