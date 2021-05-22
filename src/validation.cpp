@@ -1662,12 +1662,12 @@ bool ReadBlockHeaderFromDisk(CBlock &block, const CDiskBlockPos &pos) {
     return true;
 }
 
-CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams)
+CAmount GetBlockSubsidy(int nHeight)
 {
         return 100 * COIN;
 }
 
-CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
+CAmount GetMasternodePayment(int nHeight)
 {
         return 100 * COIN
 }

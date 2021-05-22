@@ -216,7 +216,7 @@ bool CMasternodePayments::GetBlockTxOuts(int nBlockHeight, CAmount blockReward, 
         return false;
     }
 
-    CAmount masternodeReward = GetMasternodePayment(nBlockHeight, blockReward);
+    CAmount masternodeReward = GetMasternodePayment(nBlockHeight);
 
     const CBlockIndex* pindex;
     {
