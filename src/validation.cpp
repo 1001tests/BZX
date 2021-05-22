@@ -1669,7 +1669,7 @@ CAmount GetBlockSubsidy(int nHeight)
 
 CAmount GetMasternodePayment(int nHeight)
 {
-        return 100 * COIN
+        return 100 * COIN;
 }
 
 bool IsInitialBlockDownload() {
