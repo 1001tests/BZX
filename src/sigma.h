@@ -47,8 +47,6 @@ public:
 bool IsSigmaAllowed();
 bool IsSigmaAllowed(int height);
 
-bool IsRemintWindow(int height);
-
 bool CheckSigmaSpendSerial(
         CValidationState &state,
         CSigmaTxInfo *sigmaTxInfo,

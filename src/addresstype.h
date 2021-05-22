@@ -10,7 +10,6 @@ enum struct AddressType
     , zerocoinSpend = 4
     , sigmaMint = 5
     , sigmaSpend = 6
-    , zerocoinRemint = 7
     , lelantusMint = 8
     , lelantusJMint = 9
     , lelantusJSplit = 10

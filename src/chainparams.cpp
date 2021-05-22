@@ -374,7 +374,6 @@ public:
         consensus.nMaxLelantusInputPerTransaction = ZC_LELANTUS_INPUT_LIMIT_PER_TRANSACTION;
         consensus.nMaxValueLelantusSpendPerTransaction = ZC_LELANTUS_VALUE_SPEND_LIMIT_PER_TRANSACTION;
         consensus.nMaxValueLelantusMint = ZC_LELANTUS_MAX_MINT;
-        consensus.nZerocoinToSigmaRemintWindowSize = 50000;
 
         for (const auto& str : lelantus::lelantus_blacklist) {
             GroupElement coin;

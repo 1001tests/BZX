@@ -285,9 +285,6 @@ struct Params {
     // Value of maximum lelantus mint.
     int64_t nMaxValueLelantusMint;
 
-    // Number of blocks with allowed zerocoin to sigma remint transaction (after nSigmaStartBlock)
-    int nZerocoinToSigmaRemintWindowSize;
-
     /** block number to disable zerocoin on consensus level */
     int nDisableZerocoinStartBlock;
 
