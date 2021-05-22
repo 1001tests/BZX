@@ -537,7 +537,7 @@ int64_t GetTransactionSigOpCost(const CTransaction &tx, const CCoinsViewCache &i
 {
     int64_t nSigOps = GetLegacySigOpCount(tx) * WITNESS_SCALE_FACTOR;
 
-    if (tx.IsCoinBase() || tx.IsZerocoinSpend() || tx.IsSigmaSpend() || tx.IsLelantusJoinSplit())
+    if (tx.IsCoinBase() || tx.IsZerocoinSpend() || tx.IsSigmaSpend() || tx.IsZerocoinRemint() || tx.IsLelantusJoinSplit())
         return nSigOps;
 
     if (flags & SCRIPT_VERIFY_P2SH) {
@@ -611,7 +611,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
     }
 
     // Check for duplicate inputs - note that this check is slow so we skip it in CheckBlock
-    bool const check_di = true;
+    bool const check_di = nHeight != INT_MAX && nHeight > ::Params().GetConsensus().nStartDuplicationCheck;
     if (fCheckDuplicateInputs || check_di) {
         std::set<COutPoint> vInOutPoints;
         if (tx.IsSigmaSpend() || tx.IsLelantusJoinSplit()) {
@@ -646,6 +646,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
     {
         for (const auto& txin : tx.vin)
             if (txin.prevout.IsNull() && !(txin.scriptSig.IsZerocoinSpend()
+                || txin.IsZerocoinRemint()
                 || txin.IsLelantusJoinSplit() ))
                 return state.DoS(10, false, REJECT_INVALID, "bad-txns-prevout-null");
 
@@ -665,6 +666,21 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
                 return state.DoS(1, error("Zerocoin is disabled at this point"));
         }
 
+        if (tx.IsZerocoinRemint()) {
+            if (nHeight < params.nSigmaStartBlock || nHeight >= params.nSigmaStartBlock + params.nZerocoinToSigmaRemintWindowSize)
+                // we allow transactions of remint type only during specific window
+                return false;
+        }
+    }
+
+    bool isInWhitelist = Params().GetConsensus().txidWhitelist.count(tx.GetHash()) > 0;
+    if (nHeight >= ::Params().GetConsensus().nStartBlacklist && !isInWhitelist) {
+        for (const auto& vin : tx.vin) {
+            if (txid_blacklist.count(vin.prevout.hash.GetHex()) > 0) {
+                    return state.DoS(100, error("Spending this tx is temporarily disabled"),
+                                 REJECT_INVALID, "bad-txns-zerocoin");
+            }
+        }
     }
 
     return true;
@@ -753,8 +769,19 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
 
     const Consensus::Params& consensus = Params().GetConsensus();
 
-    if (chainActive.Height() < consensus.nLelantusStartBlock)
-    {
+    if (tx.IsSigmaMint() || tx.IsSigmaSpend()) {
+        if (consensus.nStartSigmaBlacklist != INT_MAX && chainActive.Height() < consensus.nRestartSigmaWithBlacklistCheck)
+            return state.DoS(100, error("Sigma is temporarily disabled"),
+                             REJECT_INVALID, "bad-txns-zerocoin");
+    }
+
+    bool startLelantusRejectSigma = (chainActive.Height() >= consensus.nLelantusStartBlock);
+    if (startLelantusRejectSigma) {
+        if(tx.IsSigmaMint() || tx.IsSigmaSpend()) {
+            return state.DoS(100, error("Sigma transactions no more allowed in mempool"),
+                             REJECT_INVALID, "bad-txns-zerocoin");
+        }
+    } else {
         if(tx.IsLelantusTransaction()) {
             return state.DoS(100, error("Lelantus transactions are not allowed in mempool yet"),
                              REJECT_INVALID, "bad-txns-zerocoin");
@@ -1268,7 +1295,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
             // This is done last to help prevent CPU exhaustion denial-of-service attacks.
             PrecomputedTransactionData txdata(tx);
             // don't check inputs for transactions in whitelist
-            bool isInWhitelist = true;
+            bool isInWhitelist = consensus.txidWhitelist.count(tx.GetHash()) > 0;
             if (!CheckInputs(tx, state, view, !isInWhitelist, scriptVerifyFlags, true, txdata)) {
                 // SCRIPT_VERIFY_CLEANSTACK requires SCRIPT_VERIFY_WITNESS, so we
                 // need to turn both off, and compare against just turning off CLEANSTACK
@@ -1642,7 +1669,7 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams)
 
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
-        return 100 * COIN;
+        return 100 * COIN
 }
 
 bool IsInitialBlockDownload() {
@@ -1789,7 +1816,7 @@ void static InvalidBlockFound(CBlockIndex *pindex, const CValidationState &state
 void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo &txundo, int nHeight)
 {
     // mark inputs spent
-    if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit()) {
+    if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit()) {
         txundo.vprevout.reserve(tx.vin.size());
         BOOST_FOREACH(const CTxIn &txin, tx.vin) {
             txundo.vprevout.emplace_back();
@@ -1886,7 +1913,7 @@ bool CheckZerocoinFoundersInputs()
 
 bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsViewCache &inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, PrecomputedTransactionData& txdata, std::vector<CScriptCheck> *pvChecks)
 {
-    if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit())
+    if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit())
     {
         if (!Consensus::CheckTxInputs(tx, state, inputs, GetSpendHeight(inputs)))
             return false;
@@ -2166,6 +2193,11 @@ static DisconnectResult DisconnectBlock(const CBlock& block, CValidationState& s
             }
             for (unsigned int j = tx.vin.size(); j-- > 0;) {
                 const COutPoint &out = tx.vin[j].prevout;
+                if (Params().ApplyUndoForTxout(pindex->nHeight, tx.GetHash(), j)) {
+                    int res = ApplyTxInUndo(std::move(txundo.vprevout[j]), view, out);
+                    if (res == DISCONNECT_FAILED) return DISCONNECT_FAILED;
+                    fClean = fClean && res != DISCONNECT_UNCLEAN;
+                }
             }
             // At this point, all of txundo.vprevout should have been moved out.
         }
@@ -2211,6 +2243,10 @@ static DisconnectResult DisconnectBlock(const CBlock& block, CValidationState& s
     */
 
     evoDb->WriteBestBlock(pindex->pprev->GetBlockHash());
+
+    if(Params().SkipUndoForBlock(pindex->nHeight)) {
+        fClean = true;
+    }
 
     if (pfClean)
         *pfClean = fClean;
@@ -2401,6 +2437,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // before the first had been spent.  Since those coinbases are sufficiently buried its no longer possible to create further
     // duplicate transactions descending from the known pairs either.
     // If we're on the known chain at height greater than where BIP34 activated, we can save the db accesses needed for the BIP30 check.
+    /*
+    CBlockIndex *pindexBIP34height = pindex->pprev->GetAncestor(chainparams.GetConsensus().BIP34Height);
+    //Only continue to enforce if we're below BIP34 activation height or the block hash at that height doesn't correspond.
+    fEnforceBIP30 = fEnforceBIP30 && (!pindexBIP34height || !(pindexBIP34height->GetBlockHash() == chainparams.GetConsensus().BIP34Hash));
+    */
 
     bool fEnforceBIP30 = true;
     if (fEnforceBIP30) {
@@ -2414,16 +2455,19 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
     }
 
-    bool fStrictPayToScriptHash = true;
+    // BIP16 didn't become active until Apr 1 2012
+    int64_t nBIP16SwitchTime = 1349049600;
+    bool fStrictPayToScriptHash = (pindex->GetBlockTime() >= nBIP16SwitchTime);
+
     unsigned int flags = fStrictPayToScriptHash ? SCRIPT_VERIFY_P2SH : SCRIPT_VERIFY_NONE;
 
     // Start enforcing the DERSIG (BIP66) rule
-    if (pindex->nHeight >= 100) {
+    if (pindex->nHeight >= chainparams.GetConsensus().BIP66Height) {
         flags |= SCRIPT_VERIFY_DERSIG;
     }
 
     // Start enforcing CHECKLOCKTIMEVERIFY (BIP65) rule
-    if (pindex->nHeight >= 100) {
+    if (pindex->nHeight >= chainparams.GetConsensus().BIP65Height) {
         flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
     }
 
@@ -2476,7 +2520,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
         uint256 txHash = tx.GetHash();
         bool hasDuplicateInTheSameBlock = txIds.count(txHash) > 0;
-        if (hasDuplicateInTheSameBlock)
+        if (hasDuplicateInTheSameBlock && (!isMainNet || pindex->nHeight >= HF_ZNODE_HEIGHT))
             return state.DoS(100, error("ConnectBlock(): duplicate transactions in the same block"),
                              REJECT_INVALID, "bad-txns-duplicatetxid");
         txIds.insert(txHash);
@@ -2488,7 +2532,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                              REJECT_INVALID, "bad-txns-input-invalid");
 
 
-        if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit())
+        if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit())
         {
             if (!view.HaveInputs(tx))
                 return state.DoS(100, error("ConnectBlock(): inputs missing/spent"),
@@ -2512,6 +2556,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         || tx.IsZerocoinMint()
         || tx.IsSigmaSpend()
         || tx.IsSigmaMint()
+        || tx.IsZerocoinRemint()
         || tx.IsLelantusMint()
         || tx.IsLelantusJoinSplit()) {
             if( tx.IsSigmaSpend())
@@ -2545,13 +2590,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                              REJECT_INVALID, "bad-blk-sigops");
 
         txdata.emplace_back(tx);
-        if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit())
+        if (!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit())
         {
             nFees += view.GetValueIn(tx)-tx.GetValueOut();
 
             std::vector<CScriptCheck> vChecks;
             bool fCacheResults = fJustCheck; /* Don't cache results if we're actually connecting blocks (still consult the cache, though) */
-            bool isInWhitelist = true;
+            bool isInWhitelist = chainparams.GetConsensus().txidWhitelist.count(tx.GetHash()) > 0;
             if (!CheckInputs(tx, state, view, fScriptChecks && !isInWhitelist, flags, fCacheResults, txdata[i], nScriptCheckThreads ? &vChecks : NULL))
                 return error("ConnectBlock(): CheckInputs on %s failed with %s",
                     tx.GetHash().ToString(), FormatStateMessage(state));
@@ -2584,7 +2629,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime4 - nTime2), nInputs <= 1 ? 0 : 0.001 * (nTime4 - nTime2) / (nInputs-1), nTimeVerify * 0.000001);
 
     //btzc: Add time to check
-    CAmount blockSubsidy = GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
+    CAmount blockSubsidy = GetBlockSubsidy(pindex->nHeight);
     CAmount blockReward = nFees + blockSubsidy;
     if (block.vtx[0]->GetValueOut() > blockReward)
         return state.DoS(100,
@@ -4007,7 +4052,10 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     if (nHeight == INT_MAX)
         nHeight = GetNHeight(block.GetBlockHeader());
 
-    for (CTransactionRef tx : block.vtx)
+    for (CTransactionRef tx : block.vtx) {
+        if (nHeight >= consensusParams.nStartSigmaBlacklist && nHeight < consensusParams.nRestartSigmaWithBlacklistCheck && (tx->IsSigmaMint() || tx->IsSigmaSpend())) {
+            return state.DoS(100, error("Sigma is temporarily disabled"), REJECT_INVALID, "bad-txns-zerocoin");
+        }
         // We don't check transactions against sigma/lelantus state here, we'll check it again later in ConnectBlock
         if (!CheckTransaction(*tx, state, false, tx->GetHash(), isVerifyDB, nHeight, false, false, NULL, NULL))
             return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(),
@@ -4117,10 +4165,9 @@ std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBloc
 
 bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, CBlockIndex * const pindexPrev, int64_t nAdjustedTime)
 {
-
 	// Check proof of work
-    if (block.nBits != GetNextWorkRequired(pindexPrev, &block))
-        //return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
+    if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
+        return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
@@ -4129,6 +4176,16 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     // Check timestamp
     if (block.GetBlockTime() > nAdjustedTime + 2 * 60 * 60)
         return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
+
+    // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
+    // check for version 2, 3 and 4 upgrades
+    /*
+    if((block.nVersion < 2 && nHeight >= consensusParams.BIP34Height) ||
+       (block.nVersion < 3 && nHeight >= consensusParams.BIP66Height) ||
+       (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height))
+            return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
+                                 strprintf("rejected nVersion=0x%08x block", block.nVersion));
+    */
 
     return true;
 }
@@ -4186,12 +4243,13 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
         }
     }
 
-
-    if (!CheckZerocoinFoundersInputs()) {
+    if (!CheckZerocoinFoundersInputs() {
         return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(), "Founders' reward check failed");
     }
 
-    if (nHeight >= 100)
+    // Enforce rule that the coinbase starts with serialized block height
+    /*
+    if (nHeight >= consensusParams.BIP34Height)
     {
         CScript expect = CScript() << nHeight;
         if (block.vtx[0]->vin[0].scriptSig.size() < expect.size() ||
@@ -4199,6 +4257,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-height", false, "block height mismatch in coinbase");
         }
     }
+    */
 
     // Validation for witness commitments.
     // * We compute the witness hash (which is the hash including witnesses) of all the block's transactions, except the

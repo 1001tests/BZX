@@ -377,11 +377,14 @@ bool CBlockTreeDB::LoadBlockIndexGuts(boost::function<CBlockIndex*(const uint256
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
 
+                pindexNew->sigmaMintedPubCoins   = diskindex.sigmaMintedPubCoins;
+                pindexNew->sigmaSpentSerials     = diskindex.sigmaSpentSerials;
+
                 pindexNew->lelantusMintedPubCoins   = diskindex.lelantusMintedPubCoins;
                 pindexNew->lelantusSpentSerials     = diskindex.lelantusSpentSerials;
-
-                pindexNew->activeDisablingSporks    = diskindex.activeDisablingSporks; //xxxx
                 pindexNew->anonymitySetHash         = diskindex.anonymitySetHash;
+
+                pindexNew->activeDisablingSporks = diskindex.activeDisablingSporks;
 
                 pcursor->Next();
             } else {
@@ -511,6 +514,22 @@ void handleInput(CTxIn const & input, size_t inputNo, uint256 const & txHash, in
         spentIndex->push_back(make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue(txHash, inputNo, height, prevout.nValue, addrType.first, addrType.second)));
 }
 
+void handleRemint(CTxIn const & input, uint256 const & txHash, int height, int txNumber, CAmount nValue,
+        AddressIndexPtr & addressIndex, AddressUnspentIndexPtr & addressUnspentIndex, SpentIndexPtr & spentIndex)
+{
+    if(!input.IsZerocoinRemint())
+        return;
+
+    if (addressIndex) {
+        addressIndex->push_back(make_pair(CAddressIndexKey(AddressType::zerocoinRemint, uint160(), height, txNumber, txHash, 0, true), nValue * -1));
+        addressUnspentIndex->push_back(make_pair(CAddressUnspentKey(AddressType::zerocoinRemint, uint160(), input.prevout.hash, input.prevout.n), CAddressUnspentValue()));
+    }
+
+    if (spentIndex)
+        spentIndex->push_back(make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue(txHash, 0, height, nValue, AddressType::zerocoinRemint, uint160())));
+}
+
+
 template <class Iterator>
 void handleZerocoinSpend(Iterator const begin, Iterator const end, uint256 const & txHash, int height, int txNumber, CCoinsViewCache const & view,
         AddressIndexPtr & addressIndex, CTransaction const & tx)
@@ -574,10 +593,22 @@ void handleOutput(const CTxOut &out, size_t outNo, uint256 const & txHash, int h
 void CDbIndexHelper::ConnectTransaction(CTransaction const & tx, int height, int txNumber, CCoinsViewCache const & view)
 {
     size_t no = 0;
-    if(!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit()) {
+    if(!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit()) {
         for (CTxIn const & input : tx.vin) {
             handleInput(input, no++, tx.GetHash(), height, txNumber, view, addressIndex, addressUnspentIndex, spentIndex);
         }
+    }
+
+    if(tx.IsZerocoinRemint()) {
+        CAmount remintValue = 0;
+        for (CTxOut const & out : tx.vout) {
+            remintValue += out.nValue;
+        }
+        if (tx.vin.size() != 1) {
+           error("A Zerocoin to Sigma remint tx shoud have just 1 input");
+           return;
+        }
+        handleRemint(tx.vin[0], tx.GetHash(), height, txNumber, remintValue, addressIndex, addressUnspentIndex, spentIndex);
     }
 
     if(tx.IsZerocoinSpend() || tx.IsSigmaSpend() || tx.IsLelantusJoinSplit())
@@ -603,9 +634,21 @@ void CDbIndexHelper::DisconnectTransactionInputs(CTransaction const & tx, int he
     if(spentIndex)
         pSpentBegin = spentIndex->size();
 
+    if(tx.IsZerocoinRemint()) {
+        CAmount remintValue = 0;
+        for (CTxOut const & out : tx.vout) {
+            remintValue += out.nValue;
+        }
+        if (tx.vin.size() != 1) {
+           error("A Zerocoin to Sigma remint tx shoud have just 1 input");
+           return;
+        }
+        handleRemint(tx.vin[0], tx.GetHash(), height, txNumber, remintValue, addressIndex, addressUnspentIndex, spentIndex);
+    }
+
     size_t no = 0;
 
-    if(!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsLelantusJoinSplit())
+    if(!tx.IsCoinBase() && !tx.IsZerocoinSpend() && !tx.IsSigmaSpend() && !tx.IsZerocoinRemint() && !tx.IsLelantusJoinSplit())
         for (CTxIn const & input : tx.vin) {
             handleInput(input, no++, tx.GetHash(), height, txNumber, view, addressIndex, addressUnspentIndex, spentIndex);
         }

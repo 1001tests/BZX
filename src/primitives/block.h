@@ -13,7 +13,6 @@
 #include "serialize.h"
 #include "uint256.h"
 #include "definition.h"
-
 #include "priv_params.h"
 
 // Can't include sigma.h
@@ -37,7 +36,6 @@ public:
     uint32_t nTime;
     uint32_t nBits;
     uint32_t nNonce;
-
     static const int CURRENT_VERSION = 2;
 
     CBlockHeader()
@@ -73,7 +71,7 @@ public:
 
     void SetNull()
     {
-        nVersion = CBlockHeader::CURRENT_VERSION;
+        nVersion = 0;
         hashPrevBlock.SetNull();
         hashMerkleRoot.SetNull();
         nTime = 0;
@@ -94,7 +92,6 @@ public:
     {
         return (int64_t)nTime;
     }
-
 };
 
 class CBlock : public CBlockHeader
@@ -105,9 +102,10 @@ public:
 
     // memory only
     mutable CTxOut txoutZnode; // znode payment
+    mutable std::vector<CTxOut> voutSuperblock; // superblock payment
     mutable bool fChecked;
 
-    // memory only, sigma tx info
+    // memory only, zerocoin tx info after V3-sigma.
     mutable std::shared_ptr<sigma::CSigmaTxInfo> sigmaTxInfo;
 
     mutable std::shared_ptr<lelantus::CLelantusTxInfo> lelantusTxInfo;
@@ -144,6 +142,7 @@ public:
         CBlockHeader::SetNull();
         vtx.clear();
         txoutZnode = CTxOut();
+        voutSuperblock.clear();
         fChecked = false;
     }
 

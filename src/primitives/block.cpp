@@ -21,10 +21,13 @@
 #include <fstream>
 #include <algorithm>
 #include <string>
+#include "precomputed_hash.h"
+
 
 uint256 CBlockHeader::GetHash() const {
     return SerializeHash(*this);
 }
+
 
 uint256 CBlockHeader::GetPoWHash(int nHeight) const {
 
@@ -41,6 +44,8 @@ uint256 CBlockHeader::GetPoWHash(int nHeight) const {
     LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, 330, 256);
     return powHash;
     }
+
+    return powHash;
 }
 
 std::string CBlock::ToString() const {

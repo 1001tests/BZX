@@ -222,6 +222,10 @@ public:
     //! Maps <denomination,id> to vector of public coins
     map<pair<int,int>, vector<CBigNum>> mintedPubCoins;
 
+    //! Accumulator updates. Contains only changes made by mints in this block
+    //! Maps <denomination, id> to <accumulator value (CBigNum), number of such mints in this block>
+    map<pair<int,int>, pair<CBigNum,int>> accumulatorChanges;
+
     //! Values of coin serials spent in this block
 	set<CBigNum> spentSerials;
 
@@ -265,7 +269,6 @@ public:
         nBits          = 0;
         nNonce         = 0;
 
-
         sigmaMintedPubCoins.clear();
         lelantusMintedPubCoins.clear();
         anonymitySetHash.clear();
@@ -288,7 +291,6 @@ public:
         nTime          = block.nTime;
         nBits          = block.nBits;
         nNonce         = block.nNonce;
-
     }
 
     CDiskBlockPos GetBlockPos() const {
@@ -443,6 +445,12 @@ public:
 
         const auto &params = Params().GetConsensus();
 
+        if (!(s.GetType() & SER_GETHASH) && nVersion >= ZC_ADVANCED_INDEX_VERSION) {
+            READWRITE(mintedPubCoins);
+		    READWRITE(accumulatorChanges);
+            READWRITE(spentSerials);
+	    }
+
         if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nSigmaStartBlock) {
             READWRITE(sigmaMintedPubCoins);
             READWRITE(sigmaSpentSerials);
@@ -462,9 +470,9 @@ public:
                 }
             } else
                 READWRITE(lelantusMintedPubCoins);
-                READWRITE(lelantusSpentSerials);
+            READWRITE(lelantusSpentSerials);
 
-            if (nHeight >= params.nLelantusStartBlock)
+            if (nHeight >= params.nLelantusFixesStartBlock)
                 READWRITE(anonymitySetHash);
         }
 

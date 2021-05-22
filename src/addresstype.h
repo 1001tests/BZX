@@ -42,6 +42,10 @@ inline bool isSigma(std::string const & str){
     return str == "Sigma";
 }
 
+inline bool isZerocoinRemint(std::string const & str){
+    return str == "Remint";
+}
+
 inline bool isLelantus(std::string const & str){
     return str == "Lelantus";
 }

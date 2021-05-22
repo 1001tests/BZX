@@ -98,8 +98,8 @@ void GenerateMintSchnorrProof(const lelantus::PrivateCoin& coin, CDataStream&  s
     LOCK(cs_main);
     SchnorrProof schnorrProof;
 
-    // start to pass whole data to transcript
-    bool afterFixes = true;
+    // after nLelantusFixesStartBlock block start to pass whole data to transcript
+    bool afterFixes = chainActive.Height() >= ::Params().GetConsensus().nLelantusFixesStartBlock;
     SchnorrProver schnorrProver(params->get_g(), params->get_h0(), afterFixes);
     Scalar v = coin.getVScalar();
     secp_primitives::GroupElement commit = coin.getPublicCoin().getValue();
@@ -113,7 +113,7 @@ void GenerateMintSchnorrProof(const lelantus::PrivateCoin& coin, CDataStream&  s
         challengeGenerator = std::make_unique<ChallengeGeneratorImpl<CSHA256>>(0);
     }
 
-    // commit (G^s*H1^v*H2^r), comm (G^s*H2^r), and H1^v are used in challenge generation
+    // commit (G^s*H1^v*H2^r), comm (G^s*H2^r), and H1^v are used in challenge generation if nLelantusFixesStartBlock is passed
     schnorrProver.proof(coin.getSerialNumber(), coin.getRandomness(), comm, commit, (params->get_h1() * v), challengeGenerator, schnorrProof);
 
     serializedSchnorrProof << schnorrProof;
@@ -124,8 +124,8 @@ bool VerifyMintSchnorrProof(const uint64_t& v, const secp_primitives::GroupEleme
     auto params = lelantus::Params::get_default();
 
     LOCK(cs_main);
-    // start to pass whole data to transcript
-    bool afterFixes = chainActive.Height() >= ::Params().GetConsensus().nLelantusStartBlock;
+    // after nLelantusFixesStartBlock block start to pass whole data to transcript
+    bool afterFixes = chainActive.Height() >= ::Params().GetConsensus().nLelantusFixesStartBlock;
     secp_primitives::GroupElement comm = commit + (params->get_h1() * Scalar(v).negate());
     SchnorrVerifier verifier(params->get_g(), params->get_h0(), afterFixes);
     unique_ptr<ChallengeGenerator> challengeGenerator;
@@ -136,7 +136,7 @@ bool VerifyMintSchnorrProof(const uint64_t& v, const secp_primitives::GroupEleme
         challengeGenerator = std::make_unique<ChallengeGeneratorImpl<CSHA256>>(0);
     }
 
-    // commit (G^s*H1^v*H2^r), comm (G^s*H2^r), and H1^v are used in challenge generation
+    // commit (G^s*H1^v*H2^r), comm (G^s*H2^r), and H1^v are used in challenge generation if nLelantusFixesStartBlock is passed
     return verifier.verify(comm, commit, (params->get_h1() * Scalar(v)), schnorrProof, challengeGenerator);
 }
 
@@ -371,7 +371,7 @@ bool CheckLelantusJoinSplitTransaction(
     int jSplitVersion = joinsplit->getVersion();
 
     if (jSplitVersion < LELANTUS_TX_VERSION_4 ||
-        (jSplitVersion != LELANTUS_TX_VERSION_4_5 && jSplitVersion != SIGMA_TO_LELANTUS_JOINSPLIT_FIXED)) {
+        (!isVerifyDB && nHeight >= params.nLelantusFixesStartBlock && jSplitVersion != LELANTUS_TX_VERSION_4_5 && jSplitVersion != SIGMA_TO_LELANTUS_JOINSPLIT_FIXED)) {
         return state.DoS(100,
                          false,
                          NSEQUENCE_INCORRECT,
@@ -465,8 +465,8 @@ bool CheckLelantusJoinSplitTransaction(
             while (index != coinGroup.firstBlock && index->GetBlockHash() != idAndHash.second)
                 index = index->pprev;
 
-            // take the hash from last block of anonymity set, it is used at challenge generation
-            if (nHeight >= params.nLelantusStartBlock) {
+            // take the hash from last block of anonymity set, it is used at challenge generation if nLelantusFixesStartBlock is passed
+            if (nHeight >= params.nLelantusFixesStartBlock) {
                 std::vector<unsigned char> set_hash = GetAnonymitySetHash(index, idAndHash.first);
                 if (!set_hash.empty())
                     anonymity_set_hashes.push_back(set_hash);
@@ -480,8 +480,8 @@ bool CheckLelantusJoinSplitTransaction(
                     BOOST_FOREACH(
                     const auto& pubCoinValue,
                     index->lelantusMintedPubCoins[idAndHash.first]) {
-                        // skip mints from blacklist
-                        if (chainActive.Height() >= ::Params().GetConsensus().nLelantusStartBlock) {
+                        // skip mints from blacklist if nLelantusFixesStartBlock is passed
+                        if (chainActive.Height() >= ::Params().GetConsensus().nLelantusFixesStartBlock) {
                             if (::Params().GetConsensus().lelantusBlacklist.count(pubCoinValue.first.getValue()) > 0) {
                                 continue;
                             }
@@ -509,7 +509,7 @@ bool CheckLelantusJoinSplitTransaction(
         for(auto itr : anonymity_sets)
             idAndSizes[itr.first] = itr.second.size();
 
-        batchProofContainer->add(joinsplit.get(), idAndSizes, challenge, nHeight >= params.nLelantusStartBlock);
+        batchProofContainer->add(joinsplit.get(), idAndSizes, challenge, nHeight >= params.nLelantusFixesStartBlock);
     }
 
     if (passVerify) {
@@ -858,7 +858,7 @@ bool ConnectBlockLelantus(
         bool updateHash = false;
 
         // create first anonymity set hash with whole existing set, at HF block
-        if (pindexNew->nHeight == params.nLelantusStartBlock) {
+        if (pindexNew->nHeight == params.nLelantusFixesStartBlock) {
             updateHash = true;
             std::vector<lelantus::PublicCoin> coins;
             lelantusState.GetAnonymitySet(1, false, coins);
@@ -874,10 +874,10 @@ bool ConnectBlockLelantus(
             // add  coins into hasher, for generating set hash
             // if this is HF block just add mint from this block too,
             // else hasher is supposed to be empty, so add previous hash first, then coins
-            if (pindexNew->nHeight >= params.nLelantusStartBlock) {
+            if (pindexNew->nHeight >= params.nLelantusFixesStartBlock) {
                 updateHash = true;
 
-                if (pindexNew->nHeight > params.nLelantusStartBlock) {
+                if (pindexNew->nHeight > params.nLelantusFixesStartBlock) {
                     // get previous hash of the set, if there is no such, don't write anything
                     std::vector<unsigned char> prev_hash = GetAnonymitySetHash(pindexNew->pprev, latestCoinId, true);
                     if (!prev_hash.empty())
@@ -1391,8 +1391,8 @@ int CLelantusState::GetCoinSetForSpend(
             if (block->lelantusMintedPubCoins.count(id) > 0) {
                 for (const auto &coin : block->lelantusMintedPubCoins[id]) {
                     LOCK(cs_main);
-                    // skip mints from blacklist
-                    if (chainActive.Height() >= ::Params().GetConsensus().nLelantusStartBlock) {
+                    // skip mints from blacklist if nLelantusFixesStartBlock is passed
+                    if (chainActive.Height() >= ::Params().GetConsensus().nLelantusFixesStartBlock) {
                         if (::Params().GetConsensus().lelantusBlacklist.count(coin.first.getValue()) > 0) {
                             continue;
                         }
@@ -1424,7 +1424,7 @@ void CLelantusState::GetAnonymitySet(
     LelantusCoinGroupInfo &coinGroup = coinGroups[coinGroupID];
     auto params = ::Params().GetConsensus();
     LOCK(cs_main);
-    int maxHeight = true ? (chainActive.Height() - (ZC_MINT_CONFIRMATIONS - 1)) : (params.nLelantusStartBlock - 1);
+    int maxHeight = fStartLelantusBlacklist ? (chainActive.Height() - (ZC_MINT_CONFIRMATIONS - 1)) : (params.nLelantusFixesStartBlock - 1);
 
     for (CBlockIndex *block = coinGroup.lastBlock;; block = block->pprev) {
 
@@ -1445,7 +1445,7 @@ void CLelantusState::GetAnonymitySet(
             if(block->lelantusMintedPubCoins.count(id) > 0) {
                 for (const auto &coin : block->lelantusMintedPubCoins[id]) {
                     if (fStartLelantusBlacklist &&
-                        chainActive.Height() >= ::Params().GetConsensus().nLelantusStartBlock) {
+                        chainActive.Height() >= ::Params().GetConsensus().nLelantusFixesStartBlock) {
                         std::vector<unsigned char> vch = coin.first.getValue().getvch();
                         if (::Params().GetConsensus().lelantusBlacklist.count(coin.first.getValue()) > 0) {
                             continue;
