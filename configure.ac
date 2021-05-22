@@ -14,10 +14,10 @@ AC_CONFIG_HEADERS([src/config/bitcoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
 
-BITCOIN_DAEMON_NAME=bitcoinzero_testd
-BITCOIN_GUI_NAME=bitcoinzero_test-qt
-BITCOIN_CLI_NAME=bitcoinzero_test-cli
-BITCOIN_TX_NAME=bitcoinzero_test-tx
+BITCOIN_DAEMON_NAME=BZXd
+BITCOIN_GUI_NAME=BZX-qt
+BITCOIN_CLI_NAME=BZX-cli
+BITCOIN_TX_NAME=BZX-tx
 
 dnl Unless the user specified ARFLAGS, force it to be cr
 AC_ARG_VAR(ARFLAGS, [Flags for the archiver, defaults to <cr> if not set])

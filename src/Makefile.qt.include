@@ -2,7 +2,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-bin_PROGRAMS += qt/bitcoinzero_test-qt
+bin_PROGRAMS += qt/BZX-qt
 EXTRA_LIBRARIES += qt/libbitcoinqt.a
 
 # bitcoin qt core #
@@ -596,9 +596,9 @@ CLEAN_QT = $(nodist_qt_libbitcoinqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda 
 CLEANFILES += $(CLEAN_QT)
 
 BZX_qt_clean: FORCE
-	rm -f $(CLEAN_QT) $(qt_libbitcoinqt_a_OBJECTS) $(qt_BZX_qt_OBJECTS) qt/bitcoinzero_test-qt$(EXEEXT) $(LIBBITCOINQT)
+        rm -f $(CLEAN_QT) $(qt_libbitcoinqt_a_OBJECTS) $(qt_BZX_qt_OBJECTS) qt/BZX-qt$(EXEEXT) $(LIBBITCOINQT)
 
-BZX_qt : qt/bitcoinzero_test-qt$(EXEEXT)
+BZX_qt : qt/BZX-qt$(EXEEXT)
 
 ui_%.h: %.ui
 	@test -f $(UIC)
