@@ -299,8 +299,6 @@ RES_ICONS = \
   qt/res/icons/BZX.ico \
   qt/res/icons/BZX_testnet.ico \
   qt/res/icons/BZX.png \
-  qt/res/icons/zerocoin.png \
-  qt/res/icons/sigma.png \
   qt/res/icons/masternodes.png \
   qt/res/icons/qrcode.png \
   qt/res/icons/chevron.png \
