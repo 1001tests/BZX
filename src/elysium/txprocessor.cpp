@@ -163,7 +163,7 @@ int TxProcessor::ProcessSimpleSpend(const CMPTransaction& tx)
     auto group = tx.getGroup();
     auto groupSize = tx.getGroupSize();
 
-    bool const fPadding = block >= ::Params().GetConsensus().nSigmaPaddingBlock;
+    bool const fPadding = true;
 
     assert(spend);
     assert(serial);
