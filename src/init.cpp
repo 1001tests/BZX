@@ -748,7 +748,7 @@ void ThreadImport(std::vector <boost::filesystem::path> vImportFiles) {
 
     // -reindex
     if (fReindex) {
-         int nFile = 0;
+        int nFile = 0;
         while (true) {
             CDiskBlockPos pos(nFile, 0);
             if (!boost::filesystem::exists(GetBlockPosFilename(pos, "blk")))
@@ -1745,16 +1745,6 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 
                 pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
 
-                if (!fReindex) {
-                    // Check existing block index database version, reindex if needed
-                    if (pblocktree->GetBlockIndexVersion() < ZC_ADVANCED_INDEX_VERSION) {
-                        LogPrintf("Upgrade to new version of block index required, reindex forced\n");
-                        delete pblocktree;
-                        fReindex = fReset = true;
-                        pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
-                    }
-                }
-
                 evoDb = new CEvoDB(nEvoDbCache, false, fReindex || fReindexChainState);
                 deterministicMNManager = new CDeterministicMNManager(*evoDb);
 
@@ -2053,12 +2043,6 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         scheduler.scheduleEvery(boost::bind(&CNetFulfilledRequestManager::DoMaintenance, boost::ref(netfulfilledman)), 60);
         scheduler.scheduleEvery(boost::bind(&CMasternodeSync::DoMaintenance, boost::ref(masternodeSync), boost::ref(*g_connman)), 1);
         scheduler.scheduleEvery(boost::bind(&CMasternodeUtils::DoMaintenance, boost::ref(*g_connman)), 1);
-
-        /*
-        scheduler.scheduleEvery(boost::bind(&CGovernanceManager::DoMaintenance, boost::ref(governance), boost::ref(*g_connman)), 60 * 5);
-
-        scheduler.scheduleEvery(boost::bind(&CInstantSend::DoMaintenance, boost::ref(instantsend)), 60);
-        */
     }
 
     llmq::StartLLMQSystem();

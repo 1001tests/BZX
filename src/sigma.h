@@ -44,9 +44,6 @@ public:
     void Complete();
 };
 
-bool IsSigmaAllowed();
-bool IsSigmaAllowed(int height);
-
 bool CheckSigmaSpendSerial(
         CValidationState &state,
         CSigmaTxInfo *sigmaTxInfo,
