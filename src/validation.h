@@ -438,7 +438,7 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
 
 } // namespace Consensus
 
-bool CheckZerocoinFoundersInputs();
+bool CheckfInputs();
 
 /**
  * Check if transaction is final and can be included in a block with the
