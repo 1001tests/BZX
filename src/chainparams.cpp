@@ -299,9 +299,7 @@ public:
                 0.014       // * estimated number of transactions per second after checkpoint
         };
 
-        // Sigma related values.
-        consensus.nSigmaStartBlock = 50000;
-        consensus.nLelantusStartBlock = 50002;
+        consensus.nLelantusStartBlock = 50000;
         consensus.nMaxSigmaInputPerTransaction = 35;
         consensus.nMaxValueSigmaSpendPerTransaction = (500 * COIN);
         consensus.nMaxLelantusInputPerBlock = 100;

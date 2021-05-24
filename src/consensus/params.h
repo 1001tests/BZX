@@ -173,11 +173,6 @@ struct Params {
     // Probability (percentage) that a Dandelion transaction enters fluff phase.
     uint32_t nDandelionFluff;
 
-    // Values for sigma implementation.
-
-    // The block number after which sigma are accepted.
-    int nSigmaStartBlock;
-
     // The block number after which lelantus is accepted.
     int nLelantusStartBlock;
 
