@@ -26,7 +26,7 @@ bool DenominationToInteger(CoinDenomination denom, int64_t& denom_out, CValidati
 
     switch (denom) {
         default:
-            return state.DoS(100, error("CheckSigmaTransaction : invalid denomination value, unable to convert to integer"));
+            return state.DoS(100, error("CheckSigmaTransaction  : invalid denomination value, unable to convert to integer"));
         case CoinDenomination::SIGMA_DENOM_0_05:
             denom_out = 5 * CENT;
             break;
@@ -121,7 +121,7 @@ bool IntegerToDenomination(int64_t value, CoinDenomination& denom_out) {
 bool IntegerToDenomination(int64_t value, CoinDenomination& denom_out, CValidationState &state) {
     switch (value) {
         default:
-            return state.DoS(100, error("CheckSigmaTransaction : invalid denomination value, unable to convert to enum"));
+            return state.DoS(100, error("CheckSigmaTransaction  : invalid denomination value, unable to convert to enum"));
         case 5 * CENT:
             denom_out = CoinDenomination::SIGMA_DENOM_0_05;
             break;
@@ -296,7 +296,7 @@ Scalar PrivateCoin::serialNumberFromSerializedPublicKey(
         throw std::runtime_error("Unable to compute public key hash with secp256k1_ecdh.");
     }
 
-	std::string zpts(ZEROCOIN_PUBLICKEY_TO_SERIALNUMBER);
+    std::string zpts(ZEROCOIN_PUBLICKEY_TO_SERIALNUMBER);
 	std::vector<unsigned char> pre(zpts.begin(), zpts.end());
     std::copy(pubkey_hash.begin(), pubkey_hash.end(), std::back_inserter(pre));
 
