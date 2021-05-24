@@ -1635,12 +1635,12 @@ bool ReadBlockHeaderFromDisk(CBlock &block, const CDiskBlockPos &pos) {
     return true;
 }
 
-CAmount GetBlockSubsidy(int nHeight, const Consensus::Params &consensusParams)
+CAmount GetBlockSubsidy(int nHeight)
 {
         return 100 * COIN;
 }
 
-CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
+CAmount GetMasternodePayment(int nHeight)
 {
         return 100 * COIN;
 }
@@ -2584,7 +2584,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime4 - nTime2), nInputs <= 1 ? 0 : 0.001 * (nTime4 - nTime2) / (nInputs-1), nTimeVerify * 0.000001);
 
     //btzc: Add time to check
-    CAmount blockSubsidy = GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
+    CAmount blockSubsidy = GetBlockSubsidy(pindex->nHeight);
     CAmount blockReward = nFees + blockSubsidy;
     if (block.vtx[0]->GetValueOut() > blockReward)
         return state.DoS(100,
