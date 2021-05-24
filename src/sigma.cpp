@@ -226,7 +226,7 @@ bool CheckSigmaSpendTransaction(
 
         bool fPadding = true;
         if (!isVerifyDB) {
-            bool fShouldPad = nHeight >= params.nSigmaPaddingBlock;
+            bool fShouldPad = true;
             if (fPadding != fShouldPad)
                 return state.DoS(1, error("Incorrect sigma spend transaction version"));
         }

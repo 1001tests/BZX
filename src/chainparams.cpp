@@ -301,7 +301,6 @@ public:
 
         // Sigma related values.
         consensus.nSigmaStartBlock = 50000;
-        consensus.nSigmaPaddingBlock = 50001;
         consensus.nLelantusStartBlock = 50002;
         consensus.nMaxSigmaInputPerTransaction = 35;
         consensus.nMaxValueSigmaSpendPerTransaction = (500 * COIN);

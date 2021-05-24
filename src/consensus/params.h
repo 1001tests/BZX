@@ -178,8 +178,6 @@ struct Params {
     // The block number after which sigma are accepted.
     int nSigmaStartBlock;
 
-    int nSigmaPaddingBlock;
-
     // The block number after which lelantus is accepted.
     int nLelantusStartBlock;
 
