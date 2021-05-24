@@ -732,7 +732,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, bool fChe
         }
     }
 
-    if (nHeight >= ::Params().GetConsensus().nStartBlacklist) {
+    if (true) {
         for (const auto& vin : tx.vin) {
             if (txid_blacklist.count(vin.prevout.hash.GetHex()) > 0) {
                     return state.DoS(100, error("Spending this tx is temporarily disabled"),
