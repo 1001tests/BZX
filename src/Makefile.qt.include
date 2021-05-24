@@ -457,7 +457,6 @@ endif
 
 RES_IMAGES = \
   qt/res/images/splash.png \
-  qt/res/images/splash_testnet.png
 
 RES_MOVIES = $(wildcard $(srcdir)/qt/res/movies/spinner-*.png)
 
