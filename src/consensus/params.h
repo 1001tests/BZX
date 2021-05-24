@@ -127,31 +127,10 @@ struct Params {
     ChainType chainType;
 
     uint256 hashGenesisBlock;
-    /** First subsidy halving */
-    int nSubsidyHalvingFirst;
-    /** Subsequent subsidy halving intervals */
-    int nSubsidyHalvingInterval;
-    /** Stop subsidy at this block number */
-    int nSubsidyHalvingStopBlock;
-
-    /** parameters for coinbase payment distribution between first and second halvings (aka stage 2) */
-    /** P2PKH or P2SH address for developer funds */
-    std::string stage2DevelopmentFundAddress;
-    /** percentage of block subsidy going to developer fund */
-    int stage2DevelopmentFundShare;
-    /** percentage of block subsidy going to znode */
-    int stage2ZnodeShare;
-
-    int nStartDuplicationCheck;
-    int nStartBlacklist;
-
     /** Used to check majorities for block version upgrade */
     int nMajorityEnforceBlockUpgrade;
     int nMajorityRejectBlockOutdated;
     int nMajorityWindow;
-    /** Block height and hash at which BIP34 becomes active */
-    int BIP34Height;
-    uint256 BIP34Hash;
     /** Block height at which BIP65 becomes active */
     int BIP65Height;
     /** Block height at which BIP66 becomes active */
@@ -170,29 +149,12 @@ struct Params {
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     int64_t nPowTargetTimespan;
-    int64_t nChainStartTime;
-    unsigned char nMinNFactor;
-    unsigned char nMaxNFactor;
     int nZnodePaymentsStartBlock;
 
     int nInstantSendConfirmationsRequired; // in blocks
     int nInstantSendKeepLock; // in blocks
     int nInstantSendSigsRequired;
     int nInstantSendSigsTotal;
-
-	/** Zerocoin-related block numbers when features are changed */
-    int nCheckBugFixedAtBlock;
-    int nZnodePaymentsBugFixedAtBlock;
-	int nSpendV15StartBlock;
-	int nSpendV2ID_1, nSpendV2ID_10, nSpendV2ID_25, nSpendV2ID_50, nSpendV2ID_100;
-
-	int nModulusV2StartBlock;
-    int nModulusV1MempoolStopBlock;
-	int nModulusV1StopBlock;
-
-    int nMultipleSpendInputsInOneTxStartBlock;
-
-    int nDontAllowDupTxsStartBlock;
 
     // Values for dandelion.
 
@@ -218,18 +180,8 @@ struct Params {
 
     int nSigmaPaddingBlock;
 
-    int nDisableUnpaddedSigmaBlock;
-
-    int nStartSigmaBlacklist;
-    int nRestartSigmaWithBlacklistCheck;
-
-    // The block number after which old sigma clients are banned.
-    int nOldSigmaBanBlock;
-
     // The block number after which lelantus is accepted.
     int nLelantusStartBlock;
-
-    int nLelantusFixesStartBlock;
 
     // Lelantus Blacklist
     std::unordered_set<secp_primitives::GroupElement> lelantusBlacklist;
@@ -245,24 +197,6 @@ struct Params {
 
     // The block number when Bip39 was implemented in Zcoin
     int nMnemonicBlock;
-
-    // Number of blocks after nSigmaMintStartBlock during which we still accept zerocoin V2 mints into mempool.
-    int nZerocoinV2MintMempoolGracefulPeriod;
-
-    // Number of blocks after nSigmaMintStartBlock during which we still accept zerocoin V2 mints to newly mined blocks.
-    int nZerocoinV2MintGracefulPeriod;
-
-    // Number of blocks after nSigmaMintStartBlock during which we still accept zerocoin V2 spend into mempool.
-    int nZerocoinV2SpendMempoolGracefulPeriod;
-
-    // Number of blocks after nSigmaMintStartBlock during which we still accept zerocoin V2 spend to newly mined blocks.
-    int nZerocoinV2SpendGracefulPeriod;
-
-    // Amount of maximum sigma spend per block.
-    unsigned nMaxSigmaInputPerBlock;
-
-    // Value of maximum sigma spend per block.
-    int64_t nMaxValueSigmaSpendPerBlock;
 
     // Amount of maximum sigma spend per transaction.
     unsigned nMaxSigmaInputPerTransaction;
@@ -302,9 +236,6 @@ struct Params {
     int nMaxReorgDepth;
     /** block to start reorg depth enforcement */
     int nMaxReorgDepthEnforcementBlock;
-
-    /** whitelisted transactions */
-    std::set<uint256> txidWhitelist;
 
     int nEvoZnodeMinimumConfirmations;
 
