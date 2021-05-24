@@ -443,11 +443,6 @@ public:
 
         const auto &params = Params().GetConsensus();
 
-        if (!(s.GetType() & SER_GETHASH) && nHeight >= params.nSigmaStartBlock) {
-            READWRITE(sigmaMintedPubCoins);
-            READWRITE(sigmaSpentSerials);
-        }
-
         if (!(s.GetType() & SER_GETHASH)
                 && nHeight >= params.nLelantusStartBlock
                 && nVersion >= LELANTUS_PROTOCOL_ENABLEMENT_VERSION) {
