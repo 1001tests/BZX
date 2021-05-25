@@ -61,8 +61,8 @@ unsigned int static DarkGravityWave3(const CBlockIndex* pindexLast, const CBlock
     CBigNum bnNew(PastDifficultyAverage);
 
     // nTargetTimespan is the time that the CountBlocks should have taken to be generated.
-    const Consensus::Params &consensusParams
-    int64_t nTargetTimespan = CountBlocks * consensusParams.nPowTarget;
+    const Consensus::Params& params = ::Params().GetConsensus();
+    int64_t nTargetTimespan = CountBlocks * params.nPowTarget;
 
     // We don't want to increase/decrease diff too much.
     if (nActualTimespan < nTargetTimespan/1.5)
