@@ -1516,6 +1516,16 @@ UniValue reconsiderblock(const JSONRPCRequest& request)
     return NullUniValue;
 }
 
+UniValue resetblock(const UniValue& params, bool fHelp)
+{
+    CBlockIndex* const pindexPrev = chainActive.Tip();
+    ResetBlockFailureFlags(pindexPrev);
+    CValidationState state;
+    ActivateBestChain(state, Params());
+
+    return NullUniValue;
+}
+
 UniValue getspecialtxes(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() < 1 || request.params.size() > 5)
