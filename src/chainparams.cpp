@@ -134,7 +134,7 @@ public:
         consensus.BIP65Height = INT_MAX;
         consensus.BIP66Height = INT_MAX;
         consensus.powLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTarget = 150;
+        consensus.nPowTarget = 15;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
         consensus.nMinerConfirmationWindow = 2016;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -220,12 +220,12 @@ public:
 
         consensus.nLelantusStartBlock = 500;
         consensus.nMaxSigmaInputPerTransaction = 35;
-        consensus.nMaxValueSigmaSpendPerTransaction = (500 * COIN);
+        consensus.nMaxValueSigmaSpendPerTransaction = (500 * COIN *10);
         consensus.nMaxLelantusInputPerBlock = 100;
-        consensus.nMaxValueLelantusSpendPerBlock = (5101 * COIN);
+        consensus.nMaxValueLelantusSpendPerBlock = (5101 * COIN * 10);
         consensus.nMaxLelantusInputPerTransaction = 50;
-        consensus.nMaxValueLelantusSpendPerTransaction = (5101 * COIN);
-        consensus.nMaxValueLelantusMint = (5001 * COIN);
+        consensus.nMaxValueLelantusSpendPerTransaction = (5101 * COIN *10);
+        consensus.nMaxValueLelantusMint = (5001 * COIN * 10);
 
         for (const auto& str : lelantus::lelantus_blacklist) {
             GroupElement coin;
@@ -233,7 +233,7 @@ public:
             consensus.lelantusBlacklist.insert(coin);
         }
 
-        consensus.evoSporkKeyID = "a78fERshquPsTv2TuKMSsxTeKom56uBwLP";
+        consensus.evoSporkKeyID = "XSgBGYizQrSk4mi79Myqs6xcG9B3gd2m9H";
         consensus.nEvoSporkStartBlock = INT_MAX;
         consensus.nEvoSporkStopBlock = INT_MAX;
 

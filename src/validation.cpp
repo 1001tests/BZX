@@ -223,7 +223,7 @@ int GetNHeight(const CBlockHeader &block) {
 
 bool CheckFInputs(const CTransaction &tx, CValidationState &state, int nHeight) {
 
-    if (nHeight > 474000) {
+    if (nHeight > 550) {
         {
             bool found_1 = false;
             bool found_2 = false;
