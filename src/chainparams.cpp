@@ -29,7 +29,7 @@ static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesi
     txNew.nVersion = 1;
     txNew.vin.resize(1);
     txNew.vout.resize(1);
-    txNew.vin[0].scriptSig = CScript() << 504365040 << CBigNum(4).getvch() << std::vector < unsigned char >
+    txNew.vin[0].scriptSig = CScript() << 0x1f0fffff << CBigNum(4).getvch() << std::vector < unsigned char >
     ((const unsigned char *) pszTimestamp, (const unsigned char *) pszTimestamp + strlen(pszTimestamp)) << extraNonce;
     txNew.vout[0].nValue = genesisReward;
     txNew.vout[0].scriptPubKey = genesisOutputScript;
@@ -45,21 +45,10 @@ static CBlock CreateGenesisBlock(const char *pszTimestamp, const CScript &genesi
     return genesis;
 }
 
-/**
- * Build the genesis block. Note that the output of its generation
- * transaction cannot be spent since it did not originally exist in the
- * database.
- *
- * CBlock(hash=000000000019d6, ver=1, hashPrevBlock=00000000000000, hashMerkleRoot=4a5e1e, nTime=1231006505, nBits=1d00ffff, nNonce=2083236893, vtx=1)
- *   CTransaction(hash=4a5e1e, ver=1, vin.size=1, vout.size=1, nLockTime=0)
- *     CTxIn(COutPoint(000000, -1), coinbase 04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73)
- *     CTxOut(nValue=50.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
- *   vMerkleTree: 4a5e1e
- */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount &genesisReward,
                    std::vector<unsigned char> extraNonce) {
     //btzc: BZX timestamp
-    const char *pszTimestamp = "Times 2014/10/31 Maine Judge Says Nurse Must Follow Ebola Quarantine for Now";
+    const char *pszTimestamp = "Lets Swap Hexx";
     const CScript genesisOutputScript = CScript();
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward,
                               extraNonce);
@@ -182,9 +171,9 @@ public:
         consensus.nMajorityWindow = 1000;
         consensus.BIP65Height = INT_MAX;
         consensus.BIP66Height = INT_MAX;
-        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 60 * 60; // 60 minutes between retargets
-        consensus.nPowTargetSpacing = 10 * 60; // 10 minute blocks
+        consensus.powLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.nPowTargetTimespan = 150; // 60 minutes between retargets
+        consensus.nPowTargetSpacing = 150; // 10 minute blocks
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
@@ -193,27 +182,17 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1475020800; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
 
-        // Deployment of BIP68, BIP112, and BIP113.
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].bit = 0;
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nStartTime = 1462060800; // May 1st, 2016
-        consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1493596800; // May 1st, 2017
-
-        // Deployment of SegWit (BIP141, BIP143, and BIP147)
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1479168000; // November 15th, 2016.
-        consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1510704000; // November 15th, 2017.
-
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x0");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("50aff78270725ec253a722ec18069deb233f2e57eb7d64479f027141619cdda4 "); //184200
+        consensus.defaultAssumeValid = uint256S("0x0 ");
 
         // evo znodes
-        consensus.DIP0003Height = 278300; // Approximately June 22 2020, 12:00 UTC
-        consensus.DIP0003EnforcementHeight = 284400; // Approximately July 13 2020, 12:00 UTC
-        consensus.DIP0003EnforcementHash = uint256S("0x8b8d7c05bb2d75f8c5e076cb6c10ef464e94ddcda2744740db03aeda2d6cc006");
-        consensus.DIP0008Height = 341100; // Approximately Jan 28 2021, 11:00 UTC
+        consensus.DIP0003Height = INT_MAX;
+        consensus.DIP0003EnforcementHeight = INT_MAX;
+        consensus.DIP0003EnforcementHash = uint256S("0x0");
+        consensus.DIP0008Height = INT_MAX;
         consensus.nEvoZnodeMinimumConfirmations = 15;
 
         // long living quorum params
@@ -224,9 +203,7 @@ public:
         consensus.llmqChainLocks = Consensus::LLMQ_400_60;
         consensus.llmqForInstantSend = Consensus::LLMQ_50_60;
 
-        consensus.nDisableZerocoinStartBlock = 157000;
-
-        nMaxTipAge = 6 * 60 * 60; // ~144 blocks behind -> 2 x fork detection time, was 24 * 60 * 60 in bitcoin
+        nMaxTipAge = 24 * 60 * 60; // ~144 blocks behind -> 2 x fork detection time, was 24 * 60 * 60 in bitcoin
 
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour

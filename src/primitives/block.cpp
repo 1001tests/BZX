@@ -32,12 +32,12 @@ uint256 CBlockHeader::GetPoWHash(int nHeight) const {
 
     if (nHeight == 0)
     {
-    scrypt_N_1_1_256(BEGIN(nVersion), BEGIN(powHash), 10);
+    LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, 330, 256);
     }
 
     else
     {
-    LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, 330, 256);
+    lyra2z_hash(BEGIN(nVersion), BEGIN(powHash));
     }
 
     return powHash;

@@ -18,8 +18,6 @@ namespace Consensus {
 enum DeploymentPos
 {
     DEPLOYMENT_TESTDUMMY,
-    DEPLOYMENT_CSV, // Deployment of BIP68, BIP112, and BIP113.
-    DEPLOYMENT_SEGWIT, // Deployment of BIP141, BIP143, and BIP147.
 
     // NOTE: Also add new deployments to VersionBitsDeploymentInfo in versionbits.cpp
     MAX_VERSION_BITS_DEPLOYMENTS
@@ -211,9 +209,6 @@ struct Params {
 
     // Value of maximum lelantus mint.
     int64_t nMaxValueLelantusMint;
-
-    /** block number to disable zerocoin on consensus level */
-    int nDisableZerocoinStartBlock;
 
     /** block to start accepting pro reg txs for evo znodes */
     int DIP0003Height;
