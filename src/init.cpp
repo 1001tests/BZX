@@ -19,7 +19,6 @@
 #include "httpserver.h"
 #include "httprpc.h"
 #include "key.h"
-#include "validation.h"
 #include "miner.h"
 #include "netbase.h"
 #include "net.h"
@@ -53,7 +52,7 @@
 #include "masternode-utils.h"
 #include "messagesigner.h"
 #include "netfulfilledman.h"
-
+#include "validation.h"
 #include "warnings.h"
 
 #include "evo/deterministicmns.h"
@@ -103,7 +102,7 @@ static const bool DEFAULT_PROXYRANDOMIZE = true;
 static const bool DEFAULT_REST_ENABLE = false;
 static const bool DEFAULT_DISABLE_SAFEMODE = false;
 static const bool DEFAULT_STOPAFTERBLOCKIMPORT = false;
-int nBackups = GetArg("-backups", DEFAULT_BACKUPS);
+
 std::unique_ptr<CConnman> g_connman;
 std::unique_ptr<PeerLogicValidation> peerLogic;
 
@@ -131,6 +130,8 @@ enum BindFlags {
 };
 
 static const char *FEE_ESTIMATES_FILENAME = "fee_estimates.dat";
+static const unsigned int DEFAULT_BACKUPS = 50;
+static const unsigned int nBackups = GetArg("-backups", DEFAULT_BACKUPS);
 
 extern CTxPoolAggregate txpools;
 
@@ -537,6 +538,7 @@ std::string HelpMessage(HelpMessageMode mode)
 
 #ifdef ENABLE_WALLET
     strUsage += CWallet::GetWalletHelpString(showDebug);
+    strUsage += HelpMessageOpt("-backups=<n>", strprintf("Number of automatic wallet backups <n> transactions (default: %u)", DEFAULT_BACKUPS));
 #endif
 
 #if ENABLE_ZMQ

@@ -293,7 +293,7 @@ AC_ARG_WITH([utils],
   [AS_HELP_STRING([--with-utils],
   [build BZX-cli BZX-tx (default=yes)])],
   [build_bitcoin_utils=$withval],
-  [build_bitcoin_utils=no])
+  [build_bitcoin_utils=yes])
 
 AC_ARG_WITH([libs],
   [AS_HELP_STRING([--with-libs],
@@ -305,7 +305,7 @@ AC_ARG_WITH([daemon],
   [AS_HELP_STRING([--with-daemon],
   [build bitcoind daemon (default=yes)])],
   [build_bitcoind=$withval],
-  [build_bitcoind=no])
+  [build_bitcoind=yes])
 
 AC_ARG_ENABLE(unsafe-dumpprivkey,
     [],

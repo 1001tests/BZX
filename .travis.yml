@@ -32,14 +32,18 @@ jobs:
     # build depends
     - <<: *builddepends
       env: BUILD_TARGET=win64
-    #- <<: *builddepends
-      #env: BUILD_TARGET=linux64
+    - <<: *builddepends
+      env: BUILD_TARGET=linux64
+    - <<: *builddepends
+      env: BUILD_TARGET=mac
     # build source
     - <<: *buildsrc
       env: BUILD_TARGET=win64
-    #- <<: *buildsrc
-      #env: BUILD_TARGET=linux64
-      
+    - <<: *buildsrc
+      env: BUILD_TARGET=linux64
+    - <<: *buildsrc
+      env: BUILD_TARGET=mac
+
 before_cache:
   # Save builder image
   - docker save travis-builder-$BUILD_TARGET-$TRAVIS_JOB_NUMBER $(docker history -q travis-builder-$BUILD_TARGET-$TRAVIS_JOB_NUMBER | grep -v \<missing\>) | gzip -2 > $HOME/cache/docker/travis-builder-$BUILD_TARGET.tar.gz
