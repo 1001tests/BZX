@@ -96,12 +96,12 @@ unsigned int GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockH
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime)
 {
     // Limit adjustment step
-    const Consensus::Params &consensusParams
+    const Consensus::Params& params = ::Params().GetConsensus();
     int64_t nActualTimespan = pindexLast->GetBlockTime() - nFirstBlockTime;
-    if (nActualTimespan < consensusParams.nPowTarget/1.25)
-        nActualTimespan = consensusParams.nPowTarget/1.25;
-    if (nActualTimespan > consensusParams.nPowTarget*1.25)
-        nActualTimespan = consensusParams.nPowTarget*1.25;
+    if (nActualTimespan < params.nPowTarget / 1.25)
+        nActualTimespan = params.nPowTarget / 1.25;
+    if (nActualTimespan > params.nPowTarget * 1.25)
+        nActualTimespan = params.nPowTarget * 1.25;
 
     // Retarget
     const arith_uint256 bnPowLimit(~arith_uint256(0) >> 12);
