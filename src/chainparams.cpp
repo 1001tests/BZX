@@ -203,7 +203,7 @@ public:
         consensus.llmqChainLocks = Consensus::LLMQ_400_60;
         consensus.llmqForInstantSend = Consensus::LLMQ_50_60;
 
-        nMaxTipAge = 24 * 60 * 60; // ~144 blocks behind -> 2 x fork detection time, was 24 * 60 * 60 in bitcoin
+        nMaxTipAge = 6 * 60 * 60; // ~144 blocks behind -> 2 x fork detection time, was 24 * 60 * 60 in bitcoin
 
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60*60; // fulfilled requests expire in 1 hour
@@ -214,43 +214,26 @@ public:
        `  * a large 32-bit integer with any alignment.
          */
         //btzc: update BZX pchMessage
-        pchMessageStart[0] = 0xe3;
-        pchMessageStart[1] = 0xd9;
-        pchMessageStart[2] = 0xfe;
-        pchMessageStart[3] = 0xf1;
-        nDefaultPort = 8168;
+        pchMessageStart[0] = { 'b' };
+        pchMessageStart[1] = { 'z' };
+        pchMessageStart[2] = { 'x' };
+        pchMessageStart[3] = { '0' };
+        nDefaultPort = 29301;  //nRPCPort = 29201;
         nPruneAfterHeight = 100000;
-        /**
-         * btzc: BZX init genesis block
-         * nBits = 0x1e0ffff0
-         * nTime = 1414776286
-         * nNonce = 142392
-         * genesisReward = 0 * COIN
-         * nVersion = 2
-         * extraNonce
-         */
         std::vector<unsigned char> extraNonce(4);
         extraNonce[0] = 0x82;
         extraNonce[1] = 0x3f;
         extraNonce[2] = 0x00;
         extraNonce[3] = 0x00;
-        genesis = CreateGenesisBlock(1414776286, 142392, 0x1e0ffff0, 2, 0 * COIN, extraNonce);
+        genesis = CreateGenesisBlock(1485785935, 2610, 0x1f0fffff, 2, 0 * COIN, extraNonce);
         const std::string s = genesis.GetHash().ToString();
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"));
-        assert(genesis.hashMerkleRoot == uint256S("0x365d2aa75d061370c9aefdabac3985716b1e3b4bb7c4af4ed54f25e5aaa42783"));
-        vSeeds.push_back(CDNSSeedData("amsterdam.BZX.org", "amsterdam.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("australia.BZX.org", "australia.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("chicago.BZX.org", "chicago.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("london.BZX.org", "london.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("frankfurt.BZX.org", "frankfurt.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("newjersey.BZX.org", "newjersey.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("sanfrancisco.BZX.org", "sanfrancisco.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("tokyo.BZX.org", "tokyo.BZX.org", false));
-        vSeeds.push_back(CDNSSeedData("singapore.BZX.org", "singapore.BZX.org", false));
+        assert(consensus.hashGenesisBlock == uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f"));
+        assert(genesis.hashMerkleRoot == uint256S("0x31f49b23f8a1185f85a6a6972446e72a86d50ca0e3b3ffe217d0c2fea30473db"));
+        vSeeds.push_back(CDNSSeedData("51.77.145.35", "51.77.145.35", false));
         // Note that of those with the service bits flag, most only support a subset of possible options
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 82);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 7);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 75);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 34);
         base58Prefixes[SECRET_KEY] = std::vector < unsigned char > (1, 210);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container < std::vector < unsigned char > > ();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container < std::vector < unsigned char > > ();
@@ -265,18 +248,18 @@ public:
 
         checkpointData = (CCheckpointData) {
                 boost::assign::map_list_of
-                (0, uint256S("0xf11046292ff76af48b66de6f1a210c09825d2ab4f56975ec507766ebf9c9f443"))
+                (0, uint256S("0x322bad477efb4b33fa4b1f0b2861eaf543c61068da9898a95062fdb02ada486f"))
 
         };
 
         chainTxData = ChainTxData{
-                1414776286, // * UNIX timestamp of last checkpoint block
-                933513,     // * total number of transactions between genesis and last checkpoint
+                1485785935, // * UNIX timestamp of last checkpoint block
+                1,     // * total number of transactions between genesis and last checkpoint
                             //   (the tx=... number in the SetBestChain debug.log lines)
-                0.014       // * estimated number of transactions per second after checkpoint
+                576       // * estimated number of transactions per second after checkpoint
         };
 
-        consensus.nLelantusStartBlock = 50000;
+        consensus.nLelantusStartBlock = 500;
         consensus.nMaxSigmaInputPerTransaction = 35;
         consensus.nMaxValueSigmaSpendPerTransaction = (500 * COIN);
         consensus.nMaxLelantusInputPerBlock = 100;
@@ -297,7 +280,7 @@ public:
 
         // reorg
         consensus.nMaxReorgDepth = 5;
-        consensus.nMaxReorgDepthEnforcementBlock = 338000;
+        consensus.nMaxReorgDepthEnforcementBlock = 1;
 
         // Dandelion related values.
         consensus.nDandelionEmbargoMinimum = DANDELION_EMBARGO_MINIMUM;
@@ -307,7 +290,7 @@ public:
         consensus.nDandelionFluff = DANDELION_FLUFF;
 
         // Bip39
-        consensus.nMnemonicBlock = 222400;
+        consensus.nMnemonicBlock = 0;
     }
 
 };
