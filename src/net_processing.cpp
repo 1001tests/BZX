@@ -456,7 +456,8 @@ void MaybeSetPeerAsAnnouncingHeaderAndIDs(NodeId nodeid, CConnman& connman) {
 // Requires cs_main
 bool CanDirectFetch(const Consensus::Params &consensusParams)
 {
-    return chainActive.Tip()->GetBlockTime() > GetAdjustedTime() - consensusParams.nPowTarget * 20;
+    const Consensus::Params& params = ::Params().GetConsensus();
+    return chainActive.Tip()->GetBlockTime() > GetAdjustedTime() - params.nPowTarget * 20;
 }
 
 // Requires cs_main
@@ -3593,10 +3594,11 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
         // We compensate for other peers to prevent killing off peers due to our own downstream link
         // being saturated. We only count validated in-flight blocks so peers can't advertise non-existing block hashes
         // to unreasonably increase our timeout.
+        const Consensus::Params& params = ::Params().GetConsensus();
         if (state.vBlocksInFlight.size() > 0) {
             QueuedBlock &queuedBlock = state.vBlocksInFlight.front();
             int nOtherPeersWithValidatedDownloads = nPeersWithValidatedDownloads - (state.nBlocksInFlightValidHeaders > 0);
-            if (nNow > state.nDownloadingSince + consensusParams.nPowTarget * (BLOCK_DOWNLOAD_TIMEOUT_BASE + BLOCK_DOWNLOAD_TIMEOUT_PER_PEER * nOtherPeersWithValidatedDownloads)) {
+            if (nNow > state.nDownloadingSince + params.nPowTarget * (BLOCK_DOWNLOAD_TIMEOUT_BASE + BLOCK_DOWNLOAD_TIMEOUT_PER_PEER * nOtherPeersWithValidatedDownloads)) {
                 LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", queuedBlock.hash.ToString(), pto->id);
                 pto->fDisconnect = true;
                 return true;
