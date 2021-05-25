@@ -612,7 +612,33 @@ void ReadConfigFile(const std::string& confPath)
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile(confPath));
     if (!streamConfig.good())
-        return; // No BZX.conf file is OK
+    {
+           FILE* configFile = fopen(GetConfigFile().string().c_str(), "a");
+           if (configFile != NULL)
+           {
+               std::string strHeader =
+                       "#rescan=1\n"
+                       "#reindex=1\n"
+                       "#listen=1\n"
+                       "#server=1\n"
+                       "#daemon=1\n"
+                       "#rpcuser=xxxx\n"
+                       "#rpcpassword=xxxx\n"
+                       "#rpcallowip=127.0.0.1\n"
+                       "#maxconnections=150\n"
+                       "addnode=51.77.145.35\n"
+                       "addnode=51.91.156.251\n"
+                       "addnode=51.91.156.249\n"
+                       "addnode=51.91.156.252\n"
+                       "#bznode=1\n"
+                       "#bznodeprivkey=123123123123123123123123 ## Replace with your bznode private key\n"
+                       "#externalip=123.123.123.123:29100 ## Replace with your node external IP\n";
+
+               fwrite(strHeader.c_str(), std::strlen(strHeader.c_str()), 1, configFile);
+               fclose(configFile);
+           }
+           return;
+       }
 
     {
         LOCK(cs_args);
