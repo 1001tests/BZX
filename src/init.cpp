@@ -240,6 +240,46 @@ void Shutdown()
     if (!lockShutdown)
         return;
 
+#ifdef ENABLE_WALLET
+    boost::filesystem::path backupDir = GetDataDir() / "backups";
+    if (nBackups > 0)
+    {
+        if (!boost::filesystem::exists(backupDir))
+        {
+            // Always create backup folder to not confuse the operating system's file browser
+            boost::filesystem::create_directories(backupDir);
+        }
+
+            if (boost::filesystem::exists(backupDir))
+
+            {   std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+                // Create backup of the wallet
+                std::string dateTimeStr = DateTimeStrFormat(".%Y-%m-%d-%H-%M-CLOSED", GetTime());
+                std::string backupPathStr = backupDir.string();
+                backupPathStr += "/" + strWalletFile;
+                std::string sourcePathStr = GetDataDir().string();
+                sourcePathStr += "/" + strWalletFile;
+                boost::filesystem::path sourceFile = sourcePathStr;
+                boost::filesystem::path backupFile = backupPathStr + dateTimeStr;
+                sourceFile.make_preferred();
+                backupFile.make_preferred();
+                if (boost::filesystem::exists(sourceFile))
+                {
+                    try
+                    {
+                        boost::filesystem::copy_file(sourceFile, backupFile);
+                        LogPrintf("Creating backup of %s -> %s\n", sourceFile, backupFile);
+                    } catch (boost::filesystem::filesystem_error& error)
+                    {
+                        LogPrintf("Failed to create backup %s\n", error.what());
+                    }
+
+                }
+            }
+    }
+
+#endif
+
     /// Note: Shutdown() must be able to handle cases in which AppInit2() failed part of the way,
     /// for example if the data directory was found to be locked.
     /// Be sure that anything that writes files or flushes caches only does this if the respective
@@ -1508,6 +1548,77 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 #ifdef ENABLE_WALLET
     if (!CWallet::Verify())
         return false;
+
+
+    boost::filesystem::path backupDir = GetDataDir() / "backups";
+
+    if (nBackups > 0)
+    {
+    if (!boost::filesystem::exists(backupDir))
+    {
+        // Always create backup folder to not confuse the operating system's file browser
+        boost::filesystem::create_directories(backupDir);
+    }
+        if (boost::filesystem::exists(backupDir))
+
+        {   std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+            // Create backup of the wallet
+            std::string dateTimeStr = DateTimeStrFormat(".%Y-%m-%d-%H-%M-OPENED", GetTime());
+            std::string backupPathStr = backupDir.string();
+            backupPathStr += "/" + strWalletFile;
+            std::string sourcePathStr = GetDataDir().string();
+            sourcePathStr += "/" + strWalletFile;
+            boost::filesystem::path sourceFile = sourcePathStr;
+            boost::filesystem::path backupFile = backupPathStr + dateTimeStr;
+            sourceFile.make_preferred();
+            backupFile.make_preferred();
+            if (boost::filesystem::exists(sourceFile))
+            {
+                try
+                {
+                    boost::filesystem::copy_file(sourceFile, backupFile);
+                    LogPrintf("Creating backup of %s -> %s\n", sourceFile, backupFile);
+                } catch (boost::filesystem::filesystem_error& error)
+                {
+                    LogPrintf("Failed to create backup %s\n", error.what());
+                }
+            }
+
+            // Keep only the last 25 backups, including the new one of course
+            typedef std::multimap<std::time_t, boost::filesystem::path> folder_set_t;
+            folder_set_t folder_set;
+            boost::filesystem::directory_iterator end_iter;
+            boost::filesystem::path backupFolder = backupDir.string();
+            backupFolder.make_preferred();
+            // Build map of backup files for current(!) wallet sorted by last write time
+            boost::filesystem::path currentFile;
+            for (boost::filesystem::directory_iterator dir_iter(backupFolder); dir_iter != end_iter; ++dir_iter) {
+                // Only check regular files
+                if (boost::filesystem::is_regular_file(dir_iter->status())) {
+                    currentFile = dir_iter->path().filename();
+                    // Only add the backups for the current wallet, e.g. wallet.dat.*
+                    if (dir_iter->path().stem().string() == strWalletFile) {
+                        folder_set.insert(folder_set_t::value_type(boost::filesystem::last_write_time(dir_iter->path()), *dir_iter));
+                    }
+                }
+            }
+            // Loop backward through backup files and keep the N newest ones (1 <= N <= 10)
+            int counter = 0;
+            BOOST_REVERSE_FOREACH (PAIRTYPE(const std::time_t, boost::filesystem::path) file, folder_set) {
+                counter++;
+                if (counter > nBackups) {
+                    // More than nBackups backups: delete oldest one(s)
+                    try {
+                        boost::filesystem::remove(file.second);
+                        LogPrintf("Old backup deleted: %s\n", file.second);
+                    } catch (boost::filesystem::filesystem_error& error) {
+                        LogPrintf("Failed to delete backup %s\n", error.what());
+                    }
+                }
+            }
+        }
+    }
+
 #endif
     // ********************************************************* Step 6: network initialization
     // Note that we absolutely cannot open any actual connections
