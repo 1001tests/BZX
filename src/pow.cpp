@@ -61,7 +61,8 @@ unsigned int static DarkGravityWave3(const CBlockIndex* pindexLast, const CBlock
     CBigNum bnNew(PastDifficultyAverage);
 
     // nTargetTimespan is the time that the CountBlocks should have taken to be generated.
-    int64_t nTargetTimespan = CountBlocks * 150;
+    const Consensus::Params &consensusParams
+    int64_t nTargetTimespan = CountBlocks * consensusParams.nPowTarget;
 
     // We don't want to increase/decrease diff too much.
     if (nActualTimespan < nTargetTimespan/1.5)
@@ -95,18 +96,19 @@ unsigned int GetNextWorkRequiredBTC(const CBlockIndex* pindexLast, const CBlockH
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime)
 {
     // Limit adjustment step
+    const Consensus::Params &consensusParams
     int64_t nActualTimespan = pindexLast->GetBlockTime() - nFirstBlockTime;
-    if (nActualTimespan < 150/1.25)
-        nActualTimespan = 150/1.25;
-    if (nActualTimespan > 150*1.25)
-        nActualTimespan = 150*1.25;
+    if (nActualTimespan < consensusParams.nPowTarget/1.25)
+        nActualTimespan = consensusParams.nPowTarget/1.25;
+    if (nActualTimespan > consensusParams.nPowTarget*1.25)
+        nActualTimespan = consensusParams.nPowTarget*1.25;
 
     // Retarget
     const arith_uint256 bnPowLimit(~arith_uint256(0) >> 12);
     arith_uint256 bnNew;
     bnNew.SetCompact(pindexLast->nBits);
     bnNew *= nActualTimespan;
-    bnNew /= 150;
+    bnNew /= consensusParams.nPowTarget;
 
     if (bnNew > bnPowLimit)
         bnNew = bnPowLimit;

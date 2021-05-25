@@ -86,10 +86,6 @@ int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParam
     if (nOldTime < nNewTime)
         pblock->nTime = nNewTime;
 
-    // Updating time can change work required on testnet:
-    if (consensusParams.fPowAllowMinDifficultyBlocks)
-        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
-
     return nNewTime - nOldTime;
 }
 
@@ -1083,10 +1079,6 @@ void static BZXMiner(const CChainParams &chainparams) {
                     break; // Recreate the block if the clock has run backwards,
                 // so that we can use the correct time.
                 UpdateDiff(pblock, pindexPrev);
-                if (chainparams.GetConsensus().fPowAllowMinDifficultyBlocks) {
-                    // Changing pblock->nTime can change work required on testnet:
-                    hashTarget.SetCompact(pblock->nBits);
-                }
             }
         }
     }

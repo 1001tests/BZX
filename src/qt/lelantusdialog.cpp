@@ -543,7 +543,7 @@ void LelantusDialog::updateGlobalFeeVariables()
 
         // show the estimated required time for confirmation
         ui->confirmationTargetLabel->setText(
-            GUIUtil::formatDurationStr(nConfirmTarget * Params().GetConsensus().nPowTargetSpacing)
+            GUIUtil::formatDurationStr(nConfirmTarget * Params().GetConsensus().nPowTarget)
             + " / " + tr("%n block(s)", "", nConfirmTarget));
     }
     else
