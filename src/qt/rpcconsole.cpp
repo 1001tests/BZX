@@ -20,6 +20,7 @@
 #include "rpc/server.h"
 #include "rpc/client.h"
 #include "util.h"
+#include "validation.h"
 
 #include <openssl/crypto.h>
 
