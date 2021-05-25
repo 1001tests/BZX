@@ -2703,9 +2703,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockSubsidy)) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         LogPrintf("ConnectBlock -> IsBlockPayeeValid!\n");
-        //return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
+        return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
                                 //REJECT_INVALID, "bad-cb-payee");
-    } //xxxx
+    }
 
     if (!ProcessSpecialTxsInBlock(block, pindex, state, fJustCheck, fScriptChecks)) {
         return error("ConnectBlock(): ProcessSpecialTxsInBlock for block %s at height %i failed with %s",
@@ -4234,10 +4234,10 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 {
 	// Check proof of work
 
-    /*if (block.nBits != GetNextWorkRequired(pindexPrev, &block))
+    if (block.nBits != GetNextWorkRequired(pindexPrev, &block))
         //return state.DoS(100, false, REJECT_INVALID, "bad-diffbits", false, "incorrect proof of work");
         LogPrintf("DIFFBITS\n");
-        return false;*/ //xxxx
+        return false; //xxxx
 
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
