@@ -2703,7 +2703,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         LogPrintf("ConnectBlock -> IsBlockPayeeValid!\n");
         return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
-                                //REJECT_INVALID, "bad-cb-payee");
+                                REJECT_INVALID, "bad-cb-payee");
     }
 
     if (!ProcessSpecialTxsInBlock(block, pindex, state, fJustCheck, fScriptChecks)) {
